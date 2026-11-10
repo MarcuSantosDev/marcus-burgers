@@ -1,0 +1,66 @@
+
+# =====================================
+# IDEs
+# =====================================
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.project
+.classpath
+.settings/
+
+# =====================================
+# BACK-END - JAVA / SPRING BOOT
+# =====================================
+*.class
+*.jar
+*.war
+*.ear
+backend/target/
+backend/build/
+backend/.gradle/
+
+# =====================================
+# FRONT-END - REACT / NODE.JS
+# =====================================
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.vite/
+frontend/coverage/
+
+# =====================================
+# ENVIRONMENT VARIABLES
+# =====================================
+.env
+.env.*
+!.env.example
+
+# =====================================
+# LOGS
+# =====================================
+*.log
+logs/
+
+# =====================================
+# DATABASE FILES
+# =====================================
+*.db
+*.sqlite
+*.sqlite3
+
+# =====================================
+# TEMPORARY FILES
+# =====================================
+*.tmp
+*.swp
+*.bak
+
+# =====================================
+# OPERATING SYSTEM
+# =====================================
+.DS_Store
+Thumbs.db
+Desktop.ini
