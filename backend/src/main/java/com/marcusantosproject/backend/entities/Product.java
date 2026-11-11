@@ -30,6 +30,13 @@ public class Product {
     @Column(nullable = false)
     private int stock;
 
+    public Product(String name, String description, BigDecimal price, int stock) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.stock = stock;
+    }
+
     public void addStock(int quantity) {
         if (quantity <= 0) {
             throw new IllegalArgumentException("Quantity must be greater than zero");

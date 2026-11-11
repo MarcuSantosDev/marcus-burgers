@@ -1,30 +1,66 @@
 package com.marcusantosproject.backend.resources;
 
 import com.marcusantosproject.backend.dto.product.ProductRequest;
-import com.marcusantosproject.backend.entities.Product;
+import com.marcusantosproject.backend.dto.product.ProductResponse;
+import com.marcusantosproject.backend.dto.product.StockRequest;
 import com.marcusantosproject.backend.services.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequestMapping("/products")
 public class ProductResource {
     @Autowired
     private ProductService service;
 
-    @GetMapping(value = "/products")
-    public ResponseEntity<List<ProductRequest>> findAll(){
-        List<ProductRequest> list = service.findAll().stream().map(ProductRequest::new).toList();
-        return ResponseEntity.ok().body(list);
+    @GetMapping
+    public ResponseEntity<List<ProductResponse>> findAll() {
+        List<ProductResponse> list = service.findAll();
+        return ResponseEntity.ok(list);
     }
 
-    @GetMapping(value = "/products/{id}")
-    public ResponseEntity<ProductRequest> findById(@PathVariable Long id){
-        Product obj = service.findById(id);
-        return ResponseEntity.ok().body(new ProductRequest(obj));
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponse> findById(@PathVariable Long id) {
+        ProductResponse response = service.findById(id);
+        return ResponseEntity.ok(response);
     }
+
+    @PostMapping
+    public ResponseEntity<ProductResponse> insert(@Valid @RequestBody ProductRequest request) {
+        ProductResponse response = service.insert(request);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}").buildAndExpand(response.productId()).toUri();
+        return ResponseEntity.created(uri).body(response);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductResponse> update(@PathVariable Long id, @Valid @RequestBody ProductRequest request) {
+        ProductResponse response = service.update(id, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/stock/add")
+    public ResponseEntity<ProductResponse> addStock(@PathVariable Long id, @Valid @RequestBody StockRequest request) {
+        ProductResponse response = service.addStock(id, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{id}/stock/remove")
+    public ResponseEntity<ProductResponse> removeStock(@PathVariable Long id, @Valid @RequestBody StockRequest request) {
+        ProductResponse response = service.removeStock(id, request);
+        return ResponseEntity.ok(response);
+    }
+
 }
