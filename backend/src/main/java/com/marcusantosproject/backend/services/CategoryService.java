@@ -8,6 +8,7 @@ import com.marcusantosproject.backend.repository.CategoryRepository;
 import com.marcusantosproject.backend.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,19 +17,23 @@ public class CategoryService {
     @Autowired
     private CategoryRepository repository;
 
+    @Transactional(readOnly = true)
     public List<CategoryResponse> findAll(){
         return repository.findAll().stream().map(CategoryResponse::new).toList();
     }
 
+    @Transactional(readOnly = true)
     public CategoryResponse findById(Long id){
         return new CategoryResponse(findEntity(id));
     }
 
+    @Transactional
     public CategoryResponse  insert(CategoryRequest request){
         Category entity = new Category(request.name(), request.description());
         return new CategoryResponse(repository.save(entity));
     }
 
+    @Transactional
     public CategoryResponse update(Long id,CategoryRequest request){
         Category entity = findEntity(id);
         entity.setName(request.name());
@@ -36,6 +41,7 @@ public class CategoryService {
         return new CategoryResponse(repository.save(entity));
     }
 
+    @Transactional
     public void delete(Long id){
 
         if(!repository.existsById(id)){
