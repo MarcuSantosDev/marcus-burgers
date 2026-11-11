@@ -1,0 +1,14 @@
+# Database configuration
+spring.datasource.url=jdbc:postgresql://localhost:5432/nome_do_banco
+spring.datasource.username=seu_usuario
+spring.datasource.password=sua_senha
+
+# Hibernate configuration
+spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+
+# JWT configuration
+jwt.secret=SUBSTITUA_POR_UMA_CHAVE_SECRETA
+jwt.expiration=3600000
