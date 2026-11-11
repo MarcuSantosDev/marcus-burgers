@@ -2,6 +2,8 @@ package com.marcusantosproject.backend.services;
 
 import com.marcusantosproject.backend.entities.Category;
 import com.marcusantosproject.backend.repository.CategoryRepository;
+
+import com.marcusantosproject.backend.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,5 +16,9 @@ public class CategoryService {
 
     public List<Category> findAll(){
         return repository.findAll();
+    }
+
+    public Category findById(Long id){
+        return repository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Category not found"));
     }
 }
