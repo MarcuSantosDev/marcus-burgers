@@ -1,13 +1,29 @@
+
 package com.marcusantosproject.backend;
 
+import com.marcusantosproject.backend.entities.Category;
+import com.marcusantosproject.backend.repository.CategoryRepository;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
-@SpringBootTest
-class BackendApplicationTests {
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+@DataJpaTest
+class CategoryRepositoryTests {
+
+    @Autowired
+    private CategoryRepository repository;
 
     @Test
-    void contextLoads() {
-    }
+    void shouldSaveCategory() {
+        Category category = new Category(
+                "Hambúrgueres",
+                "Hambúrgueres artesanais"
+        );
 
+        Category saved = repository.save(category);
+
+        assertNotNull(saved.getCategoryId());
+    }
 }

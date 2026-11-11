@@ -66,4 +66,5 @@ Thumbs.db
 Desktop.ini
 
 
-application.properties
+# Configurações com credenciais
+application-dev.properties
