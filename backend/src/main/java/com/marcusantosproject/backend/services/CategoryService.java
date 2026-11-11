@@ -4,7 +4,6 @@ import com.marcusantosproject.backend.dto.CategoryDTO;
 import com.marcusantosproject.backend.entities.Category;
 import com.marcusantosproject.backend.repository.CategoryRepository;
 
-import com.marcusantosproject.backend.services.exceptions.ObjectNotFoundException;
 import com.marcusantosproject.backend.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ public class CategoryService {
     }
 
     public Category findById(Long id){
-        return repository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Category not found"));
+        return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
     public Category insert(Category obj){
@@ -44,7 +43,7 @@ public class CategoryService {
     }
 
     public Category update(Long id,Category obj){
-        Category newObj = repository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Category not found"));
+        Category newObj = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException(obj.getCategoryId()));
         updateData(newObj,obj);
         return repository.save(newObj);
     }
