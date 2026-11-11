@@ -1,6 +1,6 @@
 package com.marcusantosproject.backend.resources;
 
-import com.marcusantosproject.backend.dto.ProductDTO;
+import com.marcusantosproject.backend.dto.product.ProductRequest;
 import com.marcusantosproject.backend.entities.Product;
 import com.marcusantosproject.backend.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +17,14 @@ public class ProductResource {
     private ProductService service;
 
     @GetMapping(value = "/products")
-    public ResponseEntity<List<ProductDTO>> findAll(){
-        List<ProductDTO> list = service.findAll().stream().map(ProductDTO::new).toList();
+    public ResponseEntity<List<ProductRequest>> findAll(){
+        List<ProductRequest> list = service.findAll().stream().map(ProductRequest::new).toList();
         return ResponseEntity.ok().body(list);
     }
 
     @GetMapping(value = "/products/{id}")
-    public ResponseEntity<ProductDTO> findById(@PathVariable Long id){
+    public ResponseEntity<ProductRequest> findById(@PathVariable Long id){
         Product obj = service.findById(id);
-        return ResponseEntity.ok().body(new ProductDTO(obj));
+        return ResponseEntity.ok().body(new ProductRequest(obj));
     }
 }
