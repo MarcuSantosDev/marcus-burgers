@@ -1,6 +1,7 @@
 package com.marcusantosproject.backend.services;
 
-import com.marcusantosproject.backend.dto.CategoryDTO;
+import com.marcusantosproject.backend.dto.category.CategoryRequest;
+import com.marcusantosproject.backend.dto.category.CategoryResponse;
 import com.marcusantosproject.backend.entities.Category;
 import com.marcusantosproject.backend.repository.CategoryRepository;
 
@@ -15,42 +16,38 @@ public class CategoryService {
     @Autowired
     private CategoryRepository repository;
 
-    public List<Category> findAll(){
-        return repository.findAll();
+    public List<CategoryResponse> findAll(){
+        return repository.findAll().stream().map(CategoryResponse::new).toList();
     }
 
-    public Category findById(Long id){
-        return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
+    public CategoryResponse findById(Long id){
+        return new CategoryResponse(findEntity(id));
     }
 
-    public Category insert(Category obj){
-        return repository.save(obj);
+    public CategoryResponse  insert(CategoryRequest request){
+        Category entity = new Category(request.name(), request.description());
+        return new CategoryResponse(repository.save(entity));
     }
 
-    public Category fromDto(CategoryDTO objDto){
-        return new Category(objDto.name(),objDto.description());
+    public CategoryResponse update(Long id,CategoryRequest request){
+        Category entity = findEntity(id);
+        entity.setName(request.name());
+        entity.setDescription(request.description());
+        return new CategoryResponse(repository.save(entity));
     }
 
     public void delete(Long id){
-        try {
-            if(!repository.existsById(id)){
+
+        if(!repository.existsById(id)){
                 throw new ResourceNotFoundException(id);
-            }
-            repository.deleteById(id);
-        } catch (ResourceNotFoundException e) {
-            throw new RuntimeException(e);
         }
-    }
+        repository.deleteById(id);
+        }
 
-    public Category update(Long id,Category obj){
-        Category newObj = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException(obj.getCategoryId()));
-        updateData(newObj,obj);
-        return repository.save(newObj);
-    }
 
-    public void updateData(Category newObj, Category obj){
-        newObj.setName(obj.getName());
-        newObj.setDescription(obj.getDescription());
+    private Category findEntity(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
 }
