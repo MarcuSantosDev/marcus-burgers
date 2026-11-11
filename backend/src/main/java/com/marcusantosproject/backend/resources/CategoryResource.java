@@ -3,6 +3,7 @@ package com.marcusantosproject.backend.resources;
 import com.marcusantosproject.backend.dto.category.CategoryRequest;
 import com.marcusantosproject.backend.dto.category.CategoryResponse;
 import com.marcusantosproject.backend.services.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ public class CategoryResource {
     }
 
     @PostMapping(value = "/categories")
-    public ResponseEntity<CategoryResponse> insert(@RequestBody CategoryRequest request) {
+    public ResponseEntity<CategoryResponse> insert(@Valid @RequestBody CategoryRequest request) {
         CategoryResponse obj = service.insert(request);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}").buildAndExpand(obj.categoryId()).toUri();
@@ -37,7 +38,7 @@ public class CategoryResource {
 
     @PutMapping(value = "/categories/{id}")
     public ResponseEntity<CategoryResponse> update(@PathVariable Long id,
-                                                  @RequestBody CategoryRequest request){
+                                                   @Valid @RequestBody CategoryRequest request){
         return ResponseEntity.ok(service.update(id, request));
     }
 

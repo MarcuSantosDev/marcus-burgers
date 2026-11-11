@@ -19,5 +19,8 @@ public record ProductRequest(
         BigDecimal price,
 
         @PositiveOrZero(message = "Stock must not be negative")
-        int stock
+        int stock,
+
+        @NotNull(message = "Category is required")
+        Long categoryId
 ) {}

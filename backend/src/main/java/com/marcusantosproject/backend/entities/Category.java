@@ -1,15 +1,13 @@
 package com.marcusantosproject.backend.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -20,8 +18,14 @@ public class Category implements Serializable {
     @EqualsAndHashCode.Include
     private Long categoryId;
 
+    @Setter
     private String name;
+
+    @Setter
     private String description;
+
+    @OneToMany(mappedBy = "category")
+    private List<Product> products = new ArrayList<>();;
 
     public Category(String name, String description) {
         this.name = name;
