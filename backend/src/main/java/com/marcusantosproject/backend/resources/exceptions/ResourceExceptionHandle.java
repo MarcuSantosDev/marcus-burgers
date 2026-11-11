@@ -1,6 +1,7 @@
 package com.marcusantosproject.backend.resources.exceptions;
 
 import com.marcusantosproject.backend.services.exceptions.ObjectNotFoundException;
+import com.marcusantosproject.backend.services.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,13 @@ public class ResourceExceptionHandle {
 
     @ExceptionHandler(ObjectNotFoundException.class)
     public ResponseEntity<StandardError> objectNotFound(ObjectNotFoundException e, HttpServletRequest request){
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        StandardError err = new StandardError(System.currentTimeMillis() ,status.value(), "Not Found", e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<StandardError> ResourceNotFoundException(ResourceNotFoundException e, HttpServletRequest request){
         HttpStatus status = HttpStatus.NOT_FOUND;
         StandardError err = new StandardError(System.currentTimeMillis() ,status.value(), "Not Found", e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);

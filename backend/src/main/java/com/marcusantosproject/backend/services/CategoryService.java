@@ -5,6 +5,7 @@ import com.marcusantosproject.backend.entities.Category;
 import com.marcusantosproject.backend.repository.CategoryRepository;
 
 import com.marcusantosproject.backend.services.exceptions.ObjectNotFoundException;
+import com.marcusantosproject.backend.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,17 @@ public class CategoryService {
         return new Category(objDto.name(),objDto.description());
     }
 
+    public void delete(Long id){
+        try {
+            if(!repository.existsById(id)){
+                throw new ResourceNotFoundException(id);
+            }
+            repository.deleteById(id);
+        } catch (ResourceNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public Category update(Long id,Category obj){
         Category newObj = repository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Category not found"));
         updateData(newObj,obj);
@@ -41,4 +53,5 @@ public class CategoryService {
         newObj.setName(obj.getName());
         newObj.setDescription(obj.getDescription());
     }
+
 }
