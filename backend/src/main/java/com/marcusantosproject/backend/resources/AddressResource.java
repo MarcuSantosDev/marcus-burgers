@@ -39,7 +39,7 @@ public class AddressResource {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<AddressResponse> update(@PathVariable Long id, @RequestBody AddressRequest request){
+    public ResponseEntity<AddressResponse> update(@PathVariable Long id,@Valid @RequestBody AddressRequest request){
         return ResponseEntity.ok().body(service.update(id,request));
     }
 
