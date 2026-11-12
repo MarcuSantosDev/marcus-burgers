@@ -24,16 +24,16 @@ public class CategoryResource {
 
     @GetMapping(value = "/categories/{id}")
     public ResponseEntity<CategoryResponse> findById(@PathVariable Long id){
-        CategoryResponse obj = service.findById(id);
-        return ResponseEntity.ok().body(obj);
+        CategoryResponse response = service.findById(id);
+        return ResponseEntity.ok().body(response);
     }
 
     @PostMapping(value = "/categories")
     public ResponseEntity<CategoryResponse> insert(@Valid @RequestBody CategoryRequest request) {
-        CategoryResponse obj = service.insert(request);
+        CategoryResponse response = service.insert(request);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}").buildAndExpand(obj.categoryId()).toUri();
-        return ResponseEntity.created(uri).body(obj);
+                .path("/{id}").buildAndExpand(response.categoryId()).toUri();
+        return ResponseEntity.created(uri).body(response);
     }
 
     @PutMapping(value = "/categories/{id}")
@@ -43,8 +43,8 @@ public class CategoryResource {
     }
 
     @DeleteMapping("/categories/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        service.delete(id);
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+        service.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }

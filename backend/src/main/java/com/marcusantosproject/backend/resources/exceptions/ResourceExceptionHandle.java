@@ -1,9 +1,6 @@
 package com.marcusantosproject.backend.resources.exceptions;
 
-import com.marcusantosproject.backend.services.exceptions.CategoryHasProducts;
-import com.marcusantosproject.backend.services.exceptions.CategoryNotFound;
-import com.marcusantosproject.backend.services.exceptions.InsufficientStock;
-import com.marcusantosproject.backend.services.exceptions.ResourceNotFound;
+import com.marcusantosproject.backend.services.exceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpStatus;
@@ -41,5 +38,14 @@ public class ResourceExceptionHandle {
         StandardError err = new StandardError(System.currentTimeMillis(), status.value(), "Conflict", e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
+
+    @ExceptionHandler(EmailAlreadyExists.class)
+    public ResponseEntity<StandardError> EmailAlreadyExists(EmailAlreadyExists e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.CONFLICT;
+        StandardError err = new StandardError(System.currentTimeMillis(), status.value(), "Conflict", e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
+
+
 }
 
