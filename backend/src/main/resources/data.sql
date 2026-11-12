@@ -9,3 +9,6 @@ INSERT INTO product (name, description, price, stock, category_id) VALUES ('Coca
 INSERT INTO product (name, description, price, stock, category_id) VALUES ('Guaraná Antarctica 350ml', 'Refrigerante de guaraná, lata de 350ml.', 5.50, 80, 2);
 INSERT INTO product (name, description, price, stock, category_id) VALUES ('Batata Frita P', 'Porção pequena de batatas fritas crocantes.', 12.00, 40, 3);
 INSERT INTO product (name, description, price, stock, category_id) VALUES ('Batata Frita G', 'Porção grande de batatas fritas crocantes.', 20.00, 30, 3);
+
+INSERT INTO users (name, email, password_hash) VALUES ('Admin', 'admin@email.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy');
+INSERT INTO users (name, email, password_hash) VALUES ('Marcus', 'marcus@email.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy');
