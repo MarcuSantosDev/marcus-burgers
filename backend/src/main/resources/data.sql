@@ -12,3 +12,9 @@ INSERT INTO product (name, description, price, stock, category_id) VALUES ('Bata
 
 INSERT INTO users (name, email, password_hash) VALUES ('Admin', 'admin@email.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy');
 INSERT INTO users (name, email, password_hash) VALUES ('Marcus', 'marcus@email.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy');
+
+INSERT INTO address (name, street, number, complement, neighborhood, city, state, zipcode) VALUES ('Casa', 'Rua das Flores', 120, 'Apto 101', 'Centro', 'João Pessoa', 'PB', '58010-000');
+INSERT INTO address (name, street, number, complement, neighborhood, city, state, zipcode) VALUES ('Trabalho', 'Avenida Epitácio Pessoa', 1500, 'Sala 304', 'Bairro dos Estados', 'João Pessoa', 'PB', '58030-001');
+INSERT INTO address (name, street, number, complement, neighborhood, city, state, zipcode) VALUES ('Casa dos Pais', 'Rua Sete de Setembro', 45, NULL, 'Centro', 'Campina Grande', 'PB', '58400-100');
+INSERT INTO address (name, street, number, complement, neighborhood, city, state, zipcode) VALUES ('Apartamento', 'Avenida Paulista', 1000, 'Bloco B, Apto 52', 'Bela Vista', 'São Paulo', 'SP', '01310-100');
+INSERT INTO address (name, street, number, complement, neighborhood, city, state, zipcode) VALUES ('Casa de Praia', 'Rua dos Coqueiros', 0, 'Casa 7', 'Praia do Sol', 'Recife', 'PE', '51020040');

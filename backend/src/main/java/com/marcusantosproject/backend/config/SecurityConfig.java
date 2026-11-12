@@ -20,7 +20,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/categories/**", "/products/**", "/users/**").permitAll()
+                        .requestMatchers("/categories/**", "/products/**", "/users/**" , "/addresses/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults());

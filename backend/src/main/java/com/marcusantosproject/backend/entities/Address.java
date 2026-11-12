@@ -39,4 +39,15 @@ public class Address {
 
     @Column(nullable = false, length = 9)
     private String zipcode;
+
+    public Address(String name,String street,Integer number, String complement, String neighborhood, String city, String state, String zipcode){
+        this.name = name;
+        this.street = street;
+        this.number = number;
+        this.complement = complement;
+        this.neighborhood = neighborhood;
+        this.city = city;
+        this.state = state;
+        this.zipcode = zipcode;
+    }
 }
