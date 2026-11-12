@@ -15,7 +15,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    @Getter
+    @Getter @Setter
     private Long userId;
 
     @Column(nullable = false, length = 100)
@@ -27,9 +27,10 @@ public class User {
     private String email;
 
     @Column(nullable = false)
-    @Setter
+    @Getter @Setter
     private String passwordHash;
 
+    @Getter @Setter
     @Enumerated(EnumType.STRING)
     private Role role;
 
