@@ -37,4 +37,15 @@ public class AddressResource {
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(response.addressId()).toUri();
         return ResponseEntity.created(uri).body(response);
     }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<AddressResponse> update(@PathVariable Long id, @RequestBody AddressRequest request){
+        return ResponseEntity.ok().body(service.update(id,request));
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id){
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }
