@@ -1,10 +1,13 @@
 package com.marcusantosproject.backend.services;
 
+import com.marcusantosproject.backend.dto.address.AddressRequest;
 import com.marcusantosproject.backend.dto.user.UserRequest;
 import com.marcusantosproject.backend.dto.user.UserResponse;
 import com.marcusantosproject.backend.dto.user.UserUpdateRequest;
+import com.marcusantosproject.backend.entities.Address;
 import com.marcusantosproject.backend.entities.User;
 import com.marcusantosproject.backend.enums.Role;
+import com.marcusantosproject.backend.repository.AddressRepository;
 import com.marcusantosproject.backend.repository.UserRepository;
 import com.marcusantosproject.backend.services.exceptions.EmailAlreadyExists;
 import com.marcusantosproject.backend.services.exceptions.ResourceNotFound;
@@ -21,6 +24,8 @@ public class UserService {
     private UserRepository repository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private AddressRepository addressRepository;
 
     @Transactional(readOnly = true)
     public List<UserResponse> findAll(){
@@ -75,4 +80,6 @@ public class UserService {
     private User findEntity(Long id){
         return repository.findById(id).orElseThrow(() -> new ResourceNotFound(id));
     }
+
+
 }

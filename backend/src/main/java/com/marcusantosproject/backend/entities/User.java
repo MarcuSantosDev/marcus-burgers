@@ -4,6 +4,9 @@ import com.marcusantosproject.backend.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -29,6 +32,10 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Getter @Setter
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Address> addresses = new ArrayList<>();
 
     public User(String name, String email, String passwordHash, Role role) {
         this.name = name;

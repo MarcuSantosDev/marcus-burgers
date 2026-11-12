@@ -35,5 +35,9 @@ public record AddressRequest(
                 regexp = "\\d{5}-?\\d{3}",
                 message = "Invalid zipcode"
         )
-        String zipcode) {
-}
+        String zipcode,
+
+        @NotNull
+        Long userId
+        )
+{}

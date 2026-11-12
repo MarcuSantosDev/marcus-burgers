@@ -39,6 +39,10 @@ public class Address {
     @Column(nullable = false, length = 9)
     private String zipcode;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     public Address(String name,String street,Integer number, String complement, String neighborhood, String city, String state, String zipcode){
         this.name = name;
         this.street = street;
