@@ -4,6 +4,7 @@ import com.marcusantosproject.backend.dto.user.UserRequest;
 import com.marcusantosproject.backend.dto.user.UserResponse;
 import com.marcusantosproject.backend.dto.user.UserUpdateRequest;
 import com.marcusantosproject.backend.entities.User;
+import com.marcusantosproject.backend.enums.Role;
 import com.marcusantosproject.backend.repository.UserRepository;
 import com.marcusantosproject.backend.services.exceptions.EmailAlreadyExists;
 import com.marcusantosproject.backend.services.exceptions.ResourceNotFound;
@@ -39,7 +40,7 @@ public class UserService {
             throw new EmailAlreadyExists(email);
         }
         String hash = passwordEncoder.encode(request.password());
-        User entity = new User(request.name(), email, hash);
+        User entity = new User(request.name(), email, hash, Role.CLIENT);
         return new UserResponse(repository.save(entity));
     }
 

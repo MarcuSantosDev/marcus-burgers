@@ -1,5 +1,6 @@
 package com.marcusantosproject.backend.entities;
 
+import com.marcusantosproject.backend.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,9 +27,13 @@ public class User {
     @Setter
     private String passwordHash;
 
-    public User(String name, String email, String passwordHash) {
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    public User(String name, String email, String passwordHash, Role role) {
         this.name = name;
         this.email = email;
         this.passwordHash = passwordHash;
+        this.role = role;
     }
 }
