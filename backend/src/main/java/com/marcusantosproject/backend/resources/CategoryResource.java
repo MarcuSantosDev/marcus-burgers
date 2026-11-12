@@ -13,22 +13,23 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequestMapping(value = "/categories")
 public class CategoryResource {
     @Autowired
     private CategoryService service;
 
-    @GetMapping(value = "/categories")
+    @GetMapping
     public ResponseEntity<List<CategoryResponse>> findAll(){
         return ResponseEntity.ok(service.findAll());
     }
 
-    @GetMapping(value = "/categories/{id}")
+    @GetMapping(value = "/{id}")
     public ResponseEntity<CategoryResponse> findById(@PathVariable Long id){
         CategoryResponse response = service.findById(id);
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping(value = "/categories")
+    @PostMapping
     public ResponseEntity<CategoryResponse> insert(@Valid @RequestBody CategoryRequest request) {
         CategoryResponse response = service.insert(request);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -36,13 +37,13 @@ public class CategoryResource {
         return ResponseEntity.created(uri).body(response);
     }
 
-    @PutMapping(value = "/categories/{id}")
+    @PutMapping(value = "/{id}")
     public ResponseEntity<CategoryResponse> update(@PathVariable Long id,
                                                    @Valid @RequestBody CategoryRequest request){
         return ResponseEntity.ok(service.update(id, request));
     }
 
-    @DeleteMapping("/categories/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();
