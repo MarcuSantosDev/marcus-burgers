@@ -19,8 +19,7 @@ import java.util.Base64;
 public class JwtConfig {
 
     @Bean
-    public SecretKey secretKey(
-            @Value("${security.jwt.secret}") String secret) {
+    public SecretKey secretKey(@Value("${security.jwt.secret}") String secret) {
 
         byte[] keyBytes = Base64.getDecoder().decode(secret);
 
@@ -30,9 +29,9 @@ public class JwtConfig {
             );
         }
 
-        return new SecretKeySpec(keyBytes, "HmacSHA256");
+        return new SecretKeySpec(keyBytes, "HmacSHA256"); // SecretKeySpec permite criar uma chave criptográfica a partir de um array de bytes;
     }
-
+    // Gera tokens (usado no login)
     @Bean
     public JwtEncoder jwtEncoder(SecretKey secretKey) {
         return new NimbusJwtEncoder(
@@ -40,6 +39,7 @@ public class JwtConfig {
         );
     }
 
+    // JwtDecoder: valida tokens (usado pelo Spring em toda requisição)
     @Bean
     public JwtDecoder jwtDecoder(SecretKey secretKey) {
         return NimbusJwtDecoder.withSecretKey(secretKey)

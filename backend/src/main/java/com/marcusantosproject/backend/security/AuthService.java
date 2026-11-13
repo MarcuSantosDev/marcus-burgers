@@ -2,7 +2,6 @@ package com.marcusantosproject.backend.security;
 
 import com.marcusantosproject.backend.dto.request.LoginRequest;
 import com.marcusantosproject.backend.dto.login.LoginResponse;
-import com.marcusantosproject.backend.services.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
