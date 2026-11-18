@@ -1,7 +1,7 @@
 package com.marcusantosproject.backend.resources;
 
 
-import com.marcusantosproject.backend.dto.request.LoginRequest;
+import com.marcusantosproject.backend.dto.login.LoginRequest;
 import com.marcusantosproject.backend.dto.login.LoginResponse;
 import com.marcusantosproject.backend.security.AuthService;
 import org.springframework.http.ResponseEntity;
