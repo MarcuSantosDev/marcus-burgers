@@ -1,4 +1,4 @@
-package com.marcusantosproject.backend.dto.request;
+package com.marcusantosproject.backend.dto.login;
 
 public record LoginRequest(
         String email,
