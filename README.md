@@ -1,23 +1,57 @@
-## ⚙️ Backend — Dependencies
+### Configuration
 
-The backend is developed using **Java and Spring Boot**, following a layered architecture with REST APIs and PostgreSQL for data persistence.
+The application reads sensitive data from **environment variables**. Define them before running.
 
-### Technologies and Dependencies
+#### Required variables
 
-| Dependency | Purpose |
+The application will **not start** without these.
+
+| Variable | Description |
 |---|---|
-| Spring Web | Development of REST APIs and HTTP endpoints |
-| Spring Data JPA | Data persistence and ORM integration |
-| PostgreSQL Driver | Connection to the PostgreSQL database |
-| Validation | Validation of incoming data |
-| Lombok | Reduction of boilerplate code |
-| Spring Security | Authentication and authorization |
-| Spring Boot DevTools | Development productivity and automatic restart |
+| `JWT_SECRET` | Key used to sign JWT tokens (Base64, at least 32 bytes) |
+| `DB_USERNAME` | PostgreSQL user |
+| `DB_PASSWORD` | PostgreSQL password |
 
-### Main Technologies
+#### Optional variables
 
-- **Java** — Programming language.
-- **Spring Boot** — Backend application framework.
-- **Spring Data JPA / Hibernate** — Object-relational mapping and persistence.
-- **PostgreSQL** — Relational database.
-- **Maven** — Dependency and project management.
+If not set, the default value is used.
+
+| Variable | Description | Default |
+|---|---|---|
+| `DB_HOST` | PostgreSQL host | `localhost` |
+| `DB_PORT` | PostgreSQL port | `5432` |
+| `DB_NAME` | Database name | `hamburgueria` |
+
+#### Generating the JWT secret
+
+```bash
+# Linux / macOS / Git Bash
+openssl rand -base64 32
+```
+
+```powershell
+# Windows (PowerShell)
+$bytes = New-Object byte[] 32
+[System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($bytes)
+[Convert]::ToBase64String($bytes)
+```
+
+#### Setting the variables
+
+```bash
+# Linux / macOS
+export JWT_SECRET=<generated value>
+export DB_USERNAME=<user>
+export DB_PASSWORD=<password>
+```
+
+```powershell
+# Windows (PowerShell)
+$env:JWT_SECRET="<generated value>"
+$env:DB_USERNAME="<user>"
+$env:DB_PASSWORD="<password>"
+```
+
+In IntelliJ: *Run → Edit Configurations → Environment variables*.
+
+> **Never** commit real secrets or passwords to the repository.
