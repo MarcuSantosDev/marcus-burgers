@@ -1,6 +1,6 @@
 package com.marcusantosproject.backend.security;
 
-import com.marcusantosproject.backend.dto.request.LoginRequest;
+ import com.marcusantosproject.backend.dto.login.LoginRequest;
 import com.marcusantosproject.backend.dto.login.LoginResponse;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,7 +21,7 @@ public class AuthService {
     }
 
     public LoginResponse login(LoginRequest request) {
-
+        // AuthenticationManager recebe o token de autenticação e delega a autenticação ao mecanismo apropriado do Spring Security
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.email(),
