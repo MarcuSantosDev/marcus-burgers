@@ -1,0 +1,20 @@
+.logo {
+  font-family: var(--font-heading);
+  font-size: 25px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 1px;
+}
+
+.logo__accent {
+  color: var(--color-accent);
+}
+
+.logo__sub {
+  display: block;
+  margin-top: 5px;
+  font-family: var(--font-body);
+  font-size: 10px;
+  letter-spacing: 5px;
+  color: #aaa;
+}

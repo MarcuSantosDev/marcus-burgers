@@ -1,0 +1,20 @@
+.footer {
+  padding: 35px var(--page-gutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--color-border);
+}
+
+.footer__copy {
+  color: #888;
+  font-size: 12px;
+}
+
+@media (max-width: 600px) {
+  .footer {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+}

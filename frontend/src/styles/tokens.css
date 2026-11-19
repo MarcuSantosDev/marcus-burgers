@@ -1,0 +1,37 @@
+:root {
+  /* Cores */
+  --color-bg: #11100e;
+  --color-surface: #191714;
+  --color-card: #24211c;
+  --color-text: #f8f5ef;
+  --color-text-muted: #aaa69e;
+  --color-text-subtle: #999;
+  --color-nav-link: #c8c5bf;
+  --color-accent: #f5a623;
+  --color-accent-hover: #ffc15b;
+  --color-on-accent: #17130c;
+  --color-border: rgb(255 255 255 / 7%);
+  --color-border-strong: rgb(255 255 255 / 9%);
+
+  /* Tipografia */
+  --font-body: "DM Sans", sans-serif;
+  --font-heading: "Oswald", sans-serif;
+
+  /* Layout */
+  --page-gutter: 8%;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Sombras e transições */
+  --shadow-floating: 0 10px 35px rgb(0 0 0 / 53%);
+  --transition-fast: 0.2s ease;
+  --transition-card: 0.25s ease;
+}
+
+@media (max-width: 600px) {
+  :root {
+    --page-gutter: 6%;
+  }
+}

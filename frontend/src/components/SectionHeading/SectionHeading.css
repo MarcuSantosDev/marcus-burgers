@@ -1,0 +1,9 @@
+.section-heading {
+  margin-bottom: 45px;
+  text-align: center;
+}
+
+.section-heading__text {
+  color: var(--color-text-muted);
+  font-size: 14px;
+}

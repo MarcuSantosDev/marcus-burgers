@@ -1,0 +1,27 @@
+.btn--primary {
+  display: inline-block;
+  padding: 14px 23px;
+  border-radius: var(--radius-md);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-weight: 800;
+  transition:
+    background var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.btn--primary:hover {
+  background: var(--color-accent-hover);
+  transform: translateY(-2px);
+}
+
+.btn--link {
+  font-size: 13px;
+  font-weight: 600;
+  color: #ddd;
+  transition: color var(--transition-fast);
+}
+
+.btn--link:hover {
+  color: var(--color-accent);
+}
