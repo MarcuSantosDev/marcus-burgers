@@ -51,7 +51,7 @@ VALUES
 -- 3. USUÁRIOS
 -- =========================================
 
-INSERT INTO users (name, email, password_hash, role)
+INSERT INTO users (name, email, password, role)
 VALUES
     ('Admin', 'admin@email.com',
      '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',

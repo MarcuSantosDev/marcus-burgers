@@ -12,6 +12,7 @@ import java.util.List;
 @Getter @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "users")
+
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +26,7 @@ public class User {
     private String email;
 
     @Column(nullable = false)
-    private String passwordHash;
+    private String password;
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -33,10 +34,11 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Address> addresses = new ArrayList<>();
 
-    public User(String name, String email, String passwordHash, Role role) {
+    @Builder
+    public User(String name, String email, String password, Role role) {
         this.name = name;
         this.email = email;
-        this.passwordHash = passwordHash;
+        this.password = password;
         this.role = role;
     }
 }
