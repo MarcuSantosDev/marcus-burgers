@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ItemProduct {
+public class ItemOrder {
     @Id
     @GeneratedValue
     private Long id;
