@@ -2,25 +2,27 @@ package com.marcusantosproject.backend.security;
 
  import com.marcusantosproject.backend.dto.login.LoginRequest;
 import com.marcusantosproject.backend.dto.login.LoginResponse;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Service;
+ import com.marcusantosproject.backend.dto.register.RegisterRequestDTO;
+ import com.marcusantosproject.backend.dto.register.RegisterResponseDTO;
+ import com.marcusantosproject.backend.services.UserService;
+ import lombok.RequiredArgsConstructor;
+ import org.springframework.security.authentication.AuthenticationManager;
+ import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+ import org.springframework.security.core.Authentication;
+ import org.springframework.stereotype.Service;
+
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final UserService userService;
 
-    public AuthService(
-            AuthenticationManager authenticationManager,
-            JwtService jwtService) {
-        this.authenticationManager = authenticationManager;
-        this.jwtService = jwtService;
-    }
 
     public LoginResponse login(LoginRequest request) {
+        String email = request.email().trim().toLowerCase();
         /*
          O AuthenticationManager recebe o token com as credenciais do usuário e delega o processo de autenticação ao AuthenticationProvider apropriado :
          - AuthenticationManager: coordena a autenticação
@@ -30,7 +32,7 @@ public class AuthService {
         */
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.email(),
+                        email,
                         request.password()
                 )
         );
@@ -47,5 +49,9 @@ public class AuthService {
         );
 
         return new LoginResponse(token);
+    }
+
+    public RegisterResponseDTO register(RegisterRequestDTO request) {
+        return userService.registerClient(request);
     }
 }
