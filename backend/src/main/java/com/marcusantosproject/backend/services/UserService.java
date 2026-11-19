@@ -1,10 +1,10 @@
 package com.marcusantosproject.backend.services;
 
-import com.marcusantosproject.backend.dto.address.AddressRequest;
+import com.marcusantosproject.backend.dto.register.RegisterRequestDTO;
+import com.marcusantosproject.backend.dto.register.RegisterResponseDTO;
 import com.marcusantosproject.backend.dto.user.UserRequest;
 import com.marcusantosproject.backend.dto.user.UserResponse;
 import com.marcusantosproject.backend.dto.user.UserUpdateRequest;
-import com.marcusantosproject.backend.entities.Address;
 import com.marcusantosproject.backend.entities.User;
 import com.marcusantosproject.backend.enums.Role;
 import com.marcusantosproject.backend.repository.AddressRepository;
@@ -12,6 +12,7 @@ import com.marcusantosproject.backend.repository.UserRepository;
 import com.marcusantosproject.backend.services.exceptions.EmailAlreadyExists;
 import com.marcusantosproject.backend.services.exceptions.ResourceNotFound;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,14 +40,31 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse insert(UserRequest request){
-        String email = request.email().trim().toLowerCase();
+    public UserResponse createByAdmin(UserRequest request) {
+        return new UserResponse(createUser(request.name(), request.email(), request.password(), request.role()));
+    }
+
+    private User createUser(String name, String rawEmail, String rawPassword, Role role) {
+        String email = rawEmail.trim().toLowerCase();
+
         if (repository.existsByEmail(email)) {
             throw new EmailAlreadyExists(email);
         }
-        String hash = passwordEncoder.encode(request.password());
-        User entity = new User(request.name(), email, hash, Role.CLIENT);
-        return new UserResponse(repository.save(entity));
+
+        User user = User.builder()
+                .name(name)
+                .email(email)
+                .password(passwordEncoder.encode(rawPassword))
+                .role(role)
+                .build();
+
+        return repository.save(user);
+    }
+    // Usuário sem token só tem acesso a esse CREATE
+    @Transactional
+    public RegisterResponseDTO registerClient(RegisterRequestDTO request) {
+        User user = createUser(request.name(), request.email(), request.password(), Role.CLIENT);
+        return new RegisterResponseDTO(user);
     }
 
     @Transactional
@@ -62,7 +80,7 @@ public class UserService {
         entity.setEmail(email);
 
         if (request.password() != null) {
-            entity.setPasswordHash(passwordEncoder.encode(request.password()));
+            entity.setPassword(passwordEncoder.encode(request.password()));
         }
         entity = repository.save(entity);
 

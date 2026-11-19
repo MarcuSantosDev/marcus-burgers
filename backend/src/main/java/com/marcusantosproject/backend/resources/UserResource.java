@@ -7,6 +7,7 @@ import com.marcusantosproject.backend.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -31,9 +32,10 @@ public class UserResource {
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping
-    public ResponseEntity<UserResponse> insert(@Valid @RequestBody UserRequest request){
-        UserResponse response = service.insert(request);
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/create")
+    public ResponseEntity<UserResponse> createByAdmin(@Valid @RequestBody UserRequest request){
+        UserResponse response = service.createByAdmin(request);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(response.userId()).toUri();
         return ResponseEntity.created(uri).body(response);
     }

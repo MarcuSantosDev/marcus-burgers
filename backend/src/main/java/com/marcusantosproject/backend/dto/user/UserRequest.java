@@ -1,15 +1,23 @@
 package com.marcusantosproject.backend.dto.user;
 
+import com.marcusantosproject.backend.enums.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record UserRequest(
-        @NotBlank @Size(max = 100)
+        @NotBlank(message = "Nome é obrigatório")
         String name,
-        @NotBlank @Email @Size(max = 255)
+
+        @NotBlank(message = "Email é obrigatório")
+        @Email(message = "Email inválido")
         String email,
-        @NotBlank @Size(min = 8, max = 72, message = "Password must have between 8 and 72 characters")
-        String password)
-{}
+
+        @NotBlank(message = "Senha é obrigatória")
+        @Size(min = 8, message = "A senha deve ter no mínimo 8 caracteres")
+        String password,
+
+        @NotNull(message = "Role é obrigatória")
+        Role role
+) {}
