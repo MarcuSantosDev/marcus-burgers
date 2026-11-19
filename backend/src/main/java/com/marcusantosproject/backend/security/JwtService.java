@@ -36,7 +36,7 @@ public class JwtService {
         JwsHeader header = JwsHeader
                 .with(MacAlgorithm.HS256)
                 .build();
-
+        // Assinatura: resultado do HMAC aplicado sobre Header.Payload usando a chave secreta.
         return jwtEncoder.encode(
                 JwtEncoderParameters.from(header, claims)
         ).getTokenValue();

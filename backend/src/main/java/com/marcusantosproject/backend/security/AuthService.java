@@ -21,7 +21,13 @@ public class AuthService {
     }
 
     public LoginResponse login(LoginRequest request) {
-        // AuthenticationManager recebe o token de autenticação e delega a autenticação ao mecanismo apropriado do Spring Security
+        /*
+         O AuthenticationManager recebe o token com as credenciais do usuário e delega o processo de autenticação ao AuthenticationProvider apropriado :
+         - AuthenticationManager: coordena a autenticação
+         - AuthenticationProvider: realiza a validação das credenciais
+         - UserDetailsService: busca os dados do usuário.
+         - PasswordEncoder: verifica a senha que valida as credenciais e retorna um Authentication autenticado
+        */
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.email(),

@@ -28,8 +28,9 @@ public class JwtConfig {
                     "JWT secret must contain at least 256 bits"
             );
         }
-
-        return new SecretKeySpec(keyBytes, "HmacSHA256"); // SecretKeySpec permite criar uma chave criptográfica a partir de um array de bytes;
+        // Cria um objeto SecretKeySpec que contém os bytes da chave secreta
+        // e a identificação do algoritmo criptográfico HmacSHA256.
+        return new SecretKeySpec(keyBytes, "HmacSHA256");
     }
     // Gera tokens (usado no login)
     @Bean
