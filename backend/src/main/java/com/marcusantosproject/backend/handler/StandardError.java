@@ -1,4 +1,4 @@
-package com.marcusantosproject.backend.resources.exceptions;
+package com.marcusantosproject.backend.handler;
 
 import java.io.Serializable;
 
