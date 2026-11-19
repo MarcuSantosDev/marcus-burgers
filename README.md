@@ -1,3 +1,5 @@
+## 🍔 Marcus's Burgers
+
 ## ⚙️ Backend
 
 The backend is developed using **Java and Spring Boot**, following a layered architecture with REST APIs and PostgreSQL for data persistence. Authentication is stateless, based on **JWT**.
@@ -18,8 +20,8 @@ The backend is developed using **Java and Spring Boot**, following a layered arc
 
 ### Main Technologies
 
-- **Java** — Programming language.
-- **Spring Boot** — Backend application framework.
+- **Java 26** — Programming language.
+- **Spring Boot 4.1.2** — Backend application framework.
 - **Spring Security + JWT** — Stateless authentication and role-based authorization.
 - **Spring Data JPA / Hibernate** — Object-relational mapping and persistence.
 - **PostgreSQL** — Relational database.
@@ -29,7 +31,7 @@ The backend is developed using **Java and Spring Boot**, following a layered arc
 
 1. `POST /auth/login` receives e-mail and password and returns a signed JWT.
 2. Protected requests send the token in the header `Authorization: Bearer <token>`.
-3. A custom `JwtAuthenticationFilter` validates the token and loads the user's role into the security context.
+3. The JWT authentication mechanism validates the token and loads the user's role into the security context.
 
 Roles: `CLIENT` and `ADMIN`.
 
@@ -95,3 +97,96 @@ In IntelliJ: *Run → Edit Configurations → Environment variables*.
 
 - `dev` (default): PostgreSQL.
 - `test`: H2 in-memory database with its own JWT secret. Activate with `@ActiveProfiles("test")` or `--spring.profiles.active=test`.
+
+---
+
+## 🎨 Frontend
+
+The frontend is developed using **React and JavaScript**, with Vite as the build tool and development server. It communicates with the Spring Boot backend through REST APIs using HTTP requests and JSON.
+
+### Main Technologies
+
+| Technology | Version | Purpose |
+|---|---|---|
+| React | 19.3.1 | Building user interfaces and reusable components |
+| React DOM | 19.3.1 | Rendering React components in the browser |
+| Vite | 8.3.8 | Frontend development server and build tool |
+| @vitejs/plugin-react | 6.3.0 | React integration with Vite |
+| JavaScript | ES6+ | Frontend programming language |
+| Node.js | LTS | JavaScript runtime for development tools |
+| npm | — | Dependency and package management |
+
+### Frontend Architecture
+
+- **React** — Component-based UI development.
+- **Vite** — Fast development environment and production builds.
+- **JavaScript** — Application logic and API communication.
+- **npm** — Dependency management.
+
+### Running the Frontend
+
+Navigate to the frontend directory:
+
+```bash
+cd frontend
+```
+
+Install the dependencies:
+
+```bash
+npm install
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+The Vite development server will be available at:
+
+```text
+http://localhost:5173
+```
+
+### Production Build
+
+To generate the production-ready frontend files:
+
+```bash
+npm run build
+```
+
+To preview the production build locally:
+
+```bash
+npm run preview
+```
+
+---
+
+## 🏗️ Project Architecture
+
+The application follows a separated frontend and backend architecture:
+
+```text
+Marcus's Burgers/
+│
+├── backend/
+│   ├── src/
+│   └── pom.xml
+│
+└── frontend/
+    ├── src/
+    ├── public/
+    ├── package.json
+    └── vite.config.js
+```
+
+### Application Communication
+
+1. The React frontend handles the user interface and interactions.
+2. HTTP requests are sent to the Spring Boot REST API.
+3. The backend processes business logic and authentication.
+4. PostgreSQL stores and retrieves application data.
+5. Responses are returned to the frontend in JSON format.
