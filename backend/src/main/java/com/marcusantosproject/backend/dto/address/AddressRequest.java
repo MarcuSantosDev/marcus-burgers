@@ -13,7 +13,7 @@ public record AddressRequest(
 
         @NotNull(message = "Number is required")
         @PositiveOrZero(message = "Number must be zero or positive")
-        Integer number,
+        String number,
 
         @Size(max = 255, message = "Complement must have at most 255 characters")
         String complement,
@@ -35,7 +35,7 @@ public record AddressRequest(
                 regexp = "\\d{5}-?\\d{3}",
                 message = "Invalid zipcode"
         )
-        String zipcode,
+        String zipCode,
 
         @NotNull
         Long userId

@@ -6,12 +6,12 @@ public record AddressResponse(
         Long addressId,
         String name,
         String street,
-        Integer number,
+        String number,
         String complement,
         String neighborhood,
         String city,
         String state,
-        String zipcode
+        String zipCode
 ) {
 
     public AddressResponse(Address addr) {
@@ -24,7 +24,7 @@ public record AddressResponse(
                 addr.getNeighborhood(),
                 addr.getCity(),
                 addr.getState(),
-                addr.getZipcode()
+                addr.getZipCode()
         );
     }
 }
