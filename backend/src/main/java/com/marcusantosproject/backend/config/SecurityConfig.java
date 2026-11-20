@@ -44,8 +44,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/products/**", "/categories/**").permitAll()
-                        .requestMatchers("/products/**", "/categories/**").hasRole("ADMIN")
+                        .requestMatchers( "/products/**", "/categories/**", "/orders/**", "/addresses/**").permitAll()
                         .requestMatchers("/users/**").hasRole("ADMIN")
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
