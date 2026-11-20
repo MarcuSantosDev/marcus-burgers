@@ -47,7 +47,6 @@ public class Product implements Serializable {
         if (quantity <= 0) {
             throw new IllegalArgumentException("Quantity must be greater than zero");
         }
-
         stock += quantity;
     }
 
@@ -55,12 +54,9 @@ public class Product implements Serializable {
         if (quantity <= 0) {
             throw new IllegalArgumentException("Quantity must be greater than zero");
         }
-
         if (quantity > stock) {
             throw new InsufficientStock(name, quantity, stock);
         }
-
         stock -= quantity;
     }
-
 }
