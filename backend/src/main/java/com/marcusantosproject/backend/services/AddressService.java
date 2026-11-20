@@ -3,40 +3,50 @@ package com.marcusantosproject.backend.services;
 import com.marcusantosproject.backend.dto.address.AddressRequest;
 import com.marcusantosproject.backend.dto.address.AddressResponse;
 import com.marcusantosproject.backend.entities.Address;
+import com.marcusantosproject.backend.entities.Order;
+import com.marcusantosproject.backend.entities.User;
+import com.marcusantosproject.backend.enums.OrderStatus;
 import com.marcusantosproject.backend.repository.AddressRepository;
+import com.marcusantosproject.backend.repository.OrderRepository;
+import com.marcusantosproject.backend.repository.UserRepository;
 import com.marcusantosproject.backend.services.exceptions.ResourceNotFound;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AddressService {
-    @Autowired
-    private AddressRepository repository;
+    private final UserRepository userRepository;
+    private final AddressRepository addressRepository;
+    private final OrderRepository orderRepository;
 
     @Transactional(readOnly = true)
     public List<AddressResponse> findAll(){
-        List<AddressResponse> list = repository.findAll().stream().map(AddressResponse::new).toList();
-        return list;
+        return addressRepository.findAll()
+                .stream()
+                .map(AddressResponse::new)
+                .toList();
     }
 
     @Transactional(readOnly = true)
     public AddressResponse findById(Long id){
-        return new AddressResponse(findEntity(id));
+        return new AddressResponse(findAddressById(id));
     }
 
     @Transactional
     public AddressResponse insert(AddressRequest request){
-        Address address = new Address(request.name(),request.street(),request.number(),request.complement(),request.neighborhood(),request.city(),request.state(),request.zipcode());
-        return new AddressResponse(repository.save(address));
+        User user = findUserById(request.userId());
+        Address address = new Address(request.name(),request.street(),request.number(),request.complement(),request.neighborhood(),request.city(),request.state(),request.zipCode(),user);
+        return new AddressResponse(addressRepository.save(address));
 
     }
 
     @Transactional
     public AddressResponse update(Long id, AddressRequest request){
-        Address entity = findEntity(id);
+        Address entity = findAddressById(id);
         entity.setName(request.name());
         entity.setStreet(request.street());
         entity.setNumber(request.number());
@@ -44,18 +54,34 @@ public class AddressService {
         entity.setNeighborhood(request.neighborhood());
         entity.setCity(request.city());
         entity.setState(request.state());
-        entity.setZipcode(request.zipcode());
-        return new AddressResponse(repository.save(entity));
+        entity.setZipCode(request.zipCode());
+        return new AddressResponse(addressRepository.save(entity));
     }
 
+    @Transactional
     public void delete(Long id){
-         if(!repository.existsById(id)){
-            throw new ResourceNotFound(id);
-        }
-        repository.deleteById(id);
+        Address address = findAddressById(id);
+
+        List<OrderStatus> activeStatuses = List.of(
+                OrderStatus.PENDING,
+                OrderStatus.PREPARING,
+                OrderStatus.READY
+        );
+
+        orderRepository.existsByAddress_AddressIdAndStatusIn(id,activeStatuses);
+        addressRepository.delete(address);
+
     }
 
-    private Address findEntity(Long id){
-        return repository.findById(id).orElseThrow(() -> new ResourceNotFound(id));
+    private Address findAddressById(Long id){
+        return addressRepository.findById(id).orElseThrow(() -> new ResourceNotFound(id));
     }
+
+    private User findUserById(Long id){
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFound(
+                        "Usuario com id [" + id + "] não encontrado"
+                ));
+    }
+
 }
