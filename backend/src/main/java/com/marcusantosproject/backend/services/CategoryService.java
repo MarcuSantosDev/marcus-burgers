@@ -17,49 +17,49 @@ import java.util.List;
 @Service
 public class CategoryService {
     @Autowired
-    private CategoryRepository repository;
+    private CategoryRepository categoryRepository;
 
     @Autowired
     private ProductRepository productRepository;
 
     @Transactional(readOnly = true)
     public List<CategoryResponse> findAll(){
-        return repository.findAll().stream().map(CategoryResponse::new).toList();
+        return categoryRepository.findAll().stream().map(CategoryResponse::new).toList();
     }
 
     @Transactional(readOnly = true)
     public CategoryResponse findById(Long id){
-        return new CategoryResponse(findEntity(id));
+        return new CategoryResponse(findCategory(id));
     }
 
     @Transactional
     public CategoryResponse  insert(CategoryRequest request){
         Category entity = new Category(request.name(), request.description());
-        return new CategoryResponse(repository.save(entity));
+        return new CategoryResponse(categoryRepository.save(entity));
     }
 
     @Transactional
     public CategoryResponse update(Long id,CategoryRequest request){
-        Category entity = findEntity(id);
+        Category entity = findCategory(id);
         entity.setName(request.name());
         entity.setDescription(request.description());
-        return new CategoryResponse(repository.save(entity));
+        return new CategoryResponse(categoryRepository.save(entity));
     }
 
     @Transactional
     public void deleteById(Long id) {
-        if (!repository.existsById(id)) {
+        if (!categoryRepository.existsById(id)) {
             throw new ResourceNotFound(id);
         }
         if (productRepository.existsByCategoryCategoryId(id)) {
             throw new CategoryHasProducts(id);
         }
-        repository.deleteById(id);
+        categoryRepository.deleteById(id);
     }
 
 
-    private Category findEntity(Long id) {
-        return repository.findById(id)
+    private Category findCategory(Long id) {
+        return categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFound(id));
     }
 
