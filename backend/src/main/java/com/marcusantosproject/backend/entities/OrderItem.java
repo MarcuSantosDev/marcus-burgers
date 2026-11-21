@@ -24,6 +24,7 @@ public class OrderItem {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal unitPrice;
 
+    @Builder
     public OrderItem(Product product, int quantity, BigDecimal unitPrice) {
         this.product = product;
         this.quantity = quantity;

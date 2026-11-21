@@ -43,6 +43,7 @@ public class Order {
     @JoinColumn(name = "order_id")
     private List<OrderItem> items = new ArrayList<>();
 
+    @Builder
     public Order(User user, Address address) {
         this.user = user;
         this.address = address;

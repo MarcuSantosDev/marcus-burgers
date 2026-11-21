@@ -1,6 +1,8 @@
 package com.marcusantosproject.backend.dto.order;
 
 import com.marcusantosproject.backend.dto.OrderItem.OrderItemResponse;
+import com.marcusantosproject.backend.entities.Order;
+import com.marcusantosproject.backend.entities.OrderItem;
 import com.marcusantosproject.backend.enums.OrderStatus;
 
 import java.math.BigDecimal;
@@ -14,4 +16,15 @@ public record OrderResponse(
         BigDecimal totalAmount,
         Long addressId,
         List<OrderItemResponse> items
-) {}
+) {
+    public OrderResponse(Order order){
+        this(
+                order.getOrderId(),
+                order.getOrderDate(),
+                order.getStatus(),
+                order.getTotalAmount(),
+                order.getAddress().getAddressId(),
+                order.getItems().stream().map(OrderItemResponse::new).toList()
+        );
+    }
+}
