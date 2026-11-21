@@ -3,6 +3,7 @@ package com.marcusantosproject.backend.services;
 import com.marcusantosproject.backend.dto.OrderItem.OrderItemRequest;
 import com.marcusantosproject.backend.dto.order.OrderRequest;
 import com.marcusantosproject.backend.dto.order.OrderResponse;
+import com.marcusantosproject.backend.dto.order.OrderUpdate;
 import com.marcusantosproject.backend.entities.*;
 import com.marcusantosproject.backend.repository.AddressRepository;
 import com.marcusantosproject.backend.repository.OrderRepository;
@@ -68,6 +69,21 @@ public class OrderService {
 
         // Salva o pedido no banco
         return new OrderResponse(orderRepository.save(orderEntity));
+    }
+
+    @Transactional
+    public OrderResponse update(Long id, OrderUpdate request){
+        Order orderEntity = findOrderById(id);
+        orderEntity.setStatus(request.orderStatus());
+        return new OrderResponse(orderEntity);
+    }
+
+    @Transactional
+    public void delete(Long id){
+        if(!orderRepository.existsById(id)){
+            throw new ResourceNotFound(id);
+        }
+        orderRepository.deleteById(id);
     }
 
     private Order findOrderById(Long id){
