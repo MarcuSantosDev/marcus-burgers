@@ -1,8 +1,8 @@
 package com.marcusantosproject.backend.resources;
 
 import com.marcusantosproject.backend.dto.OrderItem.OrderItemResponse;
-import com.marcusantosproject.backend.repository.OrderRepository;
 import com.marcusantosproject.backend.services.OrderItemService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +19,4 @@ public class OrderItemResource {
     public ResponseEntity<List<OrderItemResponse>> findAll(@PathVariable Long  orderId){
         return ResponseEntity.ok().body(orderItemService.findAll(orderId));
     }
-
-    @GetMapping("/{itemId}")
-    public ResponseEntity<OrderItemResponse> findById(@PathVariable Long orderId,
-                                                      @PathVariable Long itemId ){
-        return ResponseEntity.ok().body(orderItemService.findById(orderId,itemId));
-    }
-
 }

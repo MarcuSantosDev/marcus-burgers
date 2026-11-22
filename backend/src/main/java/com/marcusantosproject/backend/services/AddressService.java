@@ -70,7 +70,6 @@ public class AddressService {
 
         orderRepository.existsByAddress_AddressIdAndStatusIn(id,activeStatuses);
         addressRepository.delete(address);
-
     }
 
     private Address findAddressById(Long id){

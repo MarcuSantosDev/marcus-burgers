@@ -7,7 +7,7 @@ public enum OrderStatus {
     DELIVERED(4),
     CANCELLED(5);
 
-    private int code;
+    private final int code;
 
     OrderStatus(int code) {
         this.code = code;
@@ -17,9 +17,18 @@ public enum OrderStatus {
         return code;
     }
 
-    public static OrderStatus valueOf(int code){
-        for(OrderStatus value: OrderStatus.values()){
-            if (value.getCode() == code){
+    public boolean canTransitionTo(OrderStatus next) {
+        return switch (this) {
+            case PENDING   -> next == PREPARING || next == CANCELLED;
+            case PREPARING -> next == READY     || next == CANCELLED;
+            case READY     -> next == DELIVERED || next == CANCELLED;
+            case DELIVERED, CANCELLED -> false; // estados finais
+        };
+    }
+
+    public static OrderStatus fromCode(int code) {
+        for (OrderStatus value : values()) {
+            if (value.code == code) {
                 return value;
             }
         }

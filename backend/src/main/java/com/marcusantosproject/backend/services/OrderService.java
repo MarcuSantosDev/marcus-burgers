@@ -5,6 +5,7 @@ import com.marcusantosproject.backend.dto.order.OrderRequest;
 import com.marcusantosproject.backend.dto.order.OrderResponse;
 import com.marcusantosproject.backend.dto.order.OrderUpdate;
 import com.marcusantosproject.backend.entities.*;
+import com.marcusantosproject.backend.enums.OrderStatus;
 import com.marcusantosproject.backend.repository.AddressRepository;
 import com.marcusantosproject.backend.repository.OrderRepository;
 import com.marcusantosproject.backend.repository.ProductRepository;
@@ -72,10 +73,30 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderResponse update(Long id, OrderUpdate request){
-        Order orderEntity = findOrderById(id);
-        orderEntity.setStatus(request.orderStatus());
-        return new OrderResponse(orderEntity);
+    public OrderResponse update(Long id, OrderUpdate request) {
+        // Busca o pedido no banco
+        Order order = findOrderById(id);
+
+        // Status atual do pedido
+        OrderStatus currentOrderStatus = order.getStatus();
+        // Status que o cliente da API está pedindo para aplicar
+        OrderStatus nextOrderStatus = request.orderStatus();
+
+        if (currentOrderStatus == nextOrderStatus) {
+            return new OrderResponse(order);
+        }
+
+        // Pergunta ao enum se essa mudança é permitida
+        if (!currentOrderStatus.canTransitionTo(nextOrderStatus)) {
+            throw new IllegalStateException("Transição inválida: " + currentOrderStatus + " -> " + nextOrderStatus);
+        }
+
+        if (nextOrderStatus == OrderStatus.CANCELLED) {
+            order.getItems().forEach(i -> i.getProduct().addStock(i.getQuantity()));
+        }
+
+        order.setStatus(nextOrderStatus);
+        return new OrderResponse(order);
     }
 
     @Transactional
