@@ -1,17 +1,19 @@
 # 🍔 Marcus's Burgers
 
-Aplicação full-stack para uma hamburgueria, com catálogo por categorias, carrinho persistido, autenticação JWT, endereços, checkout e acompanhamento de pedidos.
+Aplicação full-stack para uma hamburgueria, desenvolvida com Spring Boot e React, com catálogo por categorias, carrinho persistido, autenticação JWT, gerenciamento de endereços, checkout e acompanhamento de pedidos.
 
 ## ✨ Funcionalidades
 
 - Catálogo de produtos agrupado por categoria.
-- Imagens individuais dos produtos vindas do backend.
+- Imagens individuais dos produtos através de URLs.
 - Carrinho com quantidade, remoção, limpeza e persistência no navegador.
 - Cadastro e login com autenticação JWT.
 - Cadastro e seleção de endereços do usuário.
 - Criação e acompanhamento de pedidos.
-- Controle de acesso para usuário `CLIENT` e administrador `ADMIN`.
-- Layout responsivo para computador e dispositivos móveis.
+- Controle de acesso para usuários `CLIENT` e administradores `ADMIN`.
+- Validação de dados com Bean Validation.
+- Documentação interativa da API com Swagger UI / OpenAPI.
+- Layout responsivo para computadores e dispositivos móveis.
 
 ## 🧱 Tecnologias
 
@@ -23,6 +25,7 @@ Aplicação full-stack para uma hamburgueria, com catálogo por categorias, carr
 - Spring Data JPA / Hibernate
 - Spring Security
 - OAuth2 Resource Server / JWT
+- Springdoc OpenAPI / Swagger UI
 - Bean Validation
 - PostgreSQL
 - H2 para o perfil de teste
@@ -121,7 +124,7 @@ O projeto possui estas configurações principais:
 O perfil ativo é definido em `application.properties` e pode ser sobrescrito ao iniciar:
 
 ```powershell
-.\mvnw.cmd spring-boot:run -Dspring-boot.run.profiles=test
+.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=test"
 ```
 
 ## 🔐 Variáveis de ambiente
@@ -179,11 +182,30 @@ VITE_API_URL=http://localhost:8080
 
 Depois, reinicie o servidor Vite.
 
+## 📖 Documentação da API — Swagger
+
+O projeto utiliza Springdoc OpenAPI para gerar a documentação da API e disponibilizar uma interface interativa para visualizar e testar os endpoints.
+
+Com o backend em execução, acesse:
+
+| Recurso      | URL                                           |
+| ------------ | --------------------------------------------- |
+| Swagger UI   | `http://localhost:8080/swagger-ui/index.html` |
+| OpenAPI JSON | `http://localhost:8080/v3/api-docs`           |
+
+A documentação permite:
+
+- Visualizar os endpoints disponíveis.
+- Consultar métodos HTTP, parâmetros e respostas.
+- Visualizar os modelos de requisição e resposta (DTOs).
+- Testar requisições diretamente pela interface Swagger.
+
+Os endpoints de documentação são públicos. Os endpoints protegidos continuam exigindo autenticação JWT.
+
 ## 📡 Principais endpoints
 
 | Método | Endpoint         | Descrição                                                | Autenticação |
 | ------ | ---------------- | -------------------------------------------------------- | ------------ |
-| `POST` | `/auth/register` | Cadastra um cliente                                      | Não          |
 | `POST` | `/auth/login`    | Autentica e retorna JWT                                  | Não          |
 | `GET`  | `/products`      | Lista produtos                                           | Não          |
 | `GET`  | `/products/{id}` | Busca um produto                                         | Não          |
