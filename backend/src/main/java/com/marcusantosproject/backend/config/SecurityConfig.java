@@ -48,17 +48,17 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/error").permitAll()
 
-                        // Qualquer um lê, só ADMIN altera
+                        // Cardápio: qualquer um lê, só ADMIN altera
                         .requestMatchers(HttpMethod.GET, "/products/**", "/categories/**").permitAll()
                         .requestMatchers("/products/**", "/categories/**").hasRole("ADMIN")
 
-                        // Usuários: listar, criar e apagar só ADMIN.
+                        // Usuários: listar, criar e apagar é coisa de ADMIN.
                         // Leitura/edição do próprio perfil: a checagem de dono fica no service.
                         .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/users").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/users/create").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
 
-                        // Pedidos: apagar só ADMIN; o restante exige login + checagem de dono no service
+                        // Pedidos: apagar é só ADMIN; o restante exige login + checagem de dono no service
                         .requestMatchers(HttpMethod.DELETE, "/orders/**").hasRole("ADMIN")
 
                         // Endereços e pedidos: logado; dono validado no service
@@ -70,6 +70,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
     @Bean
     public FilterRegistrationBean<JwtAuthenticationFilter> jwtFilterRegistration(JwtAuthenticationFilter filter) {
         FilterRegistrationBean<JwtAuthenticationFilter> registration = new FilterRegistrationBean<>(filter);
