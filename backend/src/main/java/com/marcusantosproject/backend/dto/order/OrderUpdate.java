@@ -1,11 +1,9 @@
 package com.marcusantosproject.backend.dto.order;
 
-import com.marcusantosproject.backend.entities.Order;
 import com.marcusantosproject.backend.enums.OrderStatus;
+import jakarta.validation.constraints.NotNull;
 
-public record OrderUpdate(OrderStatus orderStatus) {
-
-    OrderUpdate(Order order){
-        this(order.getStatus());
-    }
-}
+public record OrderUpdate(
+        @NotNull(message = "Order status is required")
+        OrderStatus orderStatus
+) {}
