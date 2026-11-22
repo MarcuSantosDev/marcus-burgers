@@ -20,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserResource {
 
-    private UserService userService;
+    private final UserService userService;
 
     @GetMapping
     public ResponseEntity<List<UserResponse>> findAll(){

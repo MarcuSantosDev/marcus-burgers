@@ -7,12 +7,12 @@ import com.marcusantosproject.backend.dto.user.UserResponse;
 import com.marcusantosproject.backend.dto.user.UserUpdateRequest;
 import com.marcusantosproject.backend.entities.User;
 import com.marcusantosproject.backend.enums.Role;
-import com.marcusantosproject.backend.repository.AddressRepository;
+import com.marcusantosproject.backend.repository.OrderRepository;
 import com.marcusantosproject.backend.repository.UserRepository;
+import com.marcusantosproject.backend.services.exceptions.BadRequest;
 import com.marcusantosproject.backend.services.exceptions.EmailAlreadyExists;
 import com.marcusantosproject.backend.services.exceptions.ResourceNotFound;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,13 +20,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
-    @Autowired
-    private UserRepository repository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private AddressRepository addressRepository;
+
+    private final UserRepository repository;
+    private final PasswordEncoder passwordEncoder;
+    private final OrderRepository orderRepository;
 
     @Transactional(readOnly = true)
     public List<UserResponse> findAll(){
@@ -91,6 +90,9 @@ public class UserService {
     public void deleteById(Long id) {
         if (!repository.existsById(id)) {
             throw new ResourceNotFound(id);
+        }
+        if (orderRepository.existsByUserUserId(id)) {
+            throw new BadRequest("Cannot delete user with existing orders");
         }
         repository.deleteById(id);
     }

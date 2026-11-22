@@ -15,6 +15,9 @@ public class Address {
     @Setter
     private Long addressId;
 
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private boolean active = true;
+
     @Column(nullable = false, length = 100)
     private String name;
 

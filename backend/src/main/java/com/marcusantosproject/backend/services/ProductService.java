@@ -6,21 +6,23 @@ import com.marcusantosproject.backend.dto.product.StockRequest;
 import com.marcusantosproject.backend.entities.Category;
 import com.marcusantosproject.backend.entities.Product;
 import com.marcusantosproject.backend.repository.CategoryRepository;
+import com.marcusantosproject.backend.repository.OrderItemRepository;
 import com.marcusantosproject.backend.repository.ProductRepository;
+import com.marcusantosproject.backend.services.exceptions.BadRequest;
 import com.marcusantosproject.backend.services.exceptions.CategoryNotFound;
 import com.marcusantosproject.backend.services.exceptions.ResourceNotFound;
+import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ProductService{
-    @Autowired
-    private ProductRepository repository;
 
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final ProductRepository repository;
+    private final CategoryRepository categoryRepository;
+    private final OrderItemRepository orderItemRepository;
 
     @Transactional(readOnly = true)
     public List<ProductResponse> findAll(){return repository.findAll().stream().map(ProductResponse::new).toList();}
@@ -51,12 +53,16 @@ public class ProductService{
     }
 
     @Transactional
-    public void deleteById(Long id){
-        if(!repository.existsById(id)){
+    public void deleteById(Long id) {
+        if (!repository.existsById(id)) {
             throw new ResourceNotFound(id);
+        }
+        if (orderItemRepository.existsByProductProductId(id)) {
+            throw new BadRequest("Cannot delete product that is part of existing orders");
         }
         repository.deleteById(id);
     }
+
     @Transactional
     public ProductResponse addStock(Long id, StockRequest request){
         Product entity = findEntity(id);

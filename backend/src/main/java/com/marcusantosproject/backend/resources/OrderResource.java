@@ -33,8 +33,8 @@ public class OrderResource {
     }
 
     @PostMapping
-    public ResponseEntity<OrderResponse> insert(@RequestBody @Valid OrderRequest request, Principal principal){
-        OrderResponse response = orderService.insert(request,principal.getName());
+    public ResponseEntity<OrderResponse> insert(@RequestBody @Valid OrderRequest request){
+        OrderResponse response = orderService.insert(request);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(response.orderId()).toUri();
         return ResponseEntity.created(uri).body(response);
     }
@@ -51,6 +51,4 @@ public class OrderResource {
         orderService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
-
 }

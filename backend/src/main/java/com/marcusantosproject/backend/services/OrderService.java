@@ -10,6 +10,7 @@ import com.marcusantosproject.backend.repository.AddressRepository;
 import com.marcusantosproject.backend.repository.OrderRepository;
 import com.marcusantosproject.backend.repository.ProductRepository;
 import com.marcusantosproject.backend.repository.UserRepository;
+import com.marcusantosproject.backend.services.exceptions.BadRequest;
 import com.marcusantosproject.backend.services.exceptions.ResourceNotFound;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,40 +37,29 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderResponse insert(OrderRequest request, String email){
-        // Buscar Usuário
-        User userEntity = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFound(
-                        "User not found with email: " + email));
-        // Buscar o endereço e verifica se o endereço realmente pertence ao usuário autenticado
-        Address addressEntity = addressRepository
-                .findByAddressIdAndUserUserId(request.addressId(), userEntity.getUserId())
-                .orElseThrow(() -> new ResourceNotFound(
-                        "Address not found or does not belong to the authenticated user."));
+    public OrderResponse insert(OrderRequest request) {
+        User user = userRepository.findById(request.userId())
+                .orElseThrow(() -> new ResourceNotFound(request.userId()));
 
-        Order orderEntity = Order.builder()
-                .user(userEntity)
-                .address(addressEntity)
-                .build();
+        // Garante que o endereço pertence ao usuário e não foi removido (soft delete)
+        Address address = addressRepository
+                .findByAddressIdAndUserUserIdAndActiveTrue(request.addressId(), user.getUserId())
+                .orElseThrow(() -> new ResourceNotFound(
+                        "Address not found, removed, or does not belong to the user."));
+
+        Order order = Order.builder().user(user).address(address).build();
 
         for (OrderItemRequest itemRequest : request.items()) {
-            // Buscar o produto pelo ID.
             Product product = findProductById(itemRequest.productId());
-            // Remove o item do estoque
             product.removeStock(itemRequest.quantity());
-            // Criar OrderItem utilizando Builder
-            OrderItem orderItem = OrderItem.builder()
+            order.addItem(OrderItem.builder()
                     .product(product)
                     .quantity(itemRequest.quantity())
                     .unitPrice(product.getPrice())
-                    .build();
-
-            // Adicionar o item ao pedido.
-            orderEntity.addItem(orderItem);
+                    .build());
         }
 
-        // Salva o pedido no banco
-        return new OrderResponse(orderRepository.save(orderEntity));
+        return new OrderResponse(orderRepository.save(order));
     }
 
     @Transactional
@@ -88,7 +78,7 @@ public class OrderService {
 
         // Pergunta ao enum se essa mudança é permitida
         if (!currentOrderStatus.canTransitionTo(nextOrderStatus)) {
-            throw new IllegalStateException("Transição inválida: " + currentOrderStatus + " -> " + nextOrderStatus);
+            throw new BadRequest("Transição inválida: " + currentOrderStatus + " -> " + nextOrderStatus);
         }
 
         if (nextOrderStatus == OrderStatus.CANCELLED) {

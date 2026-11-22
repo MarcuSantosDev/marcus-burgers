@@ -8,19 +8,18 @@ import com.marcusantosproject.backend.repository.CategoryRepository;
 import com.marcusantosproject.backend.repository.ProductRepository;
 import com.marcusantosproject.backend.services.exceptions.CategoryHasProducts;
 import com.marcusantosproject.backend.services.exceptions.ResourceNotFound;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CategoryService {
-    @Autowired
-    private CategoryRepository categoryRepository;
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
 
     @Transactional(readOnly = true)
     public List<CategoryResponse> findAll(){
@@ -62,5 +61,4 @@ public class CategoryService {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFound(id));
     }
-
 }
