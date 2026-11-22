@@ -18,34 +18,38 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ProductService{
+public class ProductService {
 
     private final ProductRepository repository;
     private final CategoryRepository categoryRepository;
     private final OrderItemRepository orderItemRepository;
 
     @Transactional(readOnly = true)
-    public List<ProductResponse> findAll(){return repository.findAll().stream().map(ProductResponse::new).toList();}
+    public List<ProductResponse> findAll() {
+        return repository.findAll().stream().map(ProductResponse::new).toList();
+    }
 
     @Transactional(readOnly = true)
-    public ProductResponse findById(Long id){
+    public ProductResponse findById(Long id) {
         Product entity = findEntity(id);
         return new ProductResponse(entity);
     }
 
     @Transactional
-    public ProductResponse insert(ProductRequest request){
-        Category category =  findEntityCategory(request);
-        Product entity = new Product(request.name(),request.description(),request.price(),request.stock(),category);
+    public ProductResponse insert(ProductRequest request) {
+        Category category = findEntityCategory(request);
+        Product entity = new Product(request.name(), request.description(), request.imageUrl(), request.price(),
+                request.stock(), category);
         return new ProductResponse(repository.save(entity));
     }
 
     @Transactional
-    public ProductResponse update(Long id,ProductRequest request){
-        Category category =  findEntityCategory(request);
+    public ProductResponse update(Long id, ProductRequest request) {
+        Category category = findEntityCategory(request);
         Product entity = findEntity(id);
         entity.setName(request.name());
         entity.setDescription(request.description());
+        entity.setImageUrl(request.imageUrl());
         entity.setPrice(request.price());
         entity.setCategory(category);
         return new ProductResponse(repository.save(entity));
@@ -64,25 +68,26 @@ public class ProductService{
     }
 
     @Transactional
-    public ProductResponse addStock(Long id, StockRequest request){
+    public ProductResponse addStock(Long id, StockRequest request) {
         Product entity = findEntity(id);
         entity.addStock(request.quantity());
         return new ProductResponse(entity);
     }
 
     @Transactional
-    public ProductResponse removeStock(Long id, StockRequest request){
+    public ProductResponse removeStock(Long id, StockRequest request) {
         Product entity = findEntity(id);
         entity.removeStock(request.quantity());
         return new ProductResponse(entity);
     }
 
-    private Product findEntity(Long id){
+    private Product findEntity(Long id) {
         return repository.findById(id).orElseThrow(() -> new ResourceNotFound(id));
     }
 
-    private Category findEntityCategory(ProductRequest request){
-        return categoryRepository.findById(request.categoryId()).orElseThrow(() -> new CategoryNotFound(request.categoryId()));
+    private Category findEntityCategory(ProductRequest request) {
+        return categoryRepository.findById(request.categoryId())
+                .orElseThrow(() -> new CategoryNotFound(request.categoryId()));
     }
 
 }

@@ -8,19 +8,15 @@ import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 
 public record ProductRequest(
-        @NotBlank(message = "Name is required")
-        @Size(max = 100)
-        String name,
+                @NotBlank(message = "Name is required") @Size(max = 100) String name,
 
-        String description,
+                String description,
 
-        @NotNull(message = "Price is required")
-        @PositiveOrZero(message = "Price must not be negative")
-        BigDecimal price,
+                String imageUrl,
 
-        @PositiveOrZero(message = "Stock must not be negative")
-        int stock,
+                @NotNull(message = "Price is required") @PositiveOrZero(message = "Price must not be negative") BigDecimal price,
 
-        @NotNull(message = "Category is required")
-        Long categoryId
-) {}
+                @PositiveOrZero(message = "Stock must not be negative") int stock,
+
+                @NotNull(message = "Category is required") Long categoryId) {
+}

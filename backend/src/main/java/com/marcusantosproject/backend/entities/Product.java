@@ -1,6 +1,5 @@
 package com.marcusantosproject.backend.entities;
 
-
 import com.marcusantosproject.backend.services.exceptions.InsufficientStock;
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,6 +24,9 @@ public class Product implements Serializable {
     private String description;
 
     @Setter
+    private String imageUrl;
+
+    @Setter
     private BigDecimal price;
 
     @Column(nullable = false)
@@ -35,9 +37,10 @@ public class Product implements Serializable {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    public Product(String name, String description, BigDecimal price, int stock, Category category) {
+    public Product(String name, String description, String imageUrl, BigDecimal price, int stock, Category category) {
         this.name = name;
         this.description = description;
+        this.imageUrl = imageUrl;
         this.price = price;
         this.stock = stock;
         this.category = category;

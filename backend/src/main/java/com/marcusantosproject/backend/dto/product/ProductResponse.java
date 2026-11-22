@@ -5,9 +5,11 @@ import com.marcusantosproject.backend.entities.Product;
 
 import java.math.BigDecimal;
 
-public record ProductResponse(Long productId, String name, String description, BigDecimal price, int stock, CategoryResponse category) {
+public record ProductResponse(Long productId, String name, String description, String imageUrl, BigDecimal price,
+        int stock, CategoryResponse category) {
 
-    public ProductResponse(Product obj){
-        this(obj.getProductId(), obj.getName(), obj.getDescription(), obj.getPrice(), obj.getStock(), new CategoryResponse(obj.getCategory()));
+    public ProductResponse(Product obj) {
+        this(obj.getProductId(), obj.getName(), obj.getDescription(), obj.getImageUrl(), obj.getPrice(), obj.getStock(),
+                new CategoryResponse(obj.getCategory()));
     }
 }
