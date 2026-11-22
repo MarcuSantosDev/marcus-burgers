@@ -71,6 +71,13 @@ public class SecurityConfig {
                         // Endereços e pedidos: logado; dono validado no service
                         .requestMatchers("/addresses/**", "/orders/**", "/users/**").authenticated()
 
+                        // Swagger
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**"
+                        ).permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
