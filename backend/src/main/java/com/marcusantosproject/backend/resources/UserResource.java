@@ -5,6 +5,7 @@ import com.marcusantosproject.backend.dto.user.UserResponse;
 import com.marcusantosproject.backend.dto.user.UserUpdateRequest;
 import com.marcusantosproject.backend.services.UserService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,39 +17,40 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserResource {
-    @Autowired
-    private UserService service;
+
+    private UserService userService;
 
     @GetMapping
     public ResponseEntity<List<UserResponse>> findAll(){
-        List<UserResponse> list = service.findAll();
+        List<UserResponse> list = userService.findAll();
         return ResponseEntity.ok().body(list);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> findById(@PathVariable Long id){
-        UserResponse response = service.findById(id);
+        UserResponse response = userService.findById(id);
         return ResponseEntity.ok().body(response);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<UserResponse> createByAdmin(@Valid @RequestBody UserRequest request){
-        UserResponse response = service.createByAdmin(request);
+        UserResponse response = userService.createByAdmin(request);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(response.userId()).toUri();
         return ResponseEntity.created(uri).body(response);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserResponse> update(@Valid @RequestBody UserUpdateRequest request, @PathVariable Long id){
-        UserResponse  response = service.update(id,request);
+        UserResponse  response = userService.update(id,request);
         return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable Long id){
-        service.deleteById(id);
+        userService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }
