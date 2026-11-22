@@ -2,12 +2,13 @@ package com.marcusantosproject.backend.resources;
 
 import com.marcusantosproject.backend.dto.address.AddressRequest;
 import com.marcusantosproject.backend.dto.address.AddressResponse;
-import com.marcusantosproject.backend.repository.AddressRepository;
+import com.marcusantosproject.backend.security.AuthUtils;
 import com.marcusantosproject.backend.services.AddressService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -19,35 +20,42 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AddressResource {
 
-     private final AddressService addressService;
+    private final AddressService addressService;
 
     @GetMapping
-    public ResponseEntity<List<AddressResponse>> findAll(){
-        List<AddressResponse> response = addressService.findAll();
+    public ResponseEntity<List<AddressResponse>> findAll(@AuthenticationPrincipal Jwt jwt) {
+        List<AddressResponse> response = addressService.findAll(AuthUtils.userId(jwt), AuthUtils.isAdmin(jwt));
         return ResponseEntity.ok().body(response);
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<AddressResponse> findById(@PathVariable Long id){
-        AddressResponse response = addressService.findById(id);
+    public ResponseEntity<AddressResponse> findById(@PathVariable Long id,
+                                                    @AuthenticationPrincipal Jwt jwt) {
+        AddressResponse response = addressService.findById(id, AuthUtils.userId(jwt), AuthUtils.isAdmin(jwt));
         return ResponseEntity.ok().body(response);
     }
 
     @PostMapping
-    public  ResponseEntity<AddressResponse> insert(@Valid @RequestBody AddressRequest request){
-        AddressResponse response = addressService.insert(request);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(response.addressId()).toUri();
+    public ResponseEntity<AddressResponse> insert(@Valid @RequestBody AddressRequest request,
+                                                  @AuthenticationPrincipal Jwt jwt) {
+        AddressResponse response = addressService.insert(AuthUtils.userId(jwt), request);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}").buildAndExpand(response.addressId()).toUri();
         return ResponseEntity.created(uri).body(response);
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<AddressResponse> update(@PathVariable Long id,@Valid @RequestBody AddressRequest request){
-        return ResponseEntity.ok().body(addressService.update(id,request));
+    public ResponseEntity<AddressResponse> update(@PathVariable Long id,
+                                                  @Valid @RequestBody AddressRequest request,
+                                                  @AuthenticationPrincipal Jwt jwt) {
+        return ResponseEntity.ok().body(
+                addressService.update(id, request, AuthUtils.userId(jwt), AuthUtils.isAdmin(jwt)));
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
-        addressService.delete(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id,
+                                       @AuthenticationPrincipal Jwt jwt) {
+        addressService.delete(id, AuthUtils.userId(jwt), AuthUtils.isAdmin(jwt));
         return ResponseEntity.noContent().build();
     }
 }

@@ -11,8 +11,9 @@ public record AddressRequest(
         @Size(max = 150, message = "Street must have at most 150 characters")
         String street,
 
-        @NotNull(message = "Number is required")
-        @PositiveOrZero(message = "Number must be zero or positive")
+        // Número é String (aceita "S/N", "12A" etc.), então @PositiveOrZero não se aplica aqui
+        @NotBlank(message = "Number is required")
+        @Size(max = 20, message = "Number must have at most 20 characters")
         String number,
 
         @Size(max = 255, message = "Complement must have at most 255 characters")
@@ -35,9 +36,5 @@ public record AddressRequest(
                 regexp = "\\d{5}-?\\d{3}",
                 message = "Invalid zipcode"
         )
-        String zipCode,
-
-        @NotNull
-        Long userId
-        )
-{}
+        String zipCode
+) {}

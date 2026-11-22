@@ -26,20 +26,29 @@ public class OrderService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
+    // ADMIN vê todos os pedidos; CLIENT vê só os seus
     @Transactional(readOnly = true)
-    public List<OrderResponse> findAll(){
-        return orderRepository.findAll().stream().map(OrderResponse::new).toList();
+    public List<OrderResponse> findAll(Long callerId, boolean isAdmin) {
+        List<Order> orders = isAdmin
+                ? orderRepository.findAll()
+                : orderRepository.findByUserUserId(callerId);
+        return orders.stream().map(OrderResponse::new).toList();
     }
 
     @Transactional(readOnly = true)
-    public OrderResponse findById(Long id){
-        return new OrderResponse(findOrderById(id));
+    public OrderResponse findById(Long id, Long callerId, boolean isAdmin) {
+        return new OrderResponse(findOrderForCaller(id, callerId, isAdmin));
     }
 
+    // O dono do pedido é sempre quem está logado (callerId vem do token, nunca do body)
     @Transactional
-    public OrderResponse insert(OrderRequest request) {
-        User user = userRepository.findById(request.userId())
-                .orElseThrow(() -> new ResourceNotFound(request.userId()));
+    public OrderResponse insert(Long callerId, OrderRequest request) {
+        if (request.items() == null || request.items().isEmpty()) {
+            throw new BadRequest("Order must have at least one item");
+        }
+
+        User user = userRepository.findById(callerId)
+                .orElseThrow(() -> new ResourceNotFound(callerId));
 
         // Garante que o endereço pertence ao usuário e não foi removido (soft delete)
         Address address = addressRepository
@@ -63,47 +72,66 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderResponse update(Long id, OrderUpdate request) {
-        // Busca o pedido no banco
-        Order order = findOrderById(id);
+    public OrderResponse update(Long id, OrderUpdate request, Long callerId, boolean isAdmin) {
+        Order order = findOrderForCaller(id, callerId, isAdmin);
 
-        // Status atual do pedido
         OrderStatus currentOrderStatus = order.getStatus();
-        // Status que o cliente da API está pedindo para aplicar
         OrderStatus nextOrderStatus = request.orderStatus();
 
         if (currentOrderStatus == nextOrderStatus) {
             return new OrderResponse(order);
         }
 
+        // CLIENT só pode cancelar o próprio pedido enquanto ele ainda está PENDING.
+        // O restante do fluxo (PREPARING, READY, DELIVERED) é do ADMIN.
+        if (!isAdmin && (nextOrderStatus != OrderStatus.CANCELLED
+                || currentOrderStatus != OrderStatus.PENDING)) {
+            throw new BadRequest("Customers can only cancel orders that are still pending");
+        }
+
         // Pergunta ao enum se essa mudança é permitida
         if (!currentOrderStatus.canTransitionTo(nextOrderStatus)) {
-            throw new BadRequest("Transição inválida: " + currentOrderStatus + " -> " + nextOrderStatus);
+            throw new BadRequest("Invalid transition: " + currentOrderStatus + " -> " + nextOrderStatus);
         }
 
         if (nextOrderStatus == OrderStatus.CANCELLED) {
-            order.getItems().forEach(i -> i.getProduct().addStock(i.getQuantity()));
+            restoreStock(order);
         }
 
         order.setStatus(nextOrderStatus);
         return new OrderResponse(order);
     }
 
+    // Rota restrita a ADMIN no SecurityConfig
     @Transactional
-    public void delete(Long id){
-        if(!orderRepository.existsById(id)){
+    public void delete(Long id) {
+        Order order = findOrderById(id);
+
+        // Pedido ainda em andamento tem estoque reservado: devolve antes de apagar
+        if (order.getStatus() != OrderStatus.CANCELLED && order.getStatus() != OrderStatus.DELIVERED) {
+            restoreStock(order);
+        }
+        orderRepository.delete(order);
+    }
+
+    private void restoreStock(Order order) {
+        order.getItems().forEach(i -> i.getProduct().addStock(i.getQuantity()));
+    }
+
+    // Se o pedido é de outro usuário, responde 404 para não revelar que ele existe
+    private Order findOrderForCaller(Long id, Long callerId, boolean isAdmin) {
+        Order order = findOrderById(id);
+        if (!isAdmin && !order.getUser().getUserId().equals(callerId)) {
             throw new ResourceNotFound(id);
         }
-        orderRepository.deleteById(id);
+        return order;
     }
 
-    private Order findOrderById(Long id){
+    private Order findOrderById(Long id) {
         return orderRepository.findById(id).orElseThrow(() -> new ResourceNotFound(id));
     }
-    
-    private Product findProductById(Long id){
+
+    private Product findProductById(Long id) {
         return productRepository.findById(id).orElseThrow(() -> new ResourceNotFound(id));
     }
-    
-
 }

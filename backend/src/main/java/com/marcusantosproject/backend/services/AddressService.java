@@ -23,22 +23,24 @@ public class AddressService {
     private final AddressRepository addressRepository;
     private final OrderRepository orderRepository;
 
+    // ADMIN vê todos os endereços ativos; CLIENT vê só os seus
     @Transactional(readOnly = true)
-    public List<AddressResponse> findAll() {
-        return addressRepository.findByActiveTrue()
-                .stream()
-                .map(AddressResponse::new)
-                .toList();
+    public List<AddressResponse> findAll(Long callerId, boolean isAdmin) {
+        List<Address> addresses = isAdmin
+                ? addressRepository.findByActiveTrue()
+                : addressRepository.findByUserUserIdAndActiveTrue(callerId);
+        return addresses.stream().map(AddressResponse::new).toList();
     }
 
     @Transactional(readOnly = true)
-    public AddressResponse findById(Long id) {
-        return new AddressResponse(findAddressById(id));
+    public AddressResponse findById(Long id, Long callerId, boolean isAdmin) {
+        return new AddressResponse(findAddressForCaller(id, callerId, isAdmin));
     }
 
+    // O dono do endereço é sempre quem está logado (callerId vem do token, nunca do body)
     @Transactional
-    public AddressResponse insert(AddressRequest request) {
-        User user = findUserById(request.userId());
+    public AddressResponse insert(Long callerId, AddressRequest request) {
+        User user = findUserById(callerId);
         Address address = new Address(
                 request.name(),
                 request.street(),
@@ -54,8 +56,8 @@ public class AddressService {
     }
 
     @Transactional
-    public AddressResponse update(Long id, AddressRequest request) {
-        Address entity = findAddressById(id);
+    public AddressResponse update(Long id, AddressRequest request, Long callerId, boolean isAdmin) {
+        Address entity = findAddressForCaller(id, callerId, isAdmin);
         entity.setName(request.name());
         entity.setStreet(request.street());
         entity.setNumber(request.number());
@@ -68,8 +70,8 @@ public class AddressService {
     }
 
     @Transactional
-    public void delete(Long id) {
-        Address address = findAddressById(id);
+    public void delete(Long id, Long callerId, boolean isAdmin) {
+        Address address = findAddressForCaller(id, callerId, isAdmin);
 
         // Pedidos que ainda dependem do endereço
         List<OrderStatus> blockingStatuses = List.of(
@@ -85,6 +87,15 @@ public class AddressService {
         address.setActive(false);
     }
 
+    // Se o endereço é de outro usuário, responde 404 para não revelar que ele existe
+    private Address findAddressForCaller(Long id, Long callerId, boolean isAdmin) {
+        Address address = findAddressById(id);
+        if (!isAdmin && !address.getUser().getUserId().equals(callerId)) {
+            throw new ResourceNotFound(id);
+        }
+        return address;
+    }
+
     private Address findAddressById(Long id) {
         return addressRepository.findByAddressIdAndActiveTrue(id)
                 .orElseThrow(() -> new ResourceNotFound(id));
@@ -92,8 +103,6 @@ public class AddressService {
 
     private User findUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFound(
-                        "Usuario com id [" + id + "] não encontrado"
-                ));
+                .orElseThrow(() -> new ResourceNotFound("User not found. Id: " + id));
     }
 }

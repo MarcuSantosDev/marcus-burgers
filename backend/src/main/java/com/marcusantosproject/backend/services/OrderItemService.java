@@ -16,8 +16,14 @@ public class OrderItemService {
     private final OrderRepository orderRepository;
 
     @Transactional(readOnly = true)
-    public List<OrderItemResponse> findAll(Long orderId) {
+    public List<OrderItemResponse> findAll(Long orderId, Long callerId, boolean isAdmin) {
         Order order = findOrderById(orderId);
+
+        // Se o pedido é de outro usuário, responde 404 para não revelar que ele existe
+        if (!isAdmin && !order.getUser().getUserId().equals(callerId)) {
+            throw new ResourceNotFound("Order not found. Id: " + orderId);
+        }
+
         return order.getItems().stream().map(OrderItemResponse::new).toList();
     }
 
