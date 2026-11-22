@@ -2,6 +2,7 @@ package com.marcusantosproject.backend.config;
 
 import com.marcusantosproject.backend.security.JwtAuthenticationFilter;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -42,17 +43,38 @@ public class SecurityConfig {
                         .accessDeniedHandler((req, res, e) ->
                                 res.setStatus(HttpServletResponse.SC_FORBIDDEN)))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/h2-console/**").permitAll()
+                        // Públicas
+                        .requestMatchers("/h2-console/**").permitAll() // somente em dev: remova em produção
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers( "/products/**", "/categories/**", "/addresses/**").permitAll()
-                        .requestMatchers("/orders/**").authenticated()
-                        .requestMatchers("/orders/**").permitAll()
                         .requestMatchers("/error").permitAll()
+
+                        // Qualquer um lê, só ADMIN altera
+                        .requestMatchers(HttpMethod.GET, "/products/**", "/categories/**").permitAll()
+                        .requestMatchers("/products/**", "/categories/**").hasRole("ADMIN")
+
+                        // Usuários: listar, criar e apagar só ADMIN.
+                        // Leitura/edição do próprio perfil: a checagem de dono fica no service.
+                        .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/users").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
+
+                        // Pedidos: apagar só ADMIN; o restante exige login + checagem de dono no service
+                        .requestMatchers(HttpMethod.DELETE, "/orders/**").hasRole("ADMIN")
+
+                        // Endereços e pedidos: logado; dono validado no service
+                        .requestMatchers("/addresses/**", "/orders/**", "/users/**").authenticated()
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+    @Bean
+    public FilterRegistrationBean<JwtAuthenticationFilter> jwtFilterRegistration(JwtAuthenticationFilter filter) {
+        FilterRegistrationBean<JwtAuthenticationFilter> registration = new FilterRegistrationBean<>(filter);
+        registration.setEnabled(false);
+        return registration;
     }
 
     @Bean
@@ -62,7 +84,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }

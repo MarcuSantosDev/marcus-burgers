@@ -4,26 +4,27 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtDecoder jwtDecoder;
+    private final JwtAuthenticationConverter jwtAuthenticationConverter;
 
-    public JwtAuthenticationFilter(JwtDecoder jwtDecoder) {
+    public JwtAuthenticationFilter(JwtDecoder jwtDecoder,
+                                   JwtAuthenticationConverter jwtAuthenticationConverter) {
         this.jwtDecoder = jwtDecoder;
+        this.jwtAuthenticationConverter = jwtAuthenticationConverter;
     }
 
     @Override
@@ -41,14 +42,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Valida assinatura e expiração; lança JwtException se algo estiver errado
                 Jwt jwt = jwtDecoder.decode(token);
 
-                String email = jwt.getSubject();
-                String role = jwt.getClaimAsString("role");
-
-                List<GrantedAuthority> authorities =
-                        List.of(new SimpleGrantedAuthority("ROLE_" + role));
-
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(email, null, authorities);
+                // O converter (JwtConfig) lê o claim "role" e monta ROLE_ADMIN / ROLE_CLIENT.
+                // O principal da autenticação passa a ser o próprio Jwt,
+                // então @AuthenticationPrincipal Jwt jwt funciona nos controllers.
+                AbstractAuthenticationToken authentication = jwtAuthenticationConverter.convert(jwt);
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 

@@ -1,16 +1,17 @@
 package com.marcusantosproject.backend.security;
 
- import com.marcusantosproject.backend.dto.login.LoginRequest;
+import com.marcusantosproject.backend.dto.login.LoginRequest;
 import com.marcusantosproject.backend.dto.login.LoginResponse;
- import com.marcusantosproject.backend.dto.register.RegisterRequestDTO;
- import com.marcusantosproject.backend.dto.register.RegisterResponseDTO;
- import com.marcusantosproject.backend.services.UserService;
- import lombok.RequiredArgsConstructor;
- import org.springframework.security.authentication.AuthenticationManager;
- import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
- import org.springframework.security.core.Authentication;
- import org.springframework.stereotype.Service;
-
+import com.marcusantosproject.backend.dto.register.RegisterRequestDTO;
+import com.marcusantosproject.backend.dto.register.RegisterResponseDTO;
+import com.marcusantosproject.backend.entities.User;
+import com.marcusantosproject.backend.repository.UserRepository;
+import com.marcusantosproject.backend.services.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -19,36 +20,26 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final UserService userService;
-
+    private final UserRepository userRepository;
 
     public LoginResponse login(LoginRequest request) {
         String email = request.email().trim().toLowerCase();
+
         /*
-         O AuthenticationManager recebe o token com as credenciais do usuário e delega o processo de autenticação ao AuthenticationProvider apropriado :
-         - AuthenticationManager: coordena a autenticação
-         - AuthenticationProvider: realiza a validação das credenciais
-         - UserDetailsService: busca os dados do usuário.
-         - PasswordEncoder: verifica a senha que valida as credenciais e retorna um Authentication autenticado
+         O AuthenticationManager delega ao AuthenticationProvider:
+         - UserDetailsService busca o usuário
+         - PasswordEncoder confere a senha
+         Se as credenciais forem inválidas, lança AuthenticationException.
         */
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        email,
-                        request.password()
-                )
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, request.password())
         );
 
-        String role = authentication.getAuthorities()
-                .iterator()
-                .next()
-                .getAuthority()
-                .replace("ROLE_", "");
+        // Busca a entidade para colocar userId e role no token
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
 
-        String token = jwtService.generateToken(
-                authentication.getName(),
-                role
-        );
-
-        return new LoginResponse(token);
+        return new LoginResponse(jwtService.generateToken(user));
     }
 
     public RegisterResponseDTO register(RegisterRequestDTO request) {
