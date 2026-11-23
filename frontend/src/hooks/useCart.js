@@ -56,7 +56,7 @@ function loadStoredCart() {
   }
 }
 
-export function useCart() {
+export function useCart(catalog = PRODUCTS) {
   const [lines, dispatch] = useReducer(cartReducer, undefined, loadStoredCart);
 
   useEffect(() => {
@@ -70,10 +70,10 @@ export function useCart() {
   const items = useMemo(
     () =>
       lines.flatMap(({ id, quantity }) => {
-        const product = PRODUCTS.find((p) => p.id === id);
+        const product = catalog.find((p) => p.id === id);
         return product ? [{ product, quantity }] : [];
       }),
-    [lines],
+    [lines, catalog],
   );
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
