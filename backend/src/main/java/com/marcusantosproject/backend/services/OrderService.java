@@ -40,7 +40,8 @@ public class OrderService {
         return new OrderResponse(findOrderForCaller(id, callerId, isAdmin));
     }
 
-    // O dono do pedido é sempre quem está logado (callerId vem do token, nunca do body)
+    // O dono do pedido é sempre quem está logado (callerId vem do token, nunca do
+    // body)
     @Transactional
     public OrderResponse insert(Long callerId, OrderRequest request) {
         if (request.items() == null || request.items().isEmpty()) {
@@ -89,8 +90,9 @@ public class OrderService {
             throw new BadRequest("Customers can only cancel orders that are still pending");
         }
 
-        // Pergunta ao enum se essa mudança é permitida
-        if (!currentOrderStatus.canTransitionTo(nextOrderStatus)) {
+        // ADMIN só avança um status por vez ou cancela pedidos ainda ativos.
+        // CANCELLED e DELIVERED são estados finais e não podem ser alterados.
+        if (isAdmin && !currentOrderStatus.canTransitionTo(nextOrderStatus)) {
             throw new BadRequest("Invalid transition: " + currentOrderStatus + " -> " + nextOrderStatus);
         }
 
