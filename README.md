@@ -9,7 +9,12 @@ Aplicação full-stack para uma hamburgueria, desenvolvida com Spring Boot e Rea
 - Carrinho com quantidade, remoção, limpeza e persistência no navegador.
 - Cadastro e login com autenticação JWT.
 - Cadastro e seleção de endereços do usuário.
+- Busca automática de endereço por CEP integrada à API ViaCEP no backend.
+- Limite de quantidade no carrinho conforme o estoque disponível.
+- Atualização automática do catálogo e estoque após finalizar pedidos.
+- Perfil do usuário com nome e e-mail no cabeçalho.
 - Criação e acompanhamento de pedidos.
+- Painel administrativo para acompanhar e alterar status dos pedidos.
 - Controle de acesso para usuários `CLIENT` e administradores `ADMIN`.
 - Validação de dados com Bean Validation.
 - Documentação interativa da API com Swagger UI / OpenAPI.
@@ -26,6 +31,7 @@ Aplicação full-stack para uma hamburgueria, desenvolvida com Spring Boot e Rea
 - Spring Security
 - OAuth2 Resource Server / JWT
 - Springdoc OpenAPI / Swagger UI
+- ViaCEP com `RestClient`
 - Bean Validation
 - PostgreSQL
 - H2 para o perfil de teste
@@ -204,17 +210,19 @@ Os endpoints de documentação são públicos. Os endpoints protegidos continuam
 
 ## 📡 Principais endpoints
 
-| Método | Endpoint         | Descrição                                                | Autenticação |
-| ------ | ---------------- | -------------------------------------------------------- | ------------ |
-| `POST` | `/auth/login`    | Autentica e retorna JWT                                  | Não          |
-| `GET`  | `/products`      | Lista produtos                                           | Não          |
-| `GET`  | `/products/{id}` | Busca um produto                                         | Não          |
-| `GET`  | `/categories`    | Lista categorias                                         | Não          |
-| `GET`  | `/addresses`     | Lista endereços do usuário                               | Sim          |
-| `POST` | `/addresses`     | Cadastra endereço                                        | Sim          |
-| `GET`  | `/orders`        | Lista pedidos do usuário ou de todos, para administrador | Sim          |
-| `POST` | `/orders`        | Cria pedido                                              | Sim          |
-| `GET`  | `/orders/{id}`   | Busca pedido                                             | Sim          |
+| Método | Endpoint                   | Descrição                                                | Autenticação |
+| ------ | -------------------------- | -------------------------------------------------------- | ------------ |
+| `POST` | `/auth/login`              | Autentica e retorna JWT                                  | Não          |
+| `GET`  | `/products`                | Lista produtos                                           | Não          |
+| `GET`  | `/products/{id}`           | Busca um produto                                         | Não          |
+| `GET`  | `/categories`              | Lista categorias                                         | Não          |
+| `GET`  | `/addresses`               | Lista endereços do usuário                               | Sim          |
+| `POST` | `/addresses`               | Cadastra endereço                                        | Sim          |
+| `GET`  | `/addresses/cep/{zipCode}` | Consulta endereço pelo ViaCEP                            | Não          |
+| `GET`  | `/orders`                  | Lista pedidos do usuário ou de todos, para administrador | Sim          |
+| `POST` | `/orders`                  | Cria pedido e reduz o estoque                            | Sim          |
+| `GET`  | `/orders/{id}`             | Busca pedido                                             | Sim          |
+| `PUT`  | `/orders/{id}`             | Atualiza status conforme as regras de perfil             | Sim          |
 
 As requisições autenticadas devem enviar:
 
@@ -246,8 +254,27 @@ Perfil: ADMIN
 - `/login` — login.
 - `/register` — cadastro.
 - `/checkout` — endereços e confirmação do pedido.
-- `/pedidos` — pedidos do usuário.
+- `/pedidos` — pedidos do usuário, separados entre ativos e encerrados.
 - `/pedidos/{id}` — confirmação e detalhes de um pedido.
+- `/admin/pedidos` — painel administrativo de pedidos.
+
+## 📦 Status e acompanhamento dos pedidos
+
+A trilha do cliente possui 4 etapas:
+
+1. `PENDING` — Pendente
+2. `PREPARING` — Preparando
+3. `READY` — Pronto
+4. `DELIVERED` — Entregue
+
+Pedidos `CANCELLED` são exibidos em vermelho como pedidos encerrados.
+
+No painel administrativo:
+
+- A alteração é sempre em ordem direta, uma etapa por vez.
+- Não é permitido retroceder o status.
+- `DELIVERED` e `CANCELLED` são estados finais e ficam bloqueados.
+- O administrador também pode cancelar pedidos que ainda estão ativos.
 
 ## 🛠️ Comandos úteis
 
