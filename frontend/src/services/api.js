@@ -84,4 +84,8 @@ export const api = {
       })),
     }),
   }),
+  updateOrderStatus: (orderId, orderStatus) => request(`/orders/${orderId}`, {
+    method: "PUT",
+    body: JSON.stringify({ orderStatus }),
+  }),
 };

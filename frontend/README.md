@@ -1,16 +1,49 @@
-# React + Vite
+# Frontend — Marcus's Burgers
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interface React da hamburgueria Marcus's Burgers. Utiliza Vite, React Router e integração com a API Spring Boot.
 
-Currently, two official plugins are available:
+## Funcionalidades
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Catálogo por categorias e produtos.
+- Carrinho persistido no navegador.
+- Controle de quantidade conforme o estoque.
+- Login, cadastro e perfil no cabeçalho.
+- Busca automática de endereço pelo ViaCEP durante o checkout.
+- Acompanhamento de pedidos por status.
+- Painel administrativo em `/admin/pedidos`.
 
-## React Compiler
+## Executar
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Na pasta `frontend`:
 
-## Expanding the ESLint configuration
+```powershell
+npm install
+npm run dev
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Aplicação: `http://localhost:5173`
+
+## API
+
+Por padrão, o frontend se conecta em:
+
+```text
+http://localhost:8080
+```
+
+Uma URL diferente pode ser definida em `.env`:
+
+```env
+VITE_API_URL=http://localhost:8080
+```
+
+## Scripts
+
+```powershell
+npm run dev
+npm run build
+npm run lint
+npm run preview
+```
+
+O build de produção é gerado em `dist`.

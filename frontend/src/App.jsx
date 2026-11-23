@@ -11,6 +11,7 @@ import CartDrawer from "./components/CartDrawer/CartDrawer";
 import AuthPage from "./pages/AuthPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrdersPage from "./pages/OrdersPage";
+import AdminOrdersPage from "./pages/AdminOrdersPage";
 import "./App.css";
 
 const fallbackProducts = [
@@ -20,6 +21,7 @@ const fallbackProducts = [
 		description:
 			"Pão brioche, hambúrguer artesanal, queijo cheddar e molho especial.",
 		price: 29.9,
+		stock: 50,
 		imageId: "photo-1568901346375-23c9450c58cd",
 	},
 	{
@@ -28,6 +30,7 @@ const fallbackProducts = [
 		description:
 			"Dois hambúrgueres, cheddar duplo, cebola caramelizada e brioche.",
 		price: 36.9,
+		stock: 50,
 		imageId: "photo-1571091718767-18b5b1457add",
 	},
 	{
@@ -36,6 +39,7 @@ const fallbackProducts = [
 		description:
 			"Hambúrguer artesanal, bacon crocante, queijo e molho barbecue.",
 		price: 34.9,
+		stock: 50,
 		imageId: "photo-1550547660-d9450f859349",
 	},
 ];
@@ -80,7 +84,13 @@ function AppRoutes() {
 		const onAuthChange = () => setAuthenticated(Boolean(getToken()));
 		window.addEventListener("auth-change", onAuthChange);
 
-		api.products()
+		loadProducts();
+
+		return () => window.removeEventListener("auth-change", onAuthChange);
+	}, []);
+
+	function loadProducts() {
+		return api.products()
 			.then((items) => {
 				setProducts(
 					items.map((product) => ({
@@ -93,9 +103,7 @@ function AppRoutes() {
 				);
 			})
 			.catch(() => setProducts(fallbackProducts));
-
-		return () => window.removeEventListener("auth-change", onAuthChange);
-	}, []);
+	}
 
 	function logout() {
 		clearToken();
@@ -160,12 +168,17 @@ function AppRoutes() {
 					element={
 						<CheckoutPage
 							cart={cart}
-							onSuccess={() => cart.clear()}
+							onSuccess={async () => {
+								cart.clear();
+								await loadProducts();
+							}}
 						/>
 					}
 				/>
 				<Route path="/pedidos" element={<OrdersPage />} />
 				<Route path="/pedidos/:orderId" element={<OrdersPage />} />
+				<Route path="/admin/pedidos" element={<AdminOrdersPage />} />
+				<Route path="/admin/pedidos/:orderId" element={<AdminOrdersPage />} />
 			</Routes>
 
 			<CartDrawer

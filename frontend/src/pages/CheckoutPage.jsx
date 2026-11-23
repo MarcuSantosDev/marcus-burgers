@@ -100,6 +100,10 @@ export default function CheckoutPage({ cart, onSuccess }) {
 
   async function submitOrder(event) {
     event.preventDefault();
+    if (cart.items.length === 0) {
+      setError("");
+      return;
+    }
     if (!addressId) {
       setError("Cadastre um endereço para finalizar o pedido.");
       return;
@@ -108,7 +112,7 @@ export default function CheckoutPage({ cart, onSuccess }) {
     setError("");
     try {
       const order = await api.createOrder(Number(addressId), cart.items);
-      onSuccess?.();
+      await onSuccess?.();
       navigate(`/pedidos/${order.orderId}`);
     } catch (requestError) {
       setError(requestError.message);

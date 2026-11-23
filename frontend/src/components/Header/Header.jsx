@@ -33,6 +33,16 @@ function Header({ cartCount = 0, onOpenCart, authenticated = false, onLogout }) 
     <header className="header">
       <Logo />
 
+      {authenticated && (
+        <Link className="header__profile" to="/pedidos" aria-label="Ver meus pedidos">
+          <span className="header__avatar" aria-hidden="true">{profileInitial}</span>
+          <span className="header__profile-info">
+            <span className="header__profile-name">{profile?.name || "Usuário"}</span>
+            <span className="header__profile-email">{profile?.email || ""}</span>
+          </span>
+        </Link>
+      )}
+
       <nav className="header__nav" aria-label="Navegação principal">
         {NAV_LINKS.map(({ label, href }) => {
           const section = href.includes("#") ? href.substring(href.indexOf("#")) : href;
@@ -42,15 +52,19 @@ function Header({ cartCount = 0, onOpenCart, authenticated = false, onLogout }) 
             </Link>
           );
         })}
+        {authenticated && (
+          <Link className="header__link" to="/pedidos">
+            Pedidos
+          </Link>
+        )}
       </nav>
 
       <div className="header__actions">
         {authenticated ? (
           <>
-            <Link className="header__profile" to="/pedidos" aria-label="Ver meus pedidos">
-              <span className="header__avatar" aria-hidden="true">{profileInitial}</span>
-              <span className="header__profile-name">{profile?.name || "Usuário"}</span>
-            </Link>
+            {profile?.role === "ADMIN" && (
+              <Link className="header__auth" to="/admin/pedidos">Admin</Link>
+            )}
             <button className="header__auth" type="button" onClick={onLogout}>
               Sair
             </button>
