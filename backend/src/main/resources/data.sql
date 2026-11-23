@@ -25,27 +25,34 @@ INSERT INTO category (name, description) VALUES
 -- 2. PRODUTOS
 -- =========================================
 
-INSERT INTO product (name, description, price, stock, category_id)
+INSERT INTO product (name, description, image_url, price, stock, category_id)
 VALUES
     ('X-Bacon', 'Pão brioche, blend 180g, queijo cheddar e bacon crocante.',
+     'https://images.unsplash.com/photo-1550547660-d9450f859349',
      32.90, 50, (SELECT category_id FROM category WHERE name = 'Hambúrgueres')),
 
     ('X-Salada', 'Pão brioche, blend 180g, queijo prato, alface, tomate e molho especial.',
+     'https://images.unsplash.com/photo-1568901346375-23c9450c58cd',
      28.90, 40, (SELECT category_id FROM category WHERE name = 'Hambúrgueres')),
 
     ('X-Tudo', 'Pão brioche, blend 180g, queijo, presunto, bacon, ovo, alface, tomate e molho especial.',
+     'https://images.unsplash.com/photo-1571091718767-18b5b1457add',
      36.90, 25, (SELECT category_id FROM category WHERE name = 'Hambúrgueres')),
 
     ('Coca-Cola Lata 350ml', 'Refrigerante Coca-Cola tradicional, lata de 350ml.',
+     'https://images.unsplash.com/photo-1622483767028-3f66f32aef97',
      6.00, 100, (SELECT category_id FROM category WHERE name = 'Bebidas')),
 
     ('Guaraná Antarctica 350ml', 'Refrigerante de guaraná, lata de 350ml.',
+     'https://images.unsplash.com/photo-1581006852262-e4307cf6283a',
      5.50, 80, (SELECT category_id FROM category WHERE name = 'Bebidas')),
 
     ('Batata Frita P', 'Porção pequena de batatas fritas crocantes.',
+     'https://images.unsplash.com/photo-1573080496219-bb080dd4f877',
      12.00, 40, (SELECT category_id FROM category WHERE name = 'Acompanhamentos')),
 
     ('Batata Frita G', 'Porção grande de batatas fritas crocantes.',
+     'https://images.unsplash.com/photo-1630384060421-cb20d0e0649d',
      20.00, 30, (SELECT category_id FROM category WHERE name = 'Acompanhamentos'));
 
 
