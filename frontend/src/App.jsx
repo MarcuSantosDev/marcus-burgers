@@ -54,16 +54,17 @@ function StorePage({ products, onAddToCart }) {
 }
 
 function HashScroll() {
-	const { pathname } = useLocation();
+	const { pathname, hash } = useLocation();
 
 	useEffect(() => {
-		if (pathname) {
-			const element = document.getElementById(pathname.split("#")[1]);
-			if (element) {
-				element.scrollIntoView({ behavior: "smooth" });
-			}
-		}
-	}, [pathname]);
+		const targetId = hash.replace("#", "");
+		if (!targetId) return;
+
+		requestAnimationFrame(() => {
+			const element = document.getElementById(targetId);
+			if (element) element.scrollIntoView({ behavior: "smooth", block: "start" });
+		});
+	}, [pathname, hash]);
 
 	return null;
 }
@@ -135,7 +136,7 @@ function AppRoutes() {
 			});
 		}
 
-		cart.add(product.id);
+		cart.add(product.id, Number(product.stock) || 0);
 	}
 
 	return (

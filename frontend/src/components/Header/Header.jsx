@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { getUserProfile } from "../../services/api";
 import Logo from "../Logo/Logo";
 import Button from "../Button/Button";
 import { NAV_LINKS } from "../../data/site";
@@ -25,23 +26,30 @@ function CartIcon() {
 }
 
 function Header({ cartCount = 0, onOpenCart, authenticated = false, onLogout }) {
+  const profile = authenticated ? getUserProfile() : null;
+  const profileInitial = profile?.name?.trim()?.charAt(0)?.toUpperCase() || "U";
+
   return (
     <header className="header">
       <Logo />
 
       <nav className="header__nav" aria-label="Navegação principal">
-        {NAV_LINKS.map(({ label, href }) => (
-          <Link key={href} to={href} className="header__link">
-            {label}
-          </Link>
-        ))}
+        {NAV_LINKS.map(({ label, href }) => {
+          const section = href.includes("#") ? href.substring(href.indexOf("#")) : href;
+          return (
+            <Link key={href} to={`/${section}`} className="header__link">
+              {label}
+            </Link>
+          );
+        })}
       </nav>
 
       <div className="header__actions">
         {authenticated ? (
           <>
-            <Link className="header__auth" to="/pedidos">
-              Pedidos
+            <Link className="header__profile" to="/pedidos" aria-label="Ver meus pedidos">
+              <span className="header__avatar" aria-hidden="true">{profileInitial}</span>
+              <span className="header__profile-name">{profile?.name || "Usuário"}</span>
             </Link>
             <button className="header__auth" type="button" onClick={onLogout}>
               Sair

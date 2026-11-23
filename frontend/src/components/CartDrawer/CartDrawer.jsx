@@ -138,8 +138,10 @@ function CartDrawer({
                       <span aria-live="polite">{quantity}</span>
                       <button
                         type="button"
-                        onClick={() => onIncrement(product.id)}
+                        onClick={() => onIncrement(product.id, Number(product.stock) || 0)}
                         aria-label={`Aumentar quantidade de ${product.name}`}
+                        disabled={quantity >= (Number(product.stock) || 0)}
+                        title={quantity >= (Number(product.stock) || 0) ? "Quantidade máxima em estoque" : undefined}
                       >
                         +
                       </button>

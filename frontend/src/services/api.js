@@ -14,6 +14,25 @@ export function clearToken() {
   window.dispatchEvent(new Event("auth-change"));
 }
 
+export function getUserProfile() {
+  const token = getToken();
+  if (!token) return null;
+
+  try {
+    const payload = token.split(".")[1]
+      .replace(/-/g, "+")
+      .replace(/_/g, "/");
+    const decoded = JSON.parse(atob(payload));
+    return {
+      name: decoded.name || decoded.sub || "Usuário",
+      email: decoded.sub || "",
+      role: decoded.role || "",
+    };
+  } catch {
+    return null;
+  }
+}
+
 async function request(path, options = {}) {
   const token = getToken();
   const headers = {

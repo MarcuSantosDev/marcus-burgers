@@ -10,18 +10,23 @@ const STORAGE_KEY = "marcuss-burgers:cart";
 function cartReducer(state, action) {
   switch (action.type) {
     case "add": {
+      const stock = Number.isFinite(action.stock) ? action.stock : 0;
+      if (stock < 1) return state;
+
       const exists = state.some((line) => line.id === action.id);
       return exists
         ? state.map((line) =>
             line.id === action.id
-              ? { ...line, quantity: line.quantity + 1 }
+              ? { ...line, quantity: Math.min(line.quantity + 1, stock) }
               : line,
           )
         : [...state, { id: action.id, quantity: 1 }];
     }
     case "increment":
       return state.map((line) =>
-        line.id === action.id ? { ...line, quantity: line.quantity + 1 } : line,
+        line.id === action.id
+          ? { ...line, quantity: Math.min(line.quantity + 1, action.stock) }
+          : line,
       );
     case "decrement":
       return state
@@ -35,6 +40,14 @@ function cartReducer(state, action) {
       return state.filter((line) => line.id !== action.id);
     case "clear":
       return [];
+    case "setQuantity":
+      return state
+        .map((line) =>
+          line.id === action.id
+            ? { ...line, quantity: Math.max(0, action.quantity) }
+            : line,
+        )
+        .filter((line) => line.quantity > 0);
     default:
       return state;
   }
@@ -67,6 +80,16 @@ export function useCart(catalog = PRODUCTS) {
     }
   }, [lines]);
 
+  useEffect(() => {
+    lines.forEach(({ id, quantity }) => {
+      const product = catalog.find((item) => item.id === id);
+      const stock = Number(product?.stock);
+      if (Number.isFinite(stock) && quantity > stock) {
+        dispatch({ type: "setQuantity", id, quantity: stock });
+      }
+    });
+  }, [catalog, lines]);
+
   const items = useMemo(
     () =>
       lines.flatMap(({ id, quantity }) => {
@@ -90,8 +113,8 @@ export function useCart(catalog = PRODUCTS) {
     items,
     totalItems,
     totalPrice,
-    add: (id) => dispatch({ type: "add", id }),
-    increment: (id) => dispatch({ type: "increment", id }),
+    add: (id, stock) => dispatch({ type: "add", id, stock }),
+    increment: (id, stock) => dispatch({ type: "increment", id, stock }),
     decrement: (id) => dispatch({ type: "decrement", id }),
     remove: (id) => dispatch({ type: "remove", id }),
     clear: () => dispatch({ type: "clear" }),

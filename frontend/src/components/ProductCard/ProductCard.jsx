@@ -3,7 +3,7 @@ import { unsplashUrl, unsplashSrcSet } from "../../utils/unsplash";
 import "./ProductCard.css";
 
 function ProductCard({ product, onAdd }) {
-  const { name, description, price, imageUrl, imageId } = product;
+  const { name, description, price, imageUrl, imageId, stock = 0 } = product;
 
   return (
     <article className="product-card">
@@ -29,8 +29,10 @@ function ProductCard({ product, onAdd }) {
             className="product-card__button"
             onClick={(event) => onAdd?.(product, event.currentTarget)}
             aria-label={`Adicionar ${name} ao pedido`}
+            disabled={stock < 1}
+            title={stock < 1 ? "Produto sem estoque" : `${stock} unidade(s) disponível(is)`}
           >
-            Adicionar +
+            {stock < 1 ? "Sem estoque" : "Adicionar +"}
           </button>
         </div>
       </div>

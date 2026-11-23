@@ -69,3 +69,10 @@
 .product-card__button:hover {
   background: var(--color-accent-hover);
 }
+
+.product-card__button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  background: var(--color-border-strong);
+  color: var(--color-text-muted);
+}
