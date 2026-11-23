@@ -18,7 +18,7 @@ public class JwtService {
     private final long expirationSeconds;
 
     public JwtService(JwtEncoder jwtEncoder,
-                      @Value("${security.jwt.expiration}") long expirationSeconds) {
+            @Value("${security.jwt.expiration}") long expirationSeconds) {
         this.jwtEncoder = jwtEncoder;
         this.expirationSeconds = expirationSeconds;
     }
@@ -32,6 +32,7 @@ public class JwtService {
                 .expiresAt(now.plusSeconds(expirationSeconds))
                 .claim("userId", user.getUserId())
                 .claim("role", user.getRole().name())
+                .claim("name", user.getName())
                 .build();
 
         JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
