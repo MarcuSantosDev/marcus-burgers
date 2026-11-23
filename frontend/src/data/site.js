@@ -6,9 +6,9 @@ export const BRAND = {
 };
 
 export const NAV_LINKS = [
-  { label: "Início", href: "#inicio" },
-  { label: "Cardápio", href: "#cardapio" },
-  { label: "Sobre nós", href: "#sobre" },
+  { label: "Início", href: "/#inicio" },
+  { label: "Cardápio", href: "/#cardapio" },
+  { label: "Sobre nós", href: "/#sobre" },
 ];
 
 export const HERO_IMAGE_ID = "photo-1568901346375-23c9450c58cd";

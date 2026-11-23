@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import "./Button.css";
 
 /**
@@ -6,6 +7,14 @@ import "./Button.css";
  */
 function Button({ href, variant = "primary", className = "", children, ...rest }) {
   const classes = ["btn", `btn--${variant}`, className].filter(Boolean).join(" ");
+
+  if (href?.startsWith("/")) {
+    return (
+      <Link to={href} className={classes} {...rest}>
+        {children}
+      </Link>
+    );
+  }
 
   return (
     <a href={href} className={classes} {...rest}>

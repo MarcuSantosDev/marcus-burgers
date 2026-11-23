@@ -18,3 +18,47 @@
 .skip-link:focus {
   transform: translateY(0);
 }
+
+.cart-flight {
+  position: fixed;
+  z-index: 1000;
+  left: var(--flight-start-x);
+  top: var(--flight-start-y);
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 35%);
+  font-size: 20px;
+  font-weight: 900;
+  pointer-events: none;
+  animation: cart-flight 700ms cubic-bezier(.22,.78,.35,1) forwards;
+}
+
+@keyframes cart-flight {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  45% {
+    transform: translate(
+      var(--flight-half-delta-x),
+      var(--flight-arc-delta-y)
+    ) scale(.8);
+  }
+  100% {
+    transform: translate(
+      var(--flight-delta-x),
+      var(--flight-delta-y)
+    ) scale(.2);
+    opacity: .2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cart-flight {
+    display: none;
+  }
+}
