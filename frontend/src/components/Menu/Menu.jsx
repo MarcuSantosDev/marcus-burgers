@@ -1,9 +1,8 @@
 import SectionHeading from "../SectionHeading/SectionHeading";
 import ProductCard from "../ProductCard/ProductCard";
-import { PRODUCTS } from "../../data/products";
 import "./Menu.css";
 
-function Menu({ onAddToCart }) {
+function Menu({ products = [], onAddToCart }) {
   return (
     <section className="menu" id="cardapio" aria-labelledby="menu-title">
       <SectionHeading
@@ -13,14 +12,34 @@ function Menu({ onAddToCart }) {
         description="Combinações especiais preparadas para surpreender você."
       />
 
-      <div className="menu__grid">
-        {PRODUCTS.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            onAdd={onAddToCart}
-          />
-        ))}
+      <div className="menu__categories">
+        {Array.from(
+          new Map(
+            products.map((product) => [
+              product.category?.name || "Sem categoria",
+              product.category?.name || "Sem categoria",
+            ])
+          ).keys()
+        ).map((categoryName) => {
+          const categoryProducts = products.filter(
+            (product) => (product.category?.name || "Sem categoria") === categoryName
+          );
+
+          return (
+            <section className="menu__category" key={categoryName}>
+              <h3 className="menu__category-title">{categoryName}</h3>
+              <div className="menu__grid">
+                {categoryProducts.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onAdd={onAddToCart}
+                  />
+                ))}
+              </div>
+            </section>
+          );
+        })}
       </div>
     </section>
   );

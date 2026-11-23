@@ -1,49 +1,220 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { useCart } from "./hooks/useCart";
+import { api, clearToken, getToken } from "./services/api";
 import Header from "./components/Header/Header";
 import Hero from "./components/Hero/Hero";
 import Menu from "./components/Menu/Menu";
 import About from "./components/About/About";
 import Footer from "./components/Footer/Footer";
 import CartDrawer from "./components/CartDrawer/CartDrawer";
+import AuthPage from "./pages/AuthPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import OrdersPage from "./pages/OrdersPage";
 import "./App.css";
 
+const fallbackProducts = [
+	{
+		id: 1,
+		name: "Classic Burger",
+		description:
+			"Pão brioche, hambúrguer artesanal, queijo cheddar e molho especial.",
+		price: 29.9,
+		imageId: "photo-1568901346375-23c9450c58cd",
+	},
+	{
+		id: 2,
+		name: "Double Cheese",
+		description:
+			"Dois hambúrgueres, cheddar duplo, cebola caramelizada e brioche.",
+		price: 36.9,
+		imageId: "photo-1571091718767-18b5b1457add",
+	},
+	{
+		id: 3,
+		name: "Bacon Supreme",
+		description:
+			"Hambúrguer artesanal, bacon crocante, queijo e molho barbecue.",
+		price: 34.9,
+		imageId: "photo-1550547660-d9450f859349",
+	},
+];
+
+function StorePage({ products, onAddToCart }) {
+	return (
+		<>
+			<main id="conteudo">
+				<Hero />
+				<Menu products={products} onAddToCart={onAddToCart} />
+				<About />
+			</main>
+			<Footer />
+		</>
+	);
+}
+
+function HashScroll() {
+	const { pathname } = useLocation();
+
+	useEffect(() => {
+		if (pathname) {
+			const element = document.getElementById(pathname.split("#")[1]);
+			if (element) {
+				element.scrollIntoView({ behavior: "smooth" });
+			}
+		}
+	}, [pathname]);
+
+	return null;
+}
+
+function AppRoutes() {
+	const [isCartOpen, setIsCartOpen] = useState(false);
+	const [products, setProducts] = useState(fallbackProducts);
+	const [authenticated, setAuthenticated] = useState(Boolean(getToken()));
+	const [cartFlight, setCartFlight] = useState(null);
+	const cart = useCart(products);
+
+	useEffect(() => {
+		const onAuthChange = () => setAuthenticated(Boolean(getToken()));
+		window.addEventListener("auth-change", onAuthChange);
+
+		api.products()
+			.then((items) => {
+				setProducts(
+					items.map((product) => ({
+						...product,
+						id: product.productId,
+						price: Number(product.price),
+						imageUrl: product.imageUrl,
+						imageId: "photo-1568901346375-23c9450c58cd",
+					}))
+				);
+			})
+			.catch(() => setProducts(fallbackProducts));
+
+		return () => window.removeEventListener("auth-change", onAuthChange);
+	}, []);
+
+	function logout() {
+		clearToken();
+		setAuthenticated(false);
+	}
+
+	function addToCart(product, button) {
+		const source =
+			button?.getBoundingRect?.() || button?.getBoundingClientRect?.();
+		const target = document.querySelector(".header__cart")?.getBoundingClientRect();
+
+		if (source && target) {
+			setCartFlight({
+				id: `${product.id}-${Date.now()}`,
+				imageUrl: product.imageUrl,
+				imageId: product.imageId,
+				startX: source.left + source.width / 2,
+				startY: source.top + source.height / 2,
+				endX: target.left + target.width / 2,
+				endY: target.top + target.height / 2,
+				deltaX:
+					target.left + target.width / 2 - (source.left + source.width / 2),
+				deltaY:
+					target.top + target.height / 2 - (source.top + source.height / 2),
+				halfDeltaX:
+					(target.left + target.width / 2 - (source.left + source.width / 2)) *
+					0.5,
+				arcDeltaY:
+					(target.top + target.height / 2 - (source.top + source.height / 2)) *
+						0.25 -
+					80,
+				midX:
+					((source.left + source.width / 2) + (target.left + target.width / 2)) /
+					2,
+				arcY:
+					Math.min(source.top + source.height / 2, target.top + target.height / 2) -
+					80,
+			});
+		}
+
+		cart.add(product.id);
+	}
+
+	return (
+		<>
+			<Header
+				cartCount={cart.totalItems}
+				onOpenCart={() => setIsCartOpen(true)}
+				authenticated={authenticated}
+				onLogout={logout}
+			/>
+
+			<Routes>
+				<Route
+					path="/"
+					element={<StorePage products={products} onAddToCart={addToCart} />}
+				/>
+				<Route path="/login" element={<AuthPage mode="login" />} />
+				<Route path="/register" element={<AuthPage mode="register" />} />
+				<Route
+					path="/checkout"
+					element={
+						<CheckoutPage
+							cart={cart}
+							onSuccess={() => cart.clear()}
+						/>
+					}
+				/>
+				<Route path="/pedidos" element={<OrdersPage />} />
+				<Route path="/pedidos/:orderId" element={<OrdersPage />} />
+			</Routes>
+
+			<CartDrawer
+				open={isCartOpen}
+				onClose={() => setIsCartOpen(false)}
+				items={cart.items}
+				totalItems={cart.totalItems}
+				totalPrice={cart.totalPrice}
+				onIncrement={cart.increment}
+				onDecrement={cart.decrement}
+				onRemove={cart.remove}
+				onClear={cart.clear}
+				checkoutHref="/checkout"
+			/>
+
+			{cartFlight && (
+				<div
+					key={cartFlight.id}
+					className="cart-flight"
+					style={{
+						"--flight-start-x": `${cartFlight.startX}px`,
+						"--flight-start-y": `${cartFlight.startY}px`,
+						"--flight-end-x": `${cartFlight.endX}px`,
+						"--flight-end-y": `${cartFlight.endY}px`,
+						"--flight-delta-x": `${cartFlight.deltaX}px`,
+						"--flight-delta-y": `${cartFlight.deltaY}px`,
+						"--flight-half-delta-x": `${cartFlight.halfDeltaX}px`,
+						"--flight-arc-delta-y": `${cartFlight.arcDeltaY}px`,
+					}}
+					onAnimationEnd={() => setCartFlight(null)}
+				>
+					<span aria-hidden="true">+</span>
+				</div>
+			)}
+			<HashScroll />
+		</>
+	);
+}
+
 function App() {
-  const cart = useCart();
-  const [isCartOpen, setIsCartOpen] = useState(false);
-
-  return (
-    <div className="app">
-      <a className="skip-link" href="#conteudo">
-        Pular para o conteúdo
-      </a>
-
-      <Header
-        cartCount={cart.totalItems}
-        onOpenCart={() => setIsCartOpen(true)}
-      />
-
-      <main id="conteudo">
-        <Hero />
-        <Menu onAddToCart={(product) => cart.add(product.id)} />
-        <About />
-      </main>
-
-      <Footer />
-
-      <CartDrawer
-        open={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
-        items={cart.items}
-        totalItems={cart.totalItems}
-        totalPrice={cart.totalPrice}
-        onIncrement={cart.increment}
-        onDecrement={cart.decrement}
-        onRemove={cart.remove}
-        onClear={cart.clear}
-      />
-    </div>
-  );
+	return (
+		<BrowserRouter>
+			<div className="app">
+				<a className="skip-link" href="#conteudo">
+					Pular para o conteúdo
+				</a>
+				<AppRoutes />
+			</div>
+		</BrowserRouter>
+	);
 }
 
 export default App;

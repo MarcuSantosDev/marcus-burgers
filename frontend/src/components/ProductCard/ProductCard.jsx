@@ -3,14 +3,14 @@ import { unsplashUrl, unsplashSrcSet } from "../../utils/unsplash";
 import "./ProductCard.css";
 
 function ProductCard({ product, onAdd }) {
-  const { name, description, price, imageId } = product;
+  const { name, description, price, imageUrl, imageId } = product;
 
   return (
     <article className="product-card">
       <img
         className="product-card__image"
-        src={unsplashUrl(imageId, 600)}
-        srcSet={unsplashSrcSet(imageId, [400, 600, 900])}
+        src={imageUrl || unsplashUrl(imageId, 600)}
+        srcSet={imageUrl ? undefined : unsplashSrcSet(imageId, [400, 600, 900])}
         sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw"
         width="600"
         height="220"
@@ -27,7 +27,7 @@ function ProductCard({ product, onAdd }) {
           <button
             type="button"
             className="product-card__button"
-            onClick={() => onAdd?.(product)}
+            onClick={(event) => onAdd?.(product, event.currentTarget)}
             aria-label={`Adicionar ${name} ao pedido`}
           >
             Adicionar +

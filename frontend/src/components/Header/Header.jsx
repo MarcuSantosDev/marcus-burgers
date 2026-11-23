@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Logo from "../Logo/Logo";
 import Button from "../Button/Button";
 import { NAV_LINKS } from "../../data/site";
@@ -23,25 +24,42 @@ function CartIcon() {
   );
 }
 
-function Header({ cartCount = 0, onOpenCart }) {
+function Header({ cartCount = 0, onOpenCart, authenticated = false, onLogout }) {
   return (
     <header className="header">
       <Logo />
 
       <nav className="header__nav" aria-label="Navegação principal">
         {NAV_LINKS.map(({ label, href }) => (
-          <a key={href} href={href} className="header__link">
+          <Link key={href} to={href} className="header__link">
             {label}
-          </a>
+          </Link>
         ))}
       </nav>
 
       <div className="header__actions">
+        {authenticated ? (
+          <>
+            <Link className="header__auth" to="/pedidos">
+              Pedidos
+            </Link>
+            <button className="header__auth" type="button" onClick={onLogout}>
+              Sair
+            </button>
+          </>
+        ) : (
+          <Link className="header__auth" to="/login">
+            Entrar
+          </Link>
+        )}
+
         <button
           type="button"
           className="header__cart"
           onClick={onOpenCart}
-          aria-label={`Abrir carrinho, ${cartCount} ${cartCount === 1 ? "item" : "itens"}`}
+          aria-label={`Abrir carrinho, ${cartCount} ${
+            cartCount === 1 ? "item" : "itens"
+          }`}
         >
           <CartIcon />
           {cartCount > 0 && (
@@ -51,7 +69,7 @@ function Header({ cartCount = 0, onOpenCart }) {
           )}
         </button>
 
-        <Button href="#cardapio" className="header__cta">
+        <Button href="/checkout" className="header__cta">
           Fazer pedido
         </Button>
       </div>

@@ -5,11 +5,16 @@
   background: var(--color-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  transition: transform var(--transition-card);
+  backface-visibility: hidden;
+  transition:
+    border-color var(--transition-card),
+    box-shadow var(--transition-card),
+    background-color var(--transition-card);
 }
 
 .product-card:hover {
-  transform: translateY(-7px);
+  border-color: var(--color-accent);
+  box-shadow: 0 14px 38px rgb(0 0 0 / 32%);
 }
 
 .product-card__image {

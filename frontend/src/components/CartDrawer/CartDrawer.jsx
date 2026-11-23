@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import Button from "../Button/Button";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { getProductImageUrl } from "../../utils/productImage";
@@ -110,7 +111,7 @@ function CartDrawer({
                   <img
                     className="cart__item-image"
                     src={getProductImageUrl(product, 160)}
-                    alt=""
+                    alt={product.name}
                     width="64"
                     height="64"
                     referrerPolicy="no-referrer"
@@ -173,6 +174,9 @@ function CartDrawer({
               <button type="button" className="cart__clear" onClick={onClear}>
                 Limpar carrinho
               </button>
+              <Link className="primary-button cart__checkout" to="/checkout" onClick={onClose}>
+                Finalizar pedido
+              </Link>
             </footer>
           </>
         )}

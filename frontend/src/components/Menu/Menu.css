@@ -3,6 +3,22 @@
   background: var(--color-surface);
 }
 
+.menu__categories {
+  display: grid;
+  gap: 52px;
+}
+
+.menu__category {
+  min-width: 0;
+}
+
+.menu__category-title {
+  margin-bottom: 20px;
+  font-family: var(--font-heading);
+  font-size: 30px;
+  color: var(--color-accent);
+}
+
 .menu__grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
