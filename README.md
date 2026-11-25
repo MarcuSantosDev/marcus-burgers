@@ -37,6 +37,7 @@ Aplicação full-stack para uma hamburgueria, desenvolvida com Spring Boot e Rea
 - H2 para o perfil de teste
 - Maven
 - Lombok
+- JUnit 6.0.3
 
 ### Frontend
 
@@ -314,3 +315,38 @@ cd backend
 ```
 
 O arquivo executável será gerado em `backend/target`.
+
+
+## 🧪 Testes
+
+O backend possui um teste de integração utilizando **JUnit 6.0.3** e Spring Boot para validar o controle de estoque em situações de concorrência.
+
+### Teste de concorrência do estoque
+
+O teste `StockConcurrencyTest` simula dois clientes tentando realizar um pedido simultaneamente para comprar o último produto disponível.
+
+O teste verifica se:
+
+- Apenas um pedido é confirmado.
+- O estoque do produto permanece em zero.
+- Apenas um pedido é registrado no banco de dados.
+
+A implementação utiliza `CountDownLatch` para sincronizar o início das requisições concorrentes e valida o controle de estoque com bloqueio pessimista no banco de dados.
+
+### Executar os testes
+
+Na pasta `backend`, execute todos os testes:
+
+```powershell
+.\mvnw.cmd test
+```
+
+Para executar apenas o teste de concorrência:
+
+```powershell
+.\mvnw.cmd -Dtest=StockConcurrencyTest test
+```
+
+O teste utiliza o perfil `test`, com banco de dados H2 em memória, evitando alterações no banco de desenvolvimento.
+
+
