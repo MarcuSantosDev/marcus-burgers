@@ -10,7 +10,7 @@ O projeto inclui catálogo por categorias, carrinho persistido, autenticação J
 - [Screenshots](#-screenshots)
 - [Funcionalidades](#-funcionalidades)
 - [Tecnologias Usadas](#-tecnologias-usadas)
-- [Como Executar](#-como-executar)
+- [Como Rodar na Minha Máquina](#-como-rodar-na-minha-máquina)
 - [Documentação da API](#-documentação-da-api--swagger)
 - [Testes](#-testes)
 - [Autor](#-autor)
@@ -226,7 +226,7 @@ O token JWT expira em 3600 segundos (1 hora), conforme a configuração `securit
 
 > ⚠️ Nunca commite o arquivo `.env`. Ele está no `.gitignore`; apenas o `.env.example`, com valores fictícios, deve ser versionado. Utilize uma chave JWT exclusiva para cada ambiente.
 
-## Como executar
+## Como Rodar na Minha Máquina
 
 ### Endereços da aplicação
 
