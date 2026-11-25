@@ -7,7 +7,7 @@ import "./Pages.css";
 const statusLabels = {
   PENDING: "Pendente",
   PREPARING: "Preparando",
-  READY: "A caminho",
+  READY: "Pronto - pedido a caminho",
   DELIVERED: "Entregue",
   CANCELLED: "Cancelado",
 };
@@ -71,8 +71,8 @@ export default function OrdersPage() {
               <div
                 className={`delivery-progress delivery-progress--${order.status.toLowerCase()}`}
                 style={{
-                  "--progress-width": `${progressStatuses.indexOf(order.status) >= 0 ? progressStatuses.indexOf(order.status) * 30.66 : 0}%`,
-                  "--motor-left": `${4 + (progressStatuses.indexOf(order.status) >= 0 ? progressStatuses.indexOf(order.status) * 30.66 : 0)}%`,
+                  "--progress-width": `${progressStatuses.indexOf(order.status) >= 0 ? progressStatuses.indexOf(order.status) * 33.333 : 0}%`,
+                  "--motor-left": `${progressStatuses.indexOf(order.status) >= 0 ? 12.5 + progressStatuses.indexOf(order.status) * 25 : 12.5}%`,
                 }}
                 aria-label={`Status do pedido: ${statusLabels[order.status]}`}
               >

@@ -63,7 +63,7 @@ function Header({ cartCount = 0, onOpenCart, authenticated = false, onLogout }) 
         {authenticated ? (
           <>
             {profile?.role === "ADMIN" && (
-              <Link className="header__auth" to="/admin/pedidos">Admin</Link>
+              <Link className="header__auth" to="/admin/pedidos">Painel Admin</Link>
             )}
             <button className="header__auth" type="button" onClick={onLogout}>
               Sair

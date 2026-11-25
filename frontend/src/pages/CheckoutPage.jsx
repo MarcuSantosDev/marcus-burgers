@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { api, getToken } from "../services/api";
 import { formatCurrency } from "../utils/formatCurrency";
 import "./Pages.css";
@@ -14,20 +14,18 @@ export default function CheckoutPage({ cart, onSuccess }) {
   const [addressId, setAddressId] = useState("");
   const [address, setAddress] = useState(emptyAddress);
   const [showAddress, setShowAddress] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(() => getToken() ? "" : "Faça login para finalizar o pedido.");
   const [loading, setLoading] = useState(false);
   const [zipCodeLoading, setZipCodeLoading] = useState(false);
 
   useEffect(() => {
-    if (!getToken()) {
-      navigate("/login");
-      return;
-    }
+    if (!getToken()) return;
     api.addresses().then((items) => {
       setAddresses(items);
       if (items.length) setAddressId(String(items[0].addressId));
+      else setError("Cadastre um endereço para finalizar o pedido.");
     }).catch((requestError) => setError(requestError.message));
-  }, [navigate]);
+  }, []);
 
   async function lookupZipCode(rawZipCode) {
     const zipCode = rawZipCode.replace(/\D/g, "");
@@ -91,6 +89,7 @@ export default function CheckoutPage({ cart, onSuccess }) {
       setAddressId(String(created.addressId));
       setShowAddress(false);
       setAddress(emptyAddress);
+      setError("");
     } catch (requestError) {
       setError(requestError.message);
     } finally {
@@ -102,6 +101,10 @@ export default function CheckoutPage({ cart, onSuccess }) {
     event.preventDefault();
     if (cart.items.length === 0) {
       setError("");
+      return;
+    }
+    if (!getToken()) {
+      setError("Faça login para finalizar o pedido.");
       return;
     }
     if (!addressId) {
@@ -135,6 +138,9 @@ export default function CheckoutPage({ cart, onSuccess }) {
               </select>
             </label>
           )}
+          {!getToken() && <p className="form__error" role="alert">Faça login para finalizar o pedido.</p>}
+          {!getToken() && <Link className="primary-button" to="/login">Entrar ou criar conta</Link>}
+          {getToken() && addresses.length === 0 && <p className="form__error" role="alert">Cadastre um endereço antes de finalizar o pedido.</p>}
           <button className="secondary-button" type="button" onClick={() => setShowAddress((value) => !value)}>{showAddress ? "Cancelar" : "Cadastrar novo endereço"}</button>
           {showAddress && (
             <form className="form address-form" onSubmit={saveAddress}>
@@ -154,6 +160,11 @@ export default function CheckoutPage({ cart, onSuccess }) {
           <div className="summary-total"><span>Total</span><strong>{formatCurrency(cart.totalPrice)}</strong></div>
           {error && <p className="form__error" role="alert">{error}</p>}
           <button className="primary-button" type="button" onClick={submitOrder} disabled={loading || cart.items.length === 0}>{loading ? "Finalizando..." : "Confirmar pedido"}</button>
+          {!getToken() && (
+            <p>
+              Para finalizar a compra, é necessário <Link to="/login" className="link">fazer login</Link> na sua conta.
+            </p>
+          )}
         </aside>
       </div>
     </main>

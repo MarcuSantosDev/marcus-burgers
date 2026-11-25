@@ -247,8 +247,8 @@
 
 .delivery-line {
   position: absolute;
-  left: 4%;
-  right: 4%;
+  left: 12.5%;
+  right: 12.5%;
   top: 28px;
   height: 4px;
   border-radius: 999px;
@@ -310,7 +310,8 @@
 .delivery-motorbike {
   position: absolute;
   left: var(--motor-left);
-  bottom: 72px;
+  top: 13px;
+  bottom: auto;
   z-index: 3;
   font-size: 30px;
   transform: translateX(-50%);
