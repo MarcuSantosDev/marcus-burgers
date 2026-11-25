@@ -31,7 +31,7 @@ Aplicação full-stack para uma hamburgueria, desenvolvida com Spring Boot e Rea
 - Spring Security
 - OAuth2 Resource Server / JWT
 - Springdoc OpenAPI / Swagger UI
-- ViaCEP com `RestClient`
+- ViaCEP API com `RestClient`
 - Bean Validation
 - PostgreSQL
 - H2 para o perfil de teste
