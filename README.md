@@ -69,9 +69,14 @@ docker compose down -v
 
 ## 📸 Screenshots
 
-| Checkout                       | Pedidos do Cliente                              | Admin                    |
-| ------------------------------ | ----------------------------------------------- | ------------------------ |
-| ![Cardápio](docs/checkout.png) | ![Pedidos do Cliente](docs/pedidos-cliente.png) | ![Admin](docs/admin.png) |
+### Checkout
+![Checkout](docs/checkout.png)
+
+### Pedidos do Cliente
+![Pedidos do Cliente](docs/pedidos-cliente.png)
+
+### Admin
+![Admin](docs/admin.png)
 
 ## 🧱 Tecnologias
 
