@@ -199,7 +199,8 @@ No PowerShell:
 
 ```powershell
 $bytes = New-Object byte[] 32
-[System.Security.Cryptography.RandomNumberGenerator]::Fill($bytes)
+$rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+$rng.GetBytes($bytes)
 [Convert]::ToBase64String($bytes)
 ```
 
