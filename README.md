@@ -4,37 +4,81 @@ Aplicação full-stack para uma hamburgueria, desenvolvida com **React + Vite** 
 
 O projeto inclui catálogo por categorias, carrinho persistido, autenticação JWT, endereços com consulta ViaCEP, checkout, controle de estoque e painel administrativo.
 
+## 🚀 Comece aqui
+
+| Objetivo                | Comando ou endereço                         |
+| ----------------------- | ------------------------------------------- |
+| Iniciar tudo com Docker | `docker compose up --build`                 |
+| Abrir a loja            | http://localhost:5173                       |
+| Abrir o backend         | http://localhost:8080                       |
+| Abrir o Swagger         | http://localhost:8080/swagger-ui/index.html |
+| Abrir o console do H2   | http://localhost:8080/h2-console            |
+
+### Primeiro uso
+
+1. Na raiz do projeto, copie o arquivo de exemplo:
+
+   ```powershell
+   Copy-Item .env.example .env
+   ```
+
+2. Inicie a aplicação:
+
+   ```powershell
+   docker compose up --build
+   ```
+
+3. Acesse http://localhost:5173.
+
+   > O Docker já está configurado para iniciar o backend no perfil `test`, com H2 persistido no volume Docker `h2_data`. Não é necessário configurar PostgreSQL nem trocar a URL do H2 manualmente.
+
+### Parar a aplicação
+
+```powershell
+# Para os containers e mantém os dados
+docker compose down
+
+# Para os containers e apaga os volumes também
+docker compose down -v
+```
+
 ## ✨ Funcionalidades
 
-- Catálogo de produtos agrupado por categoria, com imagens individuais por URL.
+- Catálogo de produtos agrupado por categoria.
+- Imagens individuais dos produtos através de URLs.
 - Carrinho com quantidade, remoção, limpeza e persistência no navegador.
-- Limite de quantidade no carrinho conforme o estoque disponível.
 - Cadastro e login com autenticação JWT.
-- Cadastro e seleção de endereços, com busca automática por CEP (API ViaCEP, via backend).
+- Cadastro e seleção de endereços do usuário.
+- Busca automática de endereço por CEP integrada à API ViaCEP no backend.
+- Limite de quantidade no carrinho conforme o estoque disponível.
 - Controle de estoque com bloqueio pessimista, garantindo que dois pedidos simultâneos não vendam o mesmo último item (coberto por teste de concorrência).
-- Atualização automática do catálogo e do estoque após finalizar pedidos.
-- Criação e acompanhamento de pedidos.
+- Atualização automática do catálogo e estoque após finalizar pedidos.
 - Perfil do usuário com nome e e-mail no cabeçalho.
-- Painel administrativo para acompanhar e alterar o status dos pedidos.
-- Cadastro, edição e exclusão de categorias e de produtos pelo administrador.
+- Criação e acompanhamento de pedidos.
+- Painel administrativo para acompanhar e alterar status dos pedidos.
+- Cadastro, edição e exclusão de categorias pelo administrador.
+- Cadastro, edição e exclusão de produtos pelo administrador.
 - Administrador pode navegar pelo cardápio e acessar o checkout, mas não possui carrinho nem pode confirmar pedidos.
 - Navbar personalizada por perfil: clientes veem pedidos; administradores veem categorias, produtos e pedidos.
 - Controle de acesso para usuários `CLIENT` e administradores `ADMIN`.
 - Validação de dados com Bean Validation.
 - Documentação interativa da API com Swagger UI / OpenAPI.
 - Execução completa (banco, backend e frontend) com um único comando via Docker Compose.
-- Testes automatizados e integração contínua com GitHub Actions.
+- Testes automatizados e integração contínua com GitHub Actions CI.
 - Layout responsivo para computadores e dispositivos móveis.
 
 ## 📸 Screenshots
 
 ### Checkout
+
 ![Checkout](docs/checkout.png)
 
 ### Pedidos do Cliente
+
 ![Pedidos do Cliente](docs/pedidos-cliente.png)
 
 ### Admin
+
 ![Admin](docs/admin.png)
 
 ## 🧱 Tecnologias
@@ -65,43 +109,15 @@ O projeto inclui catálogo por categorias, carrinho persistido, autenticação J
 - ESLint
 - npm
 
-### Infraestrutura e CI
+### Infraestrutura
 
-- Docker e Docker Compose
+- Docker
+- Docker Compose
+
+### CI
+
 - GitHub Actions
 - GitHub Flow
-
-## ⚡ Início rápido
-
-Com Docker e Git instalados, na raiz do projeto:
-
-```powershell
-Copy-Item .env.example .env
-docker compose up --build
-```
-
-> O `.env` é necessário mesmo no perfil padrão, pois o container do PostgreSQL também é iniciado. Os valores do `.env.example` já funcionam sem edição.
-
-| Serviço           | Endereço                                    |
-| ----------------- | ------------------------------------------- |
-| Loja (frontend)   | http://localhost:5173                       |
-| API do backend    | http://localhost:8080                       |
-| Swagger / OpenAPI | http://localhost:8080/swagger-ui/index.html |
-| Console do H2     | http://localhost:8080/h2-console            |
-| PostgreSQL        | `localhost:5433` (usado no perfil `dev`)    |
-
-Por padrão, o Compose inicia o backend com o perfil `test` e o banco **H2**, com os dados de demonstração. Não é necessário configurar PostgreSQL nem a URL do H2.
-
-Comandos úteis:
-
-```powershell
-docker compose up -d --build   # executa em segundo plano
-docker compose logs -f backend # acompanha os logs do backend
-docker compose down            # para os containers, mantendo os volumes
-docker compose down -v         # para os containers e apaga os volumes (dados)
-```
-
-Para usar o PostgreSQL em vez do H2, veja [Trocar o perfil no Docker](#trocar-o-perfil-no-docker).
 
 ## 📁 Estrutura
 
@@ -151,7 +167,13 @@ Escolha **uma** das formas de execução:
 
 Todas as variáveis ficam em **um único arquivo `.env`**, na raiz do projeto. Não é necessário editar nenhum arquivo `application*.properties`: eles apenas referenciam as variáveis (por exemplo, `${DB_USERNAME}`), e o Spring as preenche ao iniciar.
 
-Crie o arquivo a partir do exemplo (`Copy-Item .env.example .env`) e preencha os valores:
+Clone o projeto e crie o seu `.env` a partir do exemplo:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Depois, preencha os valores:
 
 ```env
 DB_HOST=localhost
@@ -171,14 +193,16 @@ JWT_SECRET=sua-chave-base64
 | `DB_USERNAME` | Usuário do banco                                                    | obrigatória                        |
 | `DB_PASSWORD` | Senha do banco                                                      | obrigatória                        |
 
-> O perfil `test` **não precisa de nenhuma variável do Spring**: usa H2 e uma chave JWT própria, definida em `application-test.properties`.
+> O perfil `test` (padrão ao rodar localmente) **não precisa de nenhuma variável**: usa H2 em memória e uma chave JWT própria definida em `application-test.properties`.
 
-**Como o `.env` é usado:**
+### Como o `.env` é usado
 
-- **Docker Compose:** é lido automaticamente e repassado ao backend. Dentro do Docker, o `DB_HOST` é sobrescrito para `db` (nome do serviço do PostgreSQL), então o `localhost` do `.env` não interfere.
-- **Execução local:** o `application.properties` importa o arquivo com `spring.config.import=optional:file:.env[.properties]`. Execute o backend a partir da raiz do projeto ou da pasta `backend`. Como o import é `optional`, a ausência do `.env` (no perfil `test` e no CI) não gera erro.
+- **Docker Compose:** o `.env` é lido automaticamente e repassado ao container do backend. Dentro do Docker, o `DB_HOST` é sobrescrito para `db` (nome do serviço do PostgreSQL), então o valor `localhost` do `.env` não interfere.
+- **Execução local:** o `application.properties` importa o arquivo com `spring.config.import=optional:file:.env[.properties]`. Execute o backend a partir da raiz do projeto ou de dentro da pasta `backend`. Como o import é `optional`, a ausência do `.env` (como no perfil `test` e no CI) não gera erro.
 
-**Gerar a chave JWT:** a chave deve estar em Base64 e ter pelo menos 32 bytes após a decodificação (HS256).
+### Gerar a chave JWT
+
+A chave deve estar em **Base64** e ter pelo menos 32 bytes após a decodificação, conforme a configuração HS256 utilizada pelo projeto. Para gerar uma:
 
 ```powershell
 $bytes = New-Object byte[] 32
@@ -186,32 +210,106 @@ $bytes = New-Object byte[] 32
 [Convert]::ToBase64String($bytes)
 ```
 
-No Linux/macOS: `openssl rand -base64 32`. O token expira em 3600 segundos (1 hora), valor definido em `security.jwt.expiration`.
+Ou, no Linux/macOS:
 
-> ⚠️ **Nunca commite o `.env`.** Ele está no `.gitignore`; apenas o `.env.example` (com valores fictícios) vai para o repositório. Use uma chave JWT exclusiva para cada ambiente.
+```bash
+openssl rand -base64 32
+```
 
-## 💻 Execução local
+O token expira em 3600 segundos (1 hora), valor configurado em `security.jwt.expiration`.
 
-Para rodar sem Docker, abra dois terminais no VS Code.
+> ⚠️ **Nunca commite o `.env`.** Ele está no `.gitignore`; apenas o `.env.example` (com valores fictícios) vai para o repositório. Utilize uma chave JWT exclusiva para cada ambiente.
 
-### Backend
+## 🚀 Como executar
+
+### Opção 1: Docker (recomendado)
+
+Na raiz do projeto, execute:
+
+```powershell
+docker compose up --build
+```
+
+| Serviço           | Endereço                                    |
+| ----------------- | ------------------------------------------- |
+| Loja (frontend)   | http://localhost:5173                       |
+| API do backend    | http://localhost:8080                       |
+| Swagger / OpenAPI | http://localhost:8080/swagger-ui/index.html |
+| Console do H2     | http://localhost:8080/h2-console            |
+| PostgreSQL        | `localhost:5432`                            |
+
+Por padrão, o Compose inicia o backend com o perfil `test` e o banco H2. O banco fica persistido no volume Docker `h2_data`; os dados não são apagados quando o container reinicia.
+
+Comandos úteis:
+
+```powershell
+# Executar em segundo plano
+docker compose up -d --build
+
+# Acompanhar os logs
+docker compose logs -f backend
+
+# Parar os containers, mantendo os dados
+docker compose down
+
+# Parar e apagar todos os volumes/dados
+docker compose down -v
+```
+
+#### Trocar o banco usado pelo Docker
+
+No serviço `backend` do `docker-compose.yml`, altere somente:
+
+```yaml
+SPRING_PROFILES_ACTIVE: dev
+```
+
+Valores disponíveis:
+
+| Valor  | Banco                       |
+| ------ | --------------------------- |
+| `test` | H2 persistente em `h2_data` |
+| `dev`  | PostgreSQL no serviço `db`  |
+
+Depois recrie o backend:
+
+```powershell
+docker compose up -d --build backend
+```
+
+Não é necessário remover nem adicionar campos de conexão JDBC: o perfil selecionado define automaticamente o banco correto.
+
+| Perfil no Docker | Banco      | Persistência           | Dados de demonstração          |
+| ---------------- | ---------- | ---------------------- | ------------------------------ |
+| `test` (padrão)  | H2         | Volume `h2_data`       | Carregados pelo `data.sql`     |
+| `dev`            | PostgreSQL | Volume `postgres_data` | Não carregados automaticamente |
+
+No perfil `test`, a chave JWT definida em `application-test.properties` é usada e o valor de `JWT_SECRET` do `.env` não é necessário.
+
+### Opção 2: Execução local (perfil `test`, sem instalar banco)
+
+Abra dois terminais no VS Code.
+
+#### Backend
 
 ```powershell
 cd backend
 .\mvnw.cmd spring-boot:run
 ```
 
-Também é possível usar o Maven instalado: `mvn spring-boot:run`. O backend inicia em http://localhost:8080 com o perfil padrão `test` (H2 em memória, sem instalar banco).
+Também é possível executar pelo Maven instalado:
 
-Para usar o PostgreSQL, preencha o `.env` e execute com o perfil `dev`:
-
-```powershell
-.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=dev"
+```bash
+mvn spring-boot:run
 ```
 
-O banco pode ser um PostgreSQL instalado na máquina ou o container do projeto (`docker compose up -d db`). Neste caso, defina `DB_PORT=5433` no `.env`.
+O backend iniciará em http://localhost:8080.
 
-### Frontend
+> O perfil padrão é `test`, que usa **H2 em memória**. Não é necessário instalar PostgreSQL para experimentar o projeto, e os dados de exemplo do `data.sql` são carregados a cada inicialização.
+
+#### Frontend
+
+Em outro terminal:
 
 ```powershell
 cd frontend
@@ -219,57 +317,44 @@ npm install
 npm run dev
 ```
 
-O frontend inicia em http://localhost:5173.
+O frontend iniciará em http://localhost:5173.
+
+### Opção 3: Execução local com PostgreSQL (perfil `dev`)
+
+Com o PostgreSQL instalado e rodando, e o `.env` preenchido:
+
+```powershell
+cd backend
+.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=dev"
+```
+
+O frontend é iniciado como na Opção 2.
 
 ## 🧪 Perfis e banco de dados
 
-| Perfil              | Banco      | Persistência                                                  | Dados de demonstração          |
-| ------------------- | ---------- | ------------------------------------------------------------- | ------------------------------ |
-| `test` (**padrão**) | H2         | Memória (local) ou volume `h2_data` (Docker)                  | Carregados pelo `data.sql`     |
-| `dev`               | PostgreSQL | Volume `postgres_data` (Docker) ou instalação local           | Não carregados automaticamente |
+O projeto possui configurações para diferentes ambientes:
+
+| Perfil              | Banco         | Uso                                             |
+| ------------------- | ------------- | ----------------------------------------------- |
+| `test` (**padrão**) | H2 em memória | Execução local rápida e testes automatizados    |
+| `dev`               | PostgreSQL    | Docker Compose e desenvolvimento com banco real |
 
 O perfil ativo é definido em `application.properties` (`spring.profiles.active=test`) e pode ser sobrescrito:
 
 - **Maven:** `-Dspring-boot.run.profiles=dev`
-- **Docker:** `SPRING_PROFILES_ACTIVE`, no `docker-compose.yml` (veja abaixo).
+- **Docker:** altere `SPRING_PROFILES_ACTIVE` no serviço `backend` do `docker-compose.yml` e recrie o backend; veja [Trocar o banco usado pelo Docker](#trocar-o-banco-usado-pelo-docker).
 
-O perfil `test` também é usado pelos testes automatizados, o que evita alterações no banco de desenvolvimento.
-
-### Trocar o perfil no Docker
-
-Edite o serviço `backend` no `docker-compose.yml` e use:
-
-```yaml
-environment:
-  SPRING_PROFILES_ACTIVE: dev
-  DB_HOST: db
-```
-
-Remova o campo `SPRING_DATASOURCE_URL: jdbc:h2:~/test`, pois o perfil `dev` usa a configuração PostgreSQL de `application-dev.properties`. Depois, recrie o backend:
-
-```powershell
-docker compose up -d --build backend
-```
-
-Para voltar ao H2, restaure `SPRING_PROFILES_ACTIVE: test` e a linha `SPRING_DATASOURCE_URL` removida, e execute o mesmo comando.
-
-### Acessar o PostgreSQL (pgAdmin, DBeaver)
-
-O container publica o banco na porta **5433** do seu computador, para não conflitar com um PostgreSQL instalado localmente (que usa a 5432). Dentro do Docker, o backend continua usando `db:5432`.
-
-| Campo    | Valor                                    |
-| -------- | ---------------------------------------- |
-| Host     | `127.0.0.1`                              |
-| Porta    | `5433`                                   |
-| Banco    | `hamburgueria` (valor de `DB_NAME`)      |
-| Usuário  | valor de `DB_USERNAME` no `.env`         |
-| Senha    | valor de `DB_PASSWORD` no `.env`         |
-
-> Use `127.0.0.1` em vez de `localhost`: em alguns Windows o `localhost` resolve para IPv6 (`::1`) e pode cair em outro servidor. As tabelas só aparecem se o backend estiver no perfil `dev`.
+O perfil `test` também é utilizado pelos testes automatizados, o que evita alterações no banco de desenvolvimento.
 
 ### H2 Console (perfil `test`)
 
-Com o backend em execução, abra http://localhost:8080/h2-console e use:
+Com o backend em execução, abra:
+
+```text
+http://localhost:8080/h2-console
+```
+
+Use os dados abaixo:
 
 | Campo        | Docker           | Execução local       |
 | ------------ | ---------------- | -------------------- |
@@ -278,29 +363,47 @@ Com o backend em execução, abra http://localhost:8080/h2-console e use:
 | User Name    | `sa`             | `sa`                 |
 | Password     | _(vazio)_        | _(vazio)_            |
 
-- No Docker, o arquivo do banco fica no volume `h2_data`. Na execução local, os dados ficam só em memória.
-- O console aceita conexões externas ao container porque `spring.h2.console.settings.web-allow-others=true` está configurado.
+- No Docker, o banco é persistido no volume `h2_data`.
+- Na execução local, os dados ficam somente em memória e são recriados a cada inicialização.
+- O console aceita conexões externas ao container por estar configurado com `spring.h2.console.settings.web-allow-others=true`.
 
-> Mantenha essa opção apenas em desenvolvimento e testes. Não habilite o H2 Console em produção.
+> Mantenha essa opção apenas em ambientes de desenvolvimento ou testes. Não habilite o H2 Console em produção.
 
 ## 🌐 Configuração da API no frontend
 
-Por padrão, o frontend usa `http://localhost:8080`. Para usar outra URL, crie um arquivo `.env` dentro de `frontend` e reinicie o Vite:
+Por padrão, o frontend usa:
+
+```text
+http://localhost:8080
+```
+
+Para usar outra URL, crie um arquivo `.env` dentro de `frontend`:
 
 ```env
 VITE_API_URL=http://localhost:8080
 ```
 
-> No Docker, a URL deve continuar sendo `http://localhost:8080`, e não `http://backend:8080`: as requisições são feitas pelo **navegador**, que roda na sua máquina e não enxerga os nomes de serviço da rede do Docker.
+Depois, reinicie o servidor Vite.
+
+> No Docker, a URL da API deve continuar sendo `http://localhost:8080`, e não `http://backend:8080`: as requisições são feitas pelo **navegador**, que roda na sua máquina e não enxerga os nomes de serviço da rede do Docker.
 
 ## 📖 Documentação da API — Swagger
 
-O projeto usa Springdoc OpenAPI para gerar a documentação e uma interface interativa que permite visualizar os endpoints, parâmetros, respostas e DTOs, além de testar requisições. Com o backend em execução:
+O projeto utiliza Springdoc OpenAPI para gerar a documentação da API e disponibilizar uma interface interativa para visualizar e testar os endpoints.
+
+Com o backend em execução, acesse:
 
 | Recurso      | URL                                         |
 | ------------ | ------------------------------------------- |
 | Swagger UI   | http://localhost:8080/swagger-ui/index.html |
 | OpenAPI JSON | http://localhost:8080/v3/api-docs           |
+
+A documentação permite:
+
+- Visualizar os endpoints disponíveis.
+- Consultar métodos HTTP, parâmetros e respostas.
+- Visualizar os modelos de requisição e resposta (DTOs).
+- Testar requisições diretamente pela interface Swagger.
 
 Os endpoints de documentação são públicos. Os endpoints protegidos continuam exigindo autenticação JWT.
 
@@ -338,7 +441,7 @@ O arquivo `backend/src/main/resources/data.sql` popula o banco com:
 
 - Categorias de hambúrgueres, bebidas e acompanhamentos.
 - Produtos com nome, descrição, preço, estoque, categoria e URL da imagem.
-- Usuários administrativos e clientes (senhas armazenadas como hash BCrypt).
+- Usuários administrativos e clientes.
 - Endereços e pedidos de exemplo.
 
 Credenciais de demonstração (**apenas para desenvolvimento**):
@@ -348,13 +451,15 @@ Credenciais de demonstração (**apenas para desenvolvimento**):
 | `ADMIN`  | `admin@email.com`  | `[senha-de-demo]` |
 | `CLIENT` | `marcus@email.com` | `[senha-de-demo]` |
 
-Você também pode criar uma conta em `/register`; contas criadas pela interface têm o perfil `CLIENT`.
+Você também pode criar uma conta nova em `/register`. Contas criadas pela interface têm o perfil `CLIENT`.
 
-> O `data.sql` limpa todas as tabelas (`DELETE FROM`) antes de inserir os dados de exemplo, então os dados são recriados a cada inicialização. Por isso, ele é carregado apenas no perfil `test` e não é executado no perfil `dev` com PostgreSQL, onde o banco inicia vazio (sem usuário `ADMIN`).
+> Os usuários do `data.sql` possuem senhas armazenadas como hash BCrypt.
+>
+> O `data.sql` limpa todas as tabelas (`DELETE FROM`) antes de inserir os dados de exemplo, então os dados são recriados a cada inicialização. Por isso, ele é carregado apenas no perfil `test` (H2 em memória) e não é executado no perfil `dev` com PostgreSQL.
 
 ## 🖥️ Páginas do frontend
 
-### Cliente
+### Usuário cliente
 
 - `/` — página inicial e cardápio por categoria.
 - `/login` — login.
@@ -368,10 +473,10 @@ Você também pode criar uma conta em `/register`; contas criadas pela interface
 - `/admin/pedidos` — controle e alteração de status dos pedidos.
 - `/admin/categorias` — cadastro, edição e exclusão de categorias.
 - `/admin/produtos` — cadastro, edição e exclusão de produtos.
-- `/` — consulta do cardápio, sem carrinho nem botão de adicionar.
+- `/` — consulta do cardápio sem carrinho ou botão de adicionar.
 - `/checkout` — tela acessível, porém sem confirmar pedido.
 
-Na navbar do administrador aparecem **Categorias**, **Produtos** e **Pedidos**. O link de perfil abre o painel administrativo, e não a página "Meus pedidos".
+Na navbar do administrador aparecem **Categorias**, **Produtos** e **Pedidos**. O link de perfil abre o painel administrativo, e não a página “Meus pedidos”.
 
 ## 📦 Status dos pedidos
 
@@ -390,7 +495,7 @@ PENDING → PREPARING → READY → DELIVERED
 | `DELIVERED` | Entregue (final)                       |
 | `CANCELLED` | Cancelado (final, exibido em vermelho) |
 
-A trilha de acompanhamento do cliente possui 4 etapas (`PENDING` a `DELIVERED`). Pedidos `CANCELLED` são exibidos como encerrados.
+A trilha de acompanhamento do cliente possui 4 etapas (`PENDING` a `DELIVERED`). Pedidos `CANCELLED` são exibidos como pedidos encerrados.
 
 No painel administrativo:
 
@@ -398,49 +503,97 @@ No painel administrativo:
 - `DELIVERED` e `CANCELLED` são estados finais e ficam bloqueados.
 - Pedidos ainda ativos podem ser cancelados.
 
+## 🛠️ Comandos úteis
+
+### Frontend
+
+```powershell
+npm run dev
+npm run build
+npm run lint
+npm run preview
+```
+
+### Backend
+
+```powershell
+.\mvnw.cmd test
+.\mvnw.cmd clean package
+.\mvnw.cmd spring-boot:run
+```
+
+### Docker
+
+```bash
+docker compose up --build
+docker compose down
+docker compose logs -f backend
+docker compose --profile tests run --rm backend-test   # executa os testes do backend
+```
+
 ## 📦 Build de produção
+
+### Frontend
 
 ```powershell
 cd frontend
-npm run build          # gera frontend/dist
+npm run build
 ```
+
+Os arquivos finais serão gerados em `frontend/dist`.
+
+### Backend
 
 ```powershell
 cd backend
-.\mvnw.cmd clean package   # gera o .jar em backend/target
+.\mvnw.cmd clean package
 ```
 
-> O `Dockerfile` do frontend executa o servidor de desenvolvimento do Vite e serve ao uso em desenvolvimento. Para produção, sirva a pasta `dist` com um servidor web como o Nginx.
+O arquivo executável será gerado em `backend/target`.
 
-Outros scripts do frontend: `npm run lint` (ESLint) e `npm run preview` (pré-visualiza o build).
+> O `Dockerfile` do frontend executa o servidor de desenvolvimento do Vite e serve ao uso em desenvolvimento. Para produção, gere o build (`npm run build`) e sirva a pasta `dist` com um servidor web como o Nginx.
 
 ## 🧪 Testes
 
-O backend possui testes automatizados com **JUnit 6.0.3** e Spring Boot. Eles usam o perfil `test` (`application-test.properties`, H2 em memória), portanto não dependem do PostgreSQL nem de variáveis de ambiente.
+O backend possui testes automatizados com **JUnit 6.0.3** e Spring Boot.
+
+Os testes utilizam o perfil `test`, configurado em `application-test.properties`, com banco H2 em memória. Dessa forma, não dependem do PostgreSQL de desenvolvimento nem de variáveis de ambiente.
 
 ### Teste de concorrência do estoque
 
-O `StockConcurrencyTest` simula dois clientes tentando comprar, ao mesmo tempo, o último produto disponível. Ele verifica que:
+O teste `StockConcurrencyTest` simula dois clientes tentando realizar um pedido simultaneamente para comprar o último produto disponível.
 
-- apenas um pedido é confirmado;
-- o estoque do produto permanece em zero;
-- apenas um pedido é registrado no banco.
+O teste verifica se:
 
-A implementação usa `CountDownLatch` para sincronizar o início das requisições concorrentes e valida o bloqueio pessimista do banco.
+- Apenas um pedido é confirmado.
+- O estoque do produto permanece em zero.
+- Apenas um pedido é registrado no banco de dados.
+
+A implementação utiliza `CountDownLatch` para sincronizar o início das requisições concorrentes e valida o controle de estoque com bloqueio pessimista no banco de dados.
 
 ### Executar os testes
 
-Na pasta `backend`:
+Na pasta `backend`, execute todos os testes:
 
 ```powershell
-.\mvnw.cmd test                                # todos os testes
-.\mvnw.cmd -Dtest=StockConcurrencyTest test    # apenas o teste de concorrência
-.\mvnw.cmd clean verify                        # testes + validação do build
+.\mvnw.cmd test
+```
+
+Para executar apenas o teste de concorrência:
+
+```powershell
+.\mvnw.cmd -Dtest=StockConcurrencyTest test
+```
+
+Para executar os testes e validar o build:
+
+```powershell
+.\mvnw.cmd clean verify
 ```
 
 ### Executar os testes com Docker
 
-A imagem do backend contém apenas o JRE e o `.jar`, sem Maven nem código-fonte, então os testes rodam em um container separado. O `docker-compose.yml` possui o serviço `backend-test` para isso:
+A imagem do backend (`Dockerfile`) contém apenas o JRE e o `.jar`, sem Maven nem código-fonte, então os testes rodam em um container separado. O `docker-compose.yml` possui o serviço `backend-test` para isso:
 
 ```yaml
 backend-test:
@@ -453,27 +606,80 @@ backend-test:
   command: mvn -B clean verify
 ```
 
+Execute todos os testes:
+
 ```bash
-docker compose --profile tests run --rm backend-test                                       # todos os testes
-docker compose --profile tests run --rm backend-test mvn -B -Dtest=StockConcurrencyTest test  # apenas concorrência
+docker compose --profile tests run --rm backend-test
 ```
 
-- O serviço só roda com `--profile tests`; o `docker compose up` normal **não** o inicia. (O `tests` é um _profile do Compose_, sem relação com o perfil `test` do Spring.)
-- Por segurança, o serviço não usa `env_file`: o `setUp()` do teste executa `deleteAll()` nas tabelas e jamais deve apontar para o banco do Docker.
-- O volume `maven_repo` guarda as dependências: a primeira execução demora, as seguintes são bem mais rápidas.
-- No Linux, se houver erro de permissão em `backend/target`, adicione `--user "$(id -u):$(id -g)"` ao `docker compose run`.
+Execute apenas o teste de concorrência:
+
+```bash
+docker compose --profile tests run --rm backend-test mvn -B -Dtest=StockConcurrencyTest test
+```
+
+Observações:
+
+- O serviço só roda quando chamado com `--profile tests`; o `docker compose up` normal **não** o inicia. (O `tests` é um _profile do Compose_, sem relação com o perfil `test` do Spring.)
+- Os testes usam o perfil `test` do Spring (H2 em memória), então **não precisam do PostgreSQL nem do `.env`**. Por segurança, o serviço não usa `env_file`: o `setUp()` do teste executa `deleteAll()` nas tabelas e jamais deve apontar para o banco do Docker.
+- O volume `maven_repo` guarda as dependências do Maven: a primeira execução baixa tudo e demora; as seguintes são bem mais rápidas.
+- Se o Maven reclamar de permissão em `backend/target` no Linux, use `--user "$(id -u):$(id -g)"` no comando `docker compose run`.
 
 ## ⚙️ Integração contínua — GitHub Actions
 
-O workflow `.github/workflows/ci.yml` roda a cada `push` e a cada Pull Request para a branch `main`.
+O projeto utiliza **GitHub Actions** para executar automaticamente verificações de integração contínua (CI).
 
-**Backend:** configura Java 25, ativa o perfil `test` (H2 em memória) e executa os testes e o build com `bash ./mvnw -B clean verify`.
+O workflow está localizado em:
 
-**Frontend:** configura Node.js 22 e executa `npm ci`, `npm run lint` e `npm run build`.
+```text
+.github/workflows/ci.yml
+```
 
-O CI **não utiliza o `.env`** (ele não é versionado) e não precisa dele: a chave JWT dos testes é exclusiva do perfil `test`, e o banco é o H2. Nenhuma chave ou senha de desenvolvimento ou produção é acessada.
+### Quando o CI é executado?
+
+O workflow é acionado:
+
+- A cada `push` para a branch `main`.
+- A cada Pull Request direcionado à branch `main`.
+
+### Backend
+
+O job do backend:
+
+- Configura Java 25.
+- Ativa o perfil `test`.
+- Utiliza H2 em memória.
+- Executa os testes automatizados.
+- Valida o build com Maven.
+
+Comando executado:
+
+```bash
+bash ./mvnw -B clean verify
+```
+
+O CI **não utiliza o arquivo `.env`** (ele não é versionado) e não precisa dele: a chave JWT utilizada nos testes é exclusiva do perfil `test`, definida em `application-test.properties`, e o banco é o H2 em memória. O CI não acessa nenhuma chave ou senha de desenvolvimento ou produção.
+
+### Frontend
+
+O job do frontend:
+
+- Configura Node.js 22.
+- Instala as dependências com `npm ci`.
+- Executa o ESLint.
+- Gera o build de produção.
+
+Comandos executados:
+
+```bash
+npm ci
+npm run lint
+npm run build
+```
 
 ### GitHub Flow
+
+O desenvolvimento segue o fluxo:
 
 1. Criar uma branch para a funcionalidade ou correção.
 2. Implementar e testar as alterações.
@@ -481,6 +687,8 @@ O CI **não utiliza o `.env`** (ele não é versionado) e não precisa dele: a c
 4. Abrir um Pull Request para `main`.
 5. Aguardar a aprovação dos checks do CI.
 6. Fazer o merge para `main`.
+
+O CI valida o backend e o frontend antes da integração das alterações na branch principal.
 
 > O workflow atual realiza integração contínua (CI). O deploy automático (CD) poderá ser configurado posteriormente com a plataforma de hospedagem.
 
