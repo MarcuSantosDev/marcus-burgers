@@ -7,14 +7,15 @@ O projeto inclui catálogo por categorias, carrinho persistido, autenticação J
 
 ## 📑 Sumário Resumido
 
-- [Screenshots](#-screenshots)
-- [Funcionalidades](#-funcionalidades)
-- [Tecnologias Usadas](#-tecnologias-usadas)
-- [Como Rodar na Minha Máquina](#-como-rodar-na-minha-máquina)
-- [Documentação da API](#-documentação-da-api--swagger)
-- [Testes](#-testes)
+- [Screenshots](#screenshots)
+- [Funcionalidades](#funcionalidades)
+- [Tecnologias Usadas](#tecnologias-usadas)
+- [Como Rodar na Minha Máquina](#como-rodar-na-minha-máquina)
+- [Documentação da API — Swagger](#documentação-da-api--swagger)
+- [Testes](#testes)
 - [Autor](#-autor)
 - [Licença](#-licença)
+
 
 ## Screenshots
 
