@@ -30,7 +30,7 @@ O projeto inclui catálogo por categorias, carrinho persistido, autenticação J
 
 3. Acesse http://localhost:5173.
 
-   > O Docker já está configurado para iniciar o backend no perfil `test`, com H2 persistido no volume Docker `h2_data`. Não é necessário configurar PostgreSQL nem trocar a URL do H2 manualmente.
+   > O Docker já está configurado para iniciar o backend no perfil `test`, com o banco H2 persistido no volume Docker `h2_data`. Use `jdbc:h2:~/test` no console. Não é necessário configurar PostgreSQL nem trocar a URL manualmente.
 
 ### Parar a aplicação
 
@@ -70,12 +70,15 @@ docker compose down -v
 ## 📸 Screenshots
 
 ### Checkout
+
 ![Checkout](docs/checkout.png)
 
 ### Pedidos do Cliente
+
 ![Pedidos do Cliente](docs/pedidos-cliente.png)
 
 ### Admin
+
 ![Admin](docs/admin.png)
 
 ## 🧱 Tecnologias
@@ -155,7 +158,7 @@ Escolha **uma** das formas de execução:
 | Forma de execução                    | Necessário                                       |
 | ------------------------------------ | ------------------------------------------------ |
 | Docker (banco + backend + frontend)  | Docker e Docker Compose, Git                     |
-| Local, perfil `test` (H2 em memória) | Java 25, Node.js 22 ou superior, Git             |
+| Local, perfil `test` (H2 em arquivo) | Java 25, Node.js 22 ou superior, Git             |
 | Local, perfil `dev` (PostgreSQL)     | Java 25, Node.js 22 ou superior, PostgreSQL, Git |
 
 > Os comandos deste README assumem **Windows com PowerShell**. No Linux/macOS, use `./mvnw` no lugar de `.\mvnw.cmd` e `cp` no lugar de `Copy-Item`.
@@ -190,7 +193,7 @@ JWT_SECRET=sua-chave-base64
 | `DB_USERNAME` | Usuário do banco                                                    | obrigatória                        |
 | `DB_PASSWORD` | Senha do banco                                                      | obrigatória                        |
 
-> O perfil `test` (padrão ao rodar localmente) **não precisa de nenhuma variável**: usa H2 em memória e uma chave JWT própria definida em `application-test.properties`.
+> O perfil `test` (padrão ao rodar localmente) **não precisa de nenhuma variável**: usa H2 em `jdbc:h2:~/test` e uma chave JWT própria definida em `application-test.properties`.
 
 ### Como o `.env` é usado
 
@@ -253,24 +256,28 @@ docker compose down
 docker compose down -v
 ```
 
-#### Usar PostgreSQL em vez do H2
+#### Trocar o banco usado pelo Docker
 
-Edite o serviço `backend` no `docker-compose.yml` e substitua o bloco `environment` por:
+No serviço `backend` do `docker-compose.yml`, altere somente:
 
 ```yaml
-environment:
-  SPRING_PROFILES_ACTIVE: dev
-  DB_HOST: db
+SPRING_PROFILES_ACTIVE: dev
 ```
 
-Remova o campo `SPRING_DATASOURCE_URL: jdbc:h2:~/test`, pois o perfil `dev` usa a configuração PostgreSQL de `application-dev.properties`.
+Valores disponíveis:
 
-Preencha o `.env` e recrie o backend:
+| Valor  | Banco                       |
+| ------ | --------------------------- |
+| `test` | H2 persistente em `h2_data` |
+| `dev`  | PostgreSQL no serviço `db`  |
+
+Depois recrie o backend:
 
 ```powershell
-Copy-Item .env.example .env
 docker compose up -d --build backend
 ```
+
+Não é necessário remover nem adicionar campos de conexão JDBC: o perfil selecionado define automaticamente o banco correto.
 
 | Perfil no Docker | Banco      | Persistência           | Dados de demonstração          |
 | ---------------- | ---------- | ---------------------- | ------------------------------ |
@@ -298,7 +305,7 @@ mvn spring-boot:run
 
 O backend iniciará em http://localhost:8080.
 
-> O perfil padrão é `test`, que usa **H2 em memória**. Não é necessário instalar PostgreSQL para experimentar o projeto, e os dados de exemplo do `data.sql` são carregados a cada inicialização.
+> O perfil padrão é `test`, que usa **H2 em arquivo**. Não é necessário instalar PostgreSQL para experimentar o projeto, e os dados de exemplo do `data.sql` são carregados a cada inicialização.
 
 #### Frontend
 
@@ -329,13 +336,13 @@ O projeto possui configurações para diferentes ambientes:
 
 | Perfil              | Banco         | Uso                                             |
 | ------------------- | ------------- | ----------------------------------------------- |
-| `test` (**padrão**) | H2 em memória | Execução local rápida e testes automatizados    |
+| `test` (**padrão**) | H2 em arquivo | Execução local rápida e testes automatizados    |
 | `dev`               | PostgreSQL    | Docker Compose e desenvolvimento com banco real |
 
 O perfil ativo é definido em `application.properties` (`spring.profiles.active=test`) e pode ser sobrescrito:
 
 - **Maven:** `-Dspring-boot.run.profiles=dev`
-- **Variável de ambiente:** `SPRING_PROFILES_ACTIVE=dev` (alteração feita no serviço `backend` do `docker-compose.yml`; veja [Usar PostgreSQL em vez do H2](#usar-postgresql-em-vez-do-h2))
+- **Docker:** altere `SPRING_PROFILES_ACTIVE` no serviço `backend` do `docker-compose.yml` e recrie o backend; veja [Trocar o banco usado pelo Docker](#trocar-o-banco-usado-pelo-docker).
 
 O perfil `test` também é utilizado pelos testes automatizados, o que evita alterações no banco de desenvolvimento.
 
@@ -448,7 +455,7 @@ Você também pode criar uma conta nova em `/register`. Contas criadas pela inte
 
 > Os usuários do `data.sql` possuem senhas armazenadas como hash BCrypt.
 >
-> O `data.sql` limpa todas as tabelas (`DELETE FROM`) antes de inserir os dados de exemplo, então os dados são recriados a cada inicialização. Por isso, ele é carregado apenas no perfil `test` (H2 em memória) e não é executado no perfil `dev` com PostgreSQL.
+> O `data.sql` limpa todas as tabelas (`DELETE FROM`) antes de inserir os dados de exemplo. No perfil `test`, ele é carregado em H2 em arquivo e recriado pelo Hibernate; no perfil `dev` com PostgreSQL, o script não é executado automaticamente.
 
 ## 🖥️ Páginas do frontend
 
@@ -550,7 +557,7 @@ O arquivo executável será gerado em `backend/target`.
 
 O backend possui testes automatizados com **JUnit 6.0.3** e Spring Boot.
 
-Os testes utilizam o perfil `test`, configurado em `application-test.properties`, com banco H2 em memória. Dessa forma, não dependem do PostgreSQL de desenvolvimento nem de variáveis de ambiente.
+Os testes utilizam o perfil `test`, configurado em `application-test.properties`, com banco H2 em arquivo. Dessa forma, não dependem do PostgreSQL de desenvolvimento nem de variáveis de ambiente.
 
 ### Teste de concorrência do estoque
 
@@ -614,7 +621,7 @@ docker compose --profile tests run --rm backend-test mvn -B -Dtest=StockConcurre
 Observações:
 
 - O serviço só roda quando chamado com `--profile tests`; o `docker compose up` normal **não** o inicia. (O `tests` é um _profile do Compose_, sem relação com o perfil `test` do Spring.)
-- Os testes usam o perfil `test` do Spring (H2 em memória), então **não precisam do PostgreSQL nem do `.env`**. Por segurança, o serviço não usa `env_file`: o `setUp()` do teste executa `deleteAll()` nas tabelas e jamais deve apontar para o banco do Docker.
+- Os testes usam o perfil `test` do Spring (H2 em arquivo), então **não precisam do PostgreSQL nem do `.env`**. Por segurança, o serviço não usa `env_file`: o `setUp()` do teste executa `deleteAll()` nas tabelas e jamais deve apontar para o banco do Docker.
 - O volume `maven_repo` guarda as dependências do Maven: a primeira execução baixa tudo e demora; as seguintes são bem mais rápidas.
 - Se o Maven reclamar de permissão em `backend/target` no Linux, use `--user "$(id -u):$(id -g)"` no comando `docker compose run`.
 
@@ -641,7 +648,7 @@ O job do backend:
 
 - Configura Java 25.
 - Ativa o perfil `test`.
-- Utiliza H2 em memória.
+- Utiliza H2 em arquivo.
 - Executa os testes automatizados.
 - Valida o build com Maven.
 
@@ -651,7 +658,7 @@ Comando executado:
 bash ./mvnw -B clean verify
 ```
 
-O CI **não utiliza o arquivo `.env`** (ele não é versionado) e não precisa dele: a chave JWT utilizada nos testes é exclusiva do perfil `test`, definida em `application-test.properties`, e o banco é o H2 em memória. O CI não acessa nenhuma chave ou senha de desenvolvimento ou produção.
+O CI **não utiliza o arquivo `.env`** (ele não é versionado) e não precisa dele: a chave JWT utilizada nos testes é exclusiva do perfil `test`, definida em `application-test.properties`, e o banco é H2 em arquivo. O CI não acessa nenhuma chave ou senha de desenvolvimento ou produção.
 
 ### Frontend
 
