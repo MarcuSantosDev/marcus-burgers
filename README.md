@@ -7,7 +7,6 @@ O projeto inclui catálogo por categorias, carrinho persistido, autenticação J
 
 ## 📑 Sumário Resumido
 
-- [Screenshots](#screenshots)
 - [Funcionalidades](#funcionalidades)
 - [Tecnologias Usadas](#tecnologias-usadas)
 - [Como Rodar na Minha Máquina](#como-rodar-na-minha-máquina)
@@ -31,7 +30,7 @@ O projeto inclui catálogo por categorias, carrinho persistido, autenticação J
 
 ![Admin](docs/admin.png)
 
-## Funcionalidades
+## ✨Funcionalidades
 
 - Catálogo de produtos agrupado por categoria.
 - Imagens individuais dos produtos através de URLs.
@@ -58,7 +57,7 @@ O projeto inclui catálogo por categorias, carrinho persistido, autenticação J
 - Testes automatizados e integração contínua com GitHub Actions.
 - Layout responsivo para computadores e dispositivos móveis.
 
-## Tecnologias Usadas
+## 🛠️ Tecnologias Usadas
 
 ### Backend
 
@@ -97,7 +96,7 @@ O projeto inclui catálogo por categorias, carrinho persistido, autenticação J
 - GitHub Actions
 - GitHub Flow
 
-## Estrutura do projeto
+## 📂 Estrutura do projeto
 
 ```text
 ProjetoHamburgueria/
@@ -132,7 +131,7 @@ ProjetoHamburgueria/
 └── README.md
 ```
 
-## Pré-requisitos
+## 📋 Pré-requisitos
 
 Escolha uma das formas de execução:
 
@@ -167,7 +166,7 @@ DB_PASSWORD=sua_senha
 JWT_SECRET=sua_chave_base64
 ```
 
-### Variáveis disponíveis
+### ⚙️ Variáveis disponíveis
 
 | Variável | Descrição | Padrão |
 |---|---|---|
@@ -227,7 +226,7 @@ O token JWT expira em 3600 segundos (1 hora), conforme a configuração `securit
 
 > ⚠️ Nunca commite o arquivo `.env`. Ele está no `.gitignore`; apenas o `.env.example`, com valores fictícios, deve ser versionado. Utilize uma chave JWT exclusiva para cada ambiente.
 
-## Como Rodar na Minha Máquina
+## 🚀 Como Rodar na Minha Máquina
 
 ### Endereços da aplicação
 
@@ -385,7 +384,7 @@ Não é necessário alterar manualmente a URL JDBC. O perfil selecionado define 
 | `test` (padrão) | H2 | Volume `h2_data` | Carregados pelo `data.sql` |
 | `dev` | PostgreSQL | Volume `postgres_data` | Não carregados automaticamente |
 
-## Perfis e banco de dados
+## 🗄️ Perfis e banco de dados
 
 O projeto possui configurações para diferentes ambientes:
 
@@ -429,7 +428,7 @@ Na execução local, o banco é armazenado em arquivo no diretório de trabalho 
 
 > Mantenha o H2 Console habilitado apenas em ambientes de desenvolvimento ou testes. Não habilite esse recurso em produção.
 
-## Configuração da API no frontend
+## 🌐 Configuração da API no frontend
 
 Por padrão, o frontend utiliza:
 
@@ -447,7 +446,7 @@ Depois, reinicie o servidor Vite.
 
 > No Docker, a URL da API utilizada pelo frontend deve continuar sendo `http://localhost:8080`, e não `http://backend:8080`. As requisições são realizadas pelo navegador, que roda na máquina do usuário e não acessa diretamente os nomes dos serviços da rede Docker.
 
-## Documentação da API — Swagger
+## 📖 Documentação da API — Swagger
 
 O projeto utiliza Springdoc OpenAPI para gerar a documentação da API e disponibilizar uma interface interativa para visualizar e testar os endpoints.
 
@@ -467,7 +466,7 @@ A documentação permite:
 
 Os endpoints de documentação são públicos. Os endpoints protegidos continuam exigindo autenticação JWT.
 
-## Principais endpoints
+## 🔌 Principais endpoints
 
 | Método | Endpoint | Descrição | Autenticação |
 |---|---|---|---|
@@ -495,7 +494,7 @@ As requisições autenticadas devem enviar o token no cabeçalho:
 Authorization: Bearer <token>
 ```
 
-## Dados iniciais
+## 🌱 Dados iniciais
 
 O arquivo `backend/src/main/resources/data.sql` popula o banco com:
 
@@ -517,7 +516,7 @@ Você também pode criar uma conta nova em `/register`. Contas criadas pela inte
 
 > Atenção: o `data.sql` executa comandos `DELETE FROM` antes de inserir os dados de exemplo. No perfil `test`, ele é carregado no banco H2. No perfil `dev` com PostgreSQL, o script não é executado automaticamente conforme a configuração do projeto. Não execute esse script manualmente em um banco com dados importantes sem revisar seu conteúdo.
 
-## Páginas do frontend
+## 🖥️ Páginas do frontend
 
 Na criação de conta, o formulário valida uma senha com no mínimo 8 e máximo de 72 caracteres.
 
@@ -540,7 +539,7 @@ Na criação de conta, o formulário valida uma senha com no mínimo 8 e máximo
 
 Na navbar do administrador aparecem **Categorias**, **Produtos** e **Pedidos**. O link de perfil abre o painel administrativo, e não a página "Meus pedidos".
 
-## Status dos pedidos
+## 📦 Status dos pedidos
 
 ```text
 PENDING → PREPARING → READY → DELIVERED
@@ -567,7 +566,7 @@ No painel administrativo:
 - `DELIVERED` e `CANCELLED` são estados finais.
 - Pedidos ainda ativos podem ser cancelados.
 
-## Comandos úteis
+## 🧰 Comandos úteis
 
 ### Frontend
 
@@ -600,7 +599,7 @@ Executar os testes do backend com Docker:
 docker compose --profile tests run --rm backend-test
 ```
 
-## Build de produção
+## 🏗️ Build de produção
 
 ### Frontend
 
@@ -622,7 +621,7 @@ O arquivo executável será gerado em `backend/target`.
 
 > O Dockerfile atual do frontend utiliza o servidor de desenvolvimento do Vite. Para produção, gere o build com `npm run build` e sirva a pasta `dist` com um servidor web, como Nginx.
 
-## Testes
+## 🧪 Testes
 
 O backend possui testes automatizados com **JUnit 6.0.3** e Spring Boot.
 
@@ -687,7 +686,7 @@ Observações:
 - O serviço de testes não utiliza `env_file`, evitando que os testes apontem acidentalmente para o banco de desenvolvimento.
 - O volume `maven_repo` guarda as dependências do Maven. A primeira execução pode demorar mais devido ao download das dependências.
 
-## Integração contínua — GitHub Actions
+## 🔄 Integração contínua — GitHub Actions
 
 O projeto utiliza **GitHub Actions** para executar automaticamente verificações de integração contínua (CI).
 
