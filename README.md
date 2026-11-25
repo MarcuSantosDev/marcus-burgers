@@ -137,9 +137,9 @@ Escolha uma das formas de execução:
 
 | Forma de execução | Necessário |
 |---|---|
-| Docker | Docker Desktop com Docker Compose e Git |
-| Local, perfil `test` | Java 25, Node.js 22 ou superior e Git |
-| Local, perfil `dev` | Java 25, Node.js 22 ou superior, PostgreSQL e Git |
+| [Docker](#opção-1-docker-compose-recomendado) | Docker Desktop com Docker Compose e Git |
+| [Local — perfil `test`](#opção-2-execução-local-com-perfil-test) | Java 25, Node.js 22 ou superior e Git |
+| [Local — perfil `dev`](#opção-3-execução-local-com-postgresql-perfil-dev) | Java 25, Node.js 22 ou superior, PostgreSQL e Git |
 
 Os comandos deste README assumem **Windows com PowerShell**.
 
