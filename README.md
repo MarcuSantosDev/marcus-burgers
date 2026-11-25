@@ -8,7 +8,6 @@ O projeto inclui catálogo por categorias, carrinho persistido, autenticação J
 ## Sumário Resumido
 
 - [Funcionalidades](#-funcionalidades)
-- [Screenshots](#-screenshots)
 - [Tecnologias](#-tecnologias)
 - [Como Executar](#-como-executar)
 - [Documentação da API](#-documentação-da-api)
