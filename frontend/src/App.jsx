@@ -12,6 +12,7 @@ import AuthPage from "./pages/AuthPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrdersPage from "./pages/OrdersPage";
 import AdminOrdersPage from "./pages/AdminOrdersPage";
+import { AdminCategoriesPage, AdminProductsPage } from "./pages/AdminCatalogPage";
 import "./App.css";
 
 const fallbackProducts = [
@@ -171,7 +172,7 @@ function AppRoutes() {
 				<Route
 					path="/checkout"
 					element={
-						authenticated && !isAdmin ? (
+						authenticated ? (
 							<CheckoutPage
 								cart={cart}
 								onSuccess={async () => {
@@ -180,12 +181,26 @@ function AppRoutes() {
 								}}
 							/>
 						) : (
-							<Navigate to="/" replace />
+							<Navigate to="/login" replace />
 						)
 					}
 				/>
-				<Route path="/pedidos" element={<OrdersPage />} />
-				<Route path="/pedidos/:orderId" element={<OrdersPage />} />
+				<Route
+					path="/pedidos"
+					element={isAdmin ? <Navigate to="/admin/pedidos" replace /> : <OrdersPage />}
+				/>
+				<Route
+					path="/pedidos/:orderId"
+					element={isAdmin ? <Navigate to="/admin/pedidos" replace /> : <OrdersPage />}
+				/>
+				<Route
+					path="/admin/categorias"
+					element={<AdminCategoriesPage />}
+				/>
+				<Route
+					path="/admin/produtos"
+					element={<AdminProductsPage />}
+				/>
 				<Route path="/admin/pedidos" element={<AdminOrdersPage />} />
 				<Route path="/admin/pedidos/:orderId" element={<AdminOrdersPage />} />
 			</Routes>

@@ -24,16 +24,18 @@ function ProductCard({ product, onAdd, isAdmin = false }) {
 
         <div className="product-card__footer">
           <strong className="product-card__price">{formatCurrency(price)}</strong>
-          <button
-            type="button"
-            className="product-card__button"
-            onClick={(event) => onAdd?.(product, event.currentTarget)}
-            aria-label={isAdmin ? "Administradores não podem fazer pedidos" : `Adicionar ${name} ao pedido`}
-            disabled={isAdmin || stock < 1}
-            title={isAdmin ? "Administradores não podem fazer pedidos" : stock < 1 ? "Produto sem estoque" : `${stock} unidade(s) disponível(is)`}
-          >
-            {isAdmin ? "Pedido indisponível" : stock < 1 ? "Sem estoque" : "Adicionar +"}
-          </button>
+          {!isAdmin && (
+            <button
+              type="button"
+              className="product-card__button"
+              onClick={(event) => onAdd?.(product, event.currentTarget)}
+              aria-label={`Adicionar ${name} ao pedido`}
+              disabled={stock < 1}
+              title={stock < 1 ? "Produto sem estoque" : `${stock} unidade(s) disponível(is)`}
+            >
+              {stock < 1 ? "Sem estoque" : "Adicionar +"}
+            </button>
+          )}
         </div>
       </div>
     </article>

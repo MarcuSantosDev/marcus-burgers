@@ -34,7 +34,11 @@ function Header({ cartCount = 0, onOpenCart, authenticated = false, onLogout, is
       <Logo />
 
       {authenticated && (
-        <Link className="header__profile" to="/pedidos" aria-label="Ver meus pedidos">
+        <Link
+          className="header__profile"
+          to={profile?.role === "ADMIN" ? "/admin/pedidos" : "/pedidos"}
+          aria-label={profile?.role === "ADMIN" ? "Abrir painel administrativo" : "Ver meus pedidos"}
+        >
           <span className="header__avatar" aria-hidden="true">{profileInitial}</span>
           <span className="header__profile-info">
             <span className="header__profile-name">{profile?.name || "Usuário"}</span>
@@ -44,18 +48,28 @@ function Header({ cartCount = 0, onOpenCart, authenticated = false, onLogout, is
       )}
 
       <nav className="header__nav" aria-label="Navegação principal">
-        {NAV_LINKS.map(({ label, href }) => {
-          const section = href.includes("#") ? href.substring(href.indexOf("#")) : href;
-          return (
-            <Link key={href} to={`/${section}`} className="header__link">
-              {label}
-            </Link>
-          );
-        })}
-        {authenticated && (
-          <Link className="header__link" to="/pedidos">
-            Pedidos
-          </Link>
+        {profile?.role === "ADMIN" ? (
+          <>
+            <Link className="header__link" to="/admin/categorias">Categorias</Link>
+            <Link className="header__link" to="/admin/produtos">Produtos</Link>
+            <Link className="header__link" to="/admin/pedidos">Pedidos</Link>
+          </>
+        ) : (
+          <>
+            {NAV_LINKS.map(({ label, href }) => {
+              const section = href.includes("#") ? href.substring(href.indexOf("#")) : href;
+              return (
+                <Link key={href} to={`/${section}`} className="header__link">
+                  {label}
+                </Link>
+              );
+            })}
+            {authenticated && (
+              <Link className="header__link" to="/pedidos">
+                Meus pedidos
+              </Link>
+            )}
+          </>
         )}
       </nav>
 
