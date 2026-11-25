@@ -4,38 +4,6 @@ Aplicação full-stack para uma hamburgueria, desenvolvida com **React + Vite** 
 
 O projeto inclui catálogo por categorias, carrinho persistido, autenticação JWT, endereços com consulta ViaCEP, checkout, controle de estoque e painel administrativo.
 
-## ⚡ Início rápido
-
-Com Docker e Git instalados, na raiz do projeto:
-
-```powershell
-Copy-Item .env.example .env
-docker compose up --build
-```
-
-> O `.env` é necessário mesmo no perfil padrão, pois o container do PostgreSQL também é iniciado. Os valores do `.env.example` já funcionam sem edição.
-
-| Serviço           | Endereço                                    |
-| ----------------- | ------------------------------------------- |
-| Loja (frontend)   | http://localhost:5173                       |
-| API do backend    | http://localhost:8080                       |
-| Swagger / OpenAPI | http://localhost:8080/swagger-ui/index.html |
-| Console do H2     | http://localhost:8080/h2-console            |
-| PostgreSQL        | `localhost:5433` (usado no perfil `dev`)    |
-
-Por padrão, o Compose inicia o backend com o perfil `test` e o banco **H2**, com os dados de demonstração. Não é necessário configurar PostgreSQL nem a URL do H2.
-
-Comandos úteis:
-
-```powershell
-docker compose up -d --build   # executa em segundo plano
-docker compose logs -f backend # acompanha os logs do backend
-docker compose down            # para os containers, mantendo os volumes
-docker compose down -v         # para os containers e apaga os volumes (dados)
-```
-
-Para usar o PostgreSQL em vez do H2, veja [Trocar o perfil no Docker](#trocar-o-perfil-no-docker).
-
 ## ✨ Funcionalidades
 
 - Catálogo de produtos agrupado por categoria, com imagens individuais por URL.
@@ -102,6 +70,38 @@ Para usar o PostgreSQL em vez do H2, veja [Trocar o perfil no Docker](#trocar-o-
 - Docker e Docker Compose
 - GitHub Actions
 - GitHub Flow
+
+## ⚡ Início rápido
+
+Com Docker e Git instalados, na raiz do projeto:
+
+```powershell
+Copy-Item .env.example .env
+docker compose up --build
+```
+
+> O `.env` é necessário mesmo no perfil padrão, pois o container do PostgreSQL também é iniciado. Os valores do `.env.example` já funcionam sem edição.
+
+| Serviço           | Endereço                                    |
+| ----------------- | ------------------------------------------- |
+| Loja (frontend)   | http://localhost:5173                       |
+| API do backend    | http://localhost:8080                       |
+| Swagger / OpenAPI | http://localhost:8080/swagger-ui/index.html |
+| Console do H2     | http://localhost:8080/h2-console            |
+| PostgreSQL        | `localhost:5433` (usado no perfil `dev`)    |
+
+Por padrão, o Compose inicia o backend com o perfil `test` e o banco **H2**, com os dados de demonstração. Não é necessário configurar PostgreSQL nem a URL do H2.
+
+Comandos úteis:
+
+```powershell
+docker compose up -d --build   # executa em segundo plano
+docker compose logs -f backend # acompanha os logs do backend
+docker compose down            # para os containers, mantendo os volumes
+docker compose down -v         # para os containers e apaga os volumes (dados)
+```
+
+Para usar o PostgreSQL em vez do H2, veja [Trocar o perfil no Docker](#trocar-o-perfil-no-docker).
 
 ## 📁 Estrutura
 
