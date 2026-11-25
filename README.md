@@ -15,7 +15,7 @@ O projeto inclui catálogo por categorias, carrinho persistido, autenticação J
 - [Autor](#-autor)
 - [Licença](#-licença)
 
-
+<br>
 ## Screenshots
 
 ### Checkout
