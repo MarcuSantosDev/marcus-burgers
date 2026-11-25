@@ -24,9 +24,9 @@ Aplicação full-stack para uma hamburgueria, desenvolvida com Spring Boot e Rea
 
 ## 📸 Screenshots
 
-| Cardápio | Checkout | Painel admin |
+| Checkout | Pedidos do Cliente | Admin |
 |---|---|---|
-| ![Cardápio](docs/cardapio.png) | ![Checkout](docs/checkout.png) | ![Admin](docs/admin.png) |
+| ![Cardápio](docs/checkout.png) | ![Pedidos do Cliente](docs/pedidos-cliente.png) | ![Admin](docs/admin.png) |
 
 
 ## 🧱 Tecnologias
