@@ -44,28 +44,28 @@ docker compose down -v
 
 ## ✨ Funcionalidades
 
-- Catálogo de produtos agrupado por categoria.
-- Imagens individuais dos produtos através de URLs.
-- Carrinho com quantidade, remoção, limpeza e persistência no navegador.
-- Cadastro e login com autenticação JWT.
-- Cadastro e seleção de endereços do usuário.
-- Busca automática de endereço por CEP integrada à API ViaCEP no backend.
-- Limite de quantidade no carrinho conforme o estoque disponível.
-- Controle de estoque com bloqueio pessimista, garantindo que dois pedidos simultâneos não vendam o mesmo último item (coberto por teste de concorrência).
-- Atualização automática do catálogo e estoque após finalizar pedidos.
-- Perfil do usuário com nome e e-mail no cabeçalho.
-- Criação e acompanhamento de pedidos.
-- Painel administrativo para acompanhar e alterar status dos pedidos.
-- Cadastro, edição e exclusão de categorias pelo administrador.
-- Cadastro, edição e exclusão de produtos pelo administrador.
-- Administrador pode navegar pelo cardápio e acessar o checkout, mas não possui carrinho nem pode confirmar pedidos.
-- Navbar personalizada por perfil: clientes veem pedidos; administradores veem categorias, produtos e pedidos.
-- Controle de acesso para usuários `CLIENT` e administradores `ADMIN`.
-- Validação de dados com Bean Validation.
-- Documentação interativa da API com Swagger UI / OpenAPI.
-- Execução completa (banco, backend e frontend) com um único comando via Docker Compose.
-- Testes automatizados e integração contínua com GitHub Actions CI.
-- Layout responsivo para computadores e dispositivos móveis.
+* Catálogo de produtos agrupado por categoria.
+* Imagens individuais dos produtos através de URLs.
+* Carrinho com quantidade, remoção, limpeza e persistência no navegador.
+* Cadastro e login com autenticação JWT.
+* Cadastro e seleção de endereços do usuário.
+* Busca automática de endereço por CEP integrada à API ViaCEP no backend.
+* Limite de quantidade no carrinho conforme o estoque disponível.
+* Controle de estoque com bloqueio pessimista, garantindo que dois pedidos simultâneos não vendam o mesmo último item (coberto por teste de concorrência).
+* Atualização automática do catálogo e estoque após finalizar pedidos.
+* Perfil do usuário com nome e e-mail no cabeçalho.
+* Criação e acompanhamento de pedidos.
+* Painel administrativo para acompanhar e alterar status dos pedidos.
+* Cadastro, edição e exclusão de categorias pelo administrador.
+* Cadastro, edição e exclusão de produtos pelo administrador.
+* Administrador pode navegar pelo cardápio e acessar o checkout, mas não possui carrinho nem pode confirmar pedidos.
+* Navbar personalizada por perfil: clientes veem pedidos; administradores veem categorias, produtos e pedidos.
+* Controle de acesso para usuários `CLIENT` e administradores `ADMIN`.
+* Validação de dados com Bean Validation.
+* Documentação interativa da API com Swagger UI / OpenAPI.
+* Execução completa (banco, backend e frontend) com um único comando via Docker Compose.
+* Testes automatizados e integração contínua com GitHub Actions CI.
+* Layout responsivo para computadores e dispositivos móveis.
 
 ## 📸 Screenshots
 
@@ -85,39 +85,39 @@ docker compose down -v
 
 ### Backend
 
-- Java 25
-- Spring Boot 4.1.2
-- Spring Web MVC
-- Spring Data JPA / Hibernate
-- Spring Security
-- OAuth2 Resource Server / JWT
-- Springdoc OpenAPI / Swagger UI
-- ViaCEP API com `RestClient`
-- Bean Validation
-- PostgreSQL
-- H2 para o perfil de teste
-- Maven
-- Lombok
-- JUnit 6.0.3
+* Java 25
+* Spring Boot 4.1.2
+* Spring Web MVC
+* Spring Data JPA / Hibernate
+* Spring Security
+* OAuth2 Resource Server / JWT
+* Springdoc OpenAPI / Swagger UI
+* ViaCEP API com `RestClient`
+* Bean Validation
+* PostgreSQL
+* H2 para o perfil de teste
+* Maven
+* Lombok
+* JUnit 6.0.3
 
 ### Frontend
 
-- React 19
-- JavaScript ES6+
-- Vite 8
-- React Router DOM
-- ESLint
-- npm
+* React 19
+* JavaScript ES6+
+* Vite 8
+* React Router DOM
+* ESLint
+* npm
 
 ### Infraestrutura
 
-- Docker
-- Docker Compose
+* Docker
+* Docker Compose
 
 ### CI
 
-- GitHub Actions
-- GitHub Flow
+* GitHub Actions
+* GitHub Flow
 
 ## 📁 Estrutura
 
@@ -197,8 +197,8 @@ JWT_SECRET=sua-chave-base64
 
 ### Como o `.env` é usado
 
-- **Docker Compose:** o `.env` é lido automaticamente e repassado ao container do backend. Dentro do Docker, o `DB_HOST` é sobrescrito para `db` (nome do serviço do PostgreSQL), então o valor `localhost` do `.env` não interfere.
-- **Execução local:** o `application.properties` importa o arquivo com `spring.config.import=optional:file:.env[.properties]`. Execute o backend a partir da raiz do projeto ou de dentro da pasta `backend`. Como o import é `optional`, a ausência do `.env` (como no perfil `test` e no CI) não gera erro.
+* **Docker Compose:** o `.env` é lido automaticamente e repassado ao container do backend. Dentro do Docker, o `DB_HOST` é sobrescrito para `db` (nome do serviço do PostgreSQL), então o valor `localhost` do `.env` não interfere.
+* **Execução local:** o `application.properties` importa o arquivo com `spring.config.import=optional:file:.env[.properties]`. Execute o backend a partir da raiz do projeto ou de dentro da pasta `backend`. Como o import é `optional`, a ausência do `.env` (como no perfil `test` e no CI) não gera erro.
 
 ### Gerar a chave JWT
 
@@ -341,8 +341,8 @@ O projeto possui configurações para diferentes ambientes:
 
 O perfil ativo é definido em `application.properties` (`spring.profiles.active=test`) e pode ser sobrescrito:
 
-- **Maven:** `-Dspring-boot.run.profiles=dev`
-- **Docker:** altere `SPRING_PROFILES_ACTIVE` no serviço `backend` do `docker-compose.yml` e recrie o backend; veja [Trocar o banco usado pelo Docker](#trocar-o-banco-usado-pelo-docker).
+* **Maven:** `-Dspring-boot.run.profiles=dev`
+* **Docker:** altere `SPRING_PROFILES_ACTIVE` no serviço `backend` do `docker-compose.yml` e recrie o backend; veja [Trocar o banco usado pelo Docker](#trocar-o-banco-usado-pelo-docker).
 
 O perfil `test` também é utilizado pelos testes automatizados, o que evita alterações no banco de desenvolvimento.
 
@@ -363,9 +363,9 @@ Use os dados abaixo:
 | User Name    | `sa`             | `sa`                 |
 | Password     | _(vazio)_        | _(vazio)_            |
 
-- No Docker, o banco é persistido no volume `h2_data`.
-- Na execução local, os dados ficam somente em memória e são recriados a cada inicialização.
-- O console aceita conexões externas ao container por estar configurado com `spring.h2.console.settings.web-allow-others=true`.
+* No Docker, o banco é persistido no volume `h2_data`.
+* Na execução local, os dados ficam somente em memória e são recriados a cada inicialização.
+* O console aceita conexões externas ao container por estar configurado com `spring.h2.console.settings.web-allow-others=true`.
 
 > Mantenha essa opção apenas em ambientes de desenvolvimento ou testes. Não habilite o H2 Console em produção.
 
@@ -400,10 +400,10 @@ Com o backend em execução, acesse:
 
 A documentação permite:
 
-- Visualizar os endpoints disponíveis.
-- Consultar métodos HTTP, parâmetros e respostas.
-- Visualizar os modelos de requisição e resposta (DTOs).
-- Testar requisições diretamente pela interface Swagger.
+* Visualizar os endpoints disponíveis.
+* Consultar métodos HTTP, parâmetros e respostas.
+* Visualizar os modelos de requisição e resposta (DTOs).
+* Testar requisições diretamente pela interface Swagger.
 
 Os endpoints de documentação são públicos. Os endpoints protegidos continuam exigindo autenticação JWT.
 
@@ -439,10 +439,10 @@ Authorization: Bearer <token>
 
 O arquivo `backend/src/main/resources/data.sql` popula o banco com:
 
-- Categorias de hambúrgueres, bebidas e acompanhamentos.
-- Produtos com nome, descrição, preço, estoque, categoria e URL da imagem.
-- Usuários administrativos e clientes.
-- Endereços e pedidos de exemplo.
+* Categorias de hambúrgueres, bebidas e acompanhamentos.
+* Produtos com nome, descrição, preço, estoque, categoria e URL da imagem.
+* Usuários administrativos e clientes.
+* Endereços e pedidos de exemplo.
 
 Credenciais de demonstração (**apenas para desenvolvimento**):
 
@@ -461,20 +461,20 @@ Você também pode criar uma conta nova em `/register`. Contas criadas pela inte
 
 ### Usuário cliente
 
-- `/` — página inicial e cardápio por categoria.
-- `/login` — login.
-- `/register` — cadastro.
-- `/checkout` — endereços e confirmação do pedido.
-- `/pedidos` — pedidos do usuário, separados entre ativos e encerrados.
-- `/pedidos/{id}` — confirmação e detalhes de um pedido.
+* `/` — página inicial e cardápio por categoria.
+* `/login` — login.
+* `/register` — cadastro.
+* `/checkout` — endereços e confirmação do pedido.
+* `/pedidos` — pedidos do usuário, separados entre ativos e encerrados.
+* `/pedidos/{id}` — confirmação e detalhes de um pedido.
 
 ### Administrador
 
-- `/admin/pedidos` — controle e alteração de status dos pedidos.
-- `/admin/categorias` — cadastro, edição e exclusão de categorias.
-- `/admin/produtos` — cadastro, edição e exclusão de produtos.
-- `/` — consulta do cardápio sem carrinho ou botão de adicionar.
-- `/checkout` — tela acessível, porém sem confirmar pedido.
+* `/admin/pedidos` — controle e alteração de status dos pedidos.
+* `/admin/categorias` — cadastro, edição e exclusão de categorias.
+* `/admin/produtos` — cadastro, edição e exclusão de produtos.
+* `/` — consulta do cardápio sem carrinho ou botão de adicionar.
+* `/checkout` — tela acessível, porém sem confirmar pedido.
 
 Na navbar do administrador aparecem **Categorias**, **Produtos** e **Pedidos**. O link de perfil abre o painel administrativo, e não a página “Meus pedidos”.
 
@@ -499,9 +499,9 @@ A trilha de acompanhamento do cliente possui 4 etapas (`PENDING` a `DELIVERED`).
 
 No painel administrativo:
 
-- O status avança uma etapa por vez, sem retroceder.
-- `DELIVERED` e `CANCELLED` são estados finais e ficam bloqueados.
-- Pedidos ainda ativos podem ser cancelados.
+* O status avança uma etapa por vez, sem retroceder.
+* `DELIVERED` e `CANCELLED` são estados finais e ficam bloqueados.
+* Pedidos ainda ativos podem ser cancelados.
 
 ## 🛠️ Comandos úteis
 
@@ -565,9 +565,9 @@ O teste `StockConcurrencyTest` simula dois clientes tentando realizar um pedido 
 
 O teste verifica se:
 
-- Apenas um pedido é confirmado.
-- O estoque do produto permanece em zero.
-- Apenas um pedido é registrado no banco de dados.
+* Apenas um pedido é confirmado.
+* O estoque do produto permanece em zero.
+* Apenas um pedido é registrado no banco de dados.
 
 A implementação utiliza `CountDownLatch` para sincronizar o início das requisições concorrentes e valida o controle de estoque com bloqueio pessimista no banco de dados.
 
@@ -620,10 +620,10 @@ docker compose --profile tests run --rm backend-test mvn -B -Dtest=StockConcurre
 
 Observações:
 
-- O serviço só roda quando chamado com `--profile tests`; o `docker compose up` normal **não** o inicia. (O `tests` é um _profile do Compose_, sem relação com o perfil `test` do Spring.)
-- Os testes usam o perfil `test` do Spring (H2 em arquivo), então **não precisam do PostgreSQL nem do `.env`**. Por segurança, o serviço não usa `env_file`: o `setUp()` do teste executa `deleteAll()` nas tabelas e jamais deve apontar para o banco do Docker.
-- O volume `maven_repo` guarda as dependências do Maven: a primeira execução baixa tudo e demora; as seguintes são bem mais rápidas.
-- Se o Maven reclamar de permissão em `backend/target` no Linux, use `--user "$(id -u):$(id -g)"` no comando `docker compose run`.
+* O serviço só roda quando chamado com `--profile tests`; o `docker compose up` normal **não** o inicia. (O `tests` é um _profile do Compose_, sem relação com o perfil `test` do Spring.)
+* Os testes usam o perfil `test` do Spring (H2 em arquivo), então **não precisam do PostgreSQL nem do `.env`**. Por segurança, o serviço não usa `env_file`: o `setUp()` do teste executa `deleteAll()` nas tabelas e jamais deve apontar para o banco do Docker.
+* O volume `maven_repo` guarda as dependências do Maven: a primeira execução baixa tudo e demora; as seguintes são bem mais rápidas.
+* Se o Maven reclamar de permissão em `backend/target` no Linux, use `--user "$(id -u):$(id -g)"` no comando `docker compose run`.
 
 ## ⚙️ Integração contínua — GitHub Actions
 
@@ -639,18 +639,18 @@ O workflow está localizado em:
 
 O workflow é acionado:
 
-- A cada `push` para a branch `main`.
-- A cada Pull Request direcionado à branch `main`.
+* A cada `push` para a branch `main`.
+* A cada Pull Request direcionado à branch `main`.
 
 ### Backend
 
 O job do backend:
 
-- Configura Java 25.
-- Ativa o perfil `test`.
-- Utiliza H2 em arquivo.
-- Executa os testes automatizados.
-- Valida o build com Maven.
+* Configura Java 25.
+* Ativa o perfil `test`.
+* Utiliza H2 em arquivo.
+* Executa os testes automatizados.
+* Valida o build com Maven.
 
 Comando executado:
 
@@ -664,10 +664,10 @@ O CI **não utiliza o arquivo `.env`** (ele não é versionado) e não precisa d
 
 O job do frontend:
 
-- Configura Node.js 22.
-- Instala as dependências com `npm ci`.
-- Executa o ESLint.
-- Gera o build de produção.
+* Configura Node.js 22.
+* Instala as dependências com `npm ci`.
+* Executa o ESLint.
+* Gera o build de produção.
 
 Comandos executados:
 
@@ -698,9 +698,9 @@ O CI valida o backend e o frontend antes da integração das alterações na bra
 
 Projeto pessoal de portfólio para praticar desenvolvimento full-stack com Java, Spring Boot, React e integração de APIs REST.
 
-- LinkedIn: https://www.linkedin.com/in/marcusantosdev
-- GitHub: https://github.com/MarcuSantosDev
-- E-mail: marcus.xtreme03@gmail.com
+* LinkedIn: https://www.linkedin.com/in/marcusantosdev
+* GitHub: https://github.com/MarcuSantosDev
+* E-mail: marcus.xtreme03@gmail.com
 
 ## 📄 Licença
 
