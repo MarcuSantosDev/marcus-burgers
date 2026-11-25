@@ -44,7 +44,7 @@ VALUES
      6.00, 100, (SELECT category_id FROM category WHERE name = 'Bebidas')),
 
     ('Guaraná Antarctica 350ml', 'Refrigerante de guaraná, lata de 350ml.',
-     'https://images.unsplash.com/photo-1581006852262-e4307cf6283a',
+     'https://gkpb.com.br/wp-content/uploads/2023/12/guarana-antarctica-zero.jpg',
      5.50, 80, (SELECT category_id FROM category WHERE name = 'Bebidas')),
 
     ('Batata Frita P', 'Porção pequena de batatas fritas crocantes.',
