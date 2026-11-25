@@ -4,6 +4,28 @@ Aplicação full-stack para uma hamburgueria, desenvolvida com **React + Vite** 
 
 O projeto inclui catálogo por categorias, carrinho persistido, autenticação JWT, gerenciamento de endereços com consulta ViaCEP, checkout, controle de estoque e painel administrativo.
 
+## 📑 Sumário
+
+- [Funcionalidades](#-funcionalidades)
+- [Screenshots](#-screenshots)
+- [Tecnologias](#-tecnologias)
+- [Estrutura do Projeto](#-estrutura-do-projeto)
+- [Pré-requisitos](#-pré-requisitos)
+- [Variáveis de Ambiente](#-variáveis-de-ambiente)
+- [Como Executar](#-como-executar)
+- [Perfis e Banco de Dados](#-perfis-e-banco-de-dados)
+- [Configuração da API no Frontend](#-configuração-da-api-no-frontend)
+- [Documentação da API — Swagger](#-documentação-da-api--swagger)
+- [Principais Endpoints](#-principais-endpoints)
+- [Dados Iniciais](#-dados-iniciais)
+- [Páginas do Frontend](#-páginas-do-frontend)
+- [Status dos Pedidos](#-status-dos-pedidos)
+- [Testes](#-testes)
+- [Build de Produção](#-build-de-produção)
+- [Integração Contínua — GitHub Actions](#-integração-contínua--github-actions)
+- [Autor](#-autor)
+- [Licença](#-licença)
+
 ## ✨ Funcionalidades
 
 - Catálogo de produtos agrupado por categoria.
