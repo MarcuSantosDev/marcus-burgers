@@ -58,7 +58,26 @@ async function request(path, options = {}) {
 }
 
 export const api = {
+  categories: () => request("/categories"),
+  createCategory: (category) => request("/categories", {
+    method: "POST",
+    body: JSON.stringify(category),
+  }),
+  updateCategory: (id, category) => request(`/categories/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(category),
+  }),
+  deleteCategory: (id) => request(`/categories/${id}`, { method: "DELETE" }),
   products: () => request("/products"),
+  createProduct: (product) => request("/products", {
+    method: "POST",
+    body: JSON.stringify(product),
+  }),
+  updateProduct: (id, product) => request(`/products/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(product),
+  }),
+  deleteProduct: (id) => request(`/products/${id}`, { method: "DELETE" }),
   login: (email, password) => request("/auth/login", {
     method: "POST",
     body: JSON.stringify({ email, password }),

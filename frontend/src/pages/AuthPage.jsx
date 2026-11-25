@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { api, setToken } from "../services/api";
+import { api, getUserProfile, setToken } from "../services/api";
 import "./Pages.css";
 
 export default function AuthPage({ mode = "login" }) {
@@ -27,7 +27,8 @@ export default function AuthPage({ mode = "login" }) {
         const { token } = await api.login(form.email, form.password);
         setToken(token);
       }
-      navigate("/checkout");
+      const profile = getUserProfile();
+      navigate(profile?.role === "ADMIN" ? "/admin/pedidos" : "/checkout");
     } catch (requestError) {
       setError(requestError.message);
     } finally {

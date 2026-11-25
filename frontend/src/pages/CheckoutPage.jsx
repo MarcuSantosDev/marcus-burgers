@@ -163,7 +163,9 @@ export default function CheckoutPage({ cart, onSuccess }) {
           {cart.items.map(({ product, quantity }) => <div className="summary-line" key={product.id}><span>{quantity}× {product.name}</span><strong>{formatCurrency(product.price * quantity)}</strong></div>)}
           <div className="summary-total"><span>Total</span><strong>{formatCurrency(cart.totalPrice)}</strong></div>
           {error && <p className="form__error" role="alert">{error}</p>}
-          <button className="primary-button" type="button" onClick={submitOrder} disabled={loading || cart.items.length === 0}>{loading ? "Finalizando..." : "Confirmar pedido"}</button>
+          {getUserProfile()?.role !== "ADMIN" && (
+            <button className="primary-button" type="button" onClick={submitOrder} disabled={loading || cart.items.length === 0}>{loading ? "Finalizando..." : "Confirmar pedido"}</button>
+          )}
           {!getToken() && (
             <p>
               Para finalizar a compra, é necessário <Link to="/login" className="link">fazer login</Link> na sua conta.
