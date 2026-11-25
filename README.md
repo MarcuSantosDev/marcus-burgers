@@ -468,7 +468,7 @@ O CI valida o backend e o frontend antes da integração das alterações na bra
 
 ## 👨‍💻 Autor
 
-**[Seu nome]**
+**Marcus Vinícius Vieira Santos**
 
 Projeto pessoal de portfólio para praticar desenvolvimento full-stack com Java, Spring Boot, React e integração de APIs REST.
 
