@@ -11,6 +11,7 @@ Aplicação full-stack para uma hamburgueria, desenvolvida com Spring Boot e Rea
 - Cadastro e seleção de endereços do usuário.
 - Busca automática de endereço por CEP integrada à API ViaCEP no backend.
 - Limite de quantidade no carrinho conforme o estoque disponível.
+- Controle de estoque com bloqueio pessimista, garantindo que dois pedidos simultâneos não vendam o mesmo último item (coberto por teste de concorrência).
 - Atualização automática do catálogo e estoque após finalizar pedidos.
 - Perfil do usuário com nome e e-mail no cabeçalho.
 - Criação e acompanhamento de pedidos.
@@ -18,7 +19,15 @@ Aplicação full-stack para uma hamburgueria, desenvolvida com Spring Boot e Rea
 - Controle de acesso para usuários `CLIENT` e administradores `ADMIN`.
 - Validação de dados com Bean Validation.
 - Documentação interativa da API com Swagger UI / OpenAPI.
+- Testes automatizados e integração contínua com GitHub Actions CI.
 - Layout responsivo para computadores e dispositivos móveis.
+
+## 📸 Screenshots
+
+| Cardápio | Checkout | Painel admin |
+|---|---|---|
+| ![Cardápio](docs/cardapio.png) | ![Checkout](docs/checkout.png) | ![Admin](docs/admin.png) |
+
 
 ## 🧱 Tecnologias
 
@@ -48,13 +57,22 @@ Aplicação full-stack para uma hamburgueria, desenvolvida com Spring Boot e Rea
 - ESLint
 - npm
 
+### CI
+
+- GitHub Actions
+- GitHub Flow
+
 ## 📁 Estrutura
 
 ```text
 ProjetoHamburgueria/
+├── .github/
+│   └── workflows/
+│       └── ci.yml
 ├── backend/
 │   ├── src/main/java/
 │   ├── src/main/resources/
+│   ├── src/test/java/
 │   └── pom.xml
 ├── frontend/
 │   ├── src/
@@ -66,8 +84,18 @@ ProjetoHamburgueria/
 │   │   └── utils/
 │   ├── package.json
 │   └── vite.config.js
+├── docs/
 └── README.md
 ```
+
+## 📋 Pré-requisitos
+
+- Java 25
+- Node.js 22 ou superior
+- PostgreSQL (opcional, necessário apenas para o perfil `dev`)
+- Git
+
+> Os comandos deste README assumem **Windows com PowerShell**. No Linux/macOS, use `./mvnw` no lugar de `.\mvnw.cmd` e `export VAR=valor` no lugar de `$env:VAR="valor"`.
 
 ## 🚀 Como executar
 
@@ -79,12 +107,6 @@ No diretório do backend:
 
 ```powershell
 cd backend
-```
-
-Configure o segredo JWT em uma sessão do PowerShell:
-
-```powershell
-$env:JWT_SECRET="uma-chave-secreta-com-pelo-menos-32-caracteres"
 ```
 
 Execute a aplicação:
@@ -99,10 +121,14 @@ Também é possível executar pelo Maven instalado:
 mvn spring-boot:run
 ```
 
-O backend iniciará em:
+O backend iniciará em http://localhost:8080.
 
-```text
-http://localhost:8080
+> O perfil padrão é `test`, que usa **H2 em memória**. Não é necessário instalar PostgreSQL para experimentar o projeto, e os dados de exemplo do `data.sql` são carregados a cada inicialização.
+
+Para usar o PostgreSQL, configure as variáveis `JWT_SECRET` e `DB_*` (veja [Variáveis de ambiente](#-variáveis-de-ambiente)) e execute com o perfil `dev`:
+
+```powershell
+.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=dev"
 ```
 
 ### 2. Frontend
@@ -115,47 +141,63 @@ npm install
 npm run dev
 ```
 
-O frontend iniciará em:
-
-```text
-http://localhost:5173
-```
+O frontend iniciará em http://localhost:5173.
 
 ## 🧪 Perfis e banco de dados
 
-O projeto possui estas configurações principais:
+O projeto possui configurações para diferentes ambientes:
 
-- `test`: banco H2 em memória e dados iniciais carregados por `data.sql`.
-- `dev`: PostgreSQL através das variáveis de ambiente.
+- `test` (**padrão**): banco H2 em memória, com configurações definidas em `application-test.properties`. Não exige instalação de banco de dados.
+- `dev`: PostgreSQL, configurado por variáveis de ambiente.
 
-O perfil ativo é definido em `application.properties` e pode ser sobrescrito ao iniciar:
+O perfil ativo é definido em `application.properties` (`spring.profiles.active=test`) e pode ser sobrescrito ao iniciar a aplicação:
 
 ```powershell
-.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=test"
+.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=dev"
 ```
+
+O perfil `test` também é utilizado pelos testes automatizados, o que evita alterações no banco de desenvolvimento.
 
 ## 🔐 Variáveis de ambiente
 
-### Necessárias
+### JWT
 
-| Variável     | Uso                             |
-| ------------ | ------------------------------- |
+| Variável | Uso |
+|---|---|
 | `JWT_SECRET` | Assinar e validar os tokens JWT |
+
+A chave JWT deve estar em **Base64** e possuir pelo menos 32 bytes após a decodificação, conforme a configuração HS256 utilizada pelo projeto.
+
+No perfil `test` (padrão), a chave é definida em `application-test.properties`, então a variável só é necessária no perfil `dev` e em produção. O token expira em 3600 segundos (1 hora), valor configurado em `security.jwt.expiration`.
+
+Para gerar uma chave em formato Base64:
+
+```powershell
+$bytes = New-Object byte[] 32
+[System.Security.Cryptography.RandomNumberGenerator]::Fill($bytes)
+[Convert]::ToBase64String($bytes)
+```
+
+Exemplo de uso no Windows:
+
+```powershell
+$env:JWT_SECRET="sua-chave-base64"
+```
 
 ### Perfil de desenvolvimento PostgreSQL
 
-| Variável      | Valor padrão   |
-| ------------- | -------------- |
-| `DB_HOST`     | `localhost`    |
-| `DB_PORT`     | `5432`         |
-| `DB_NAME`     | `hamburgueria` |
-| `DB_USERNAME` | obrigatório    |
-| `DB_PASSWORD` | obrigatório    |
+| Variável | Valor padrão |
+|---|---|
+| `DB_HOST` | `localhost` |
+| `DB_PORT` | `5432` |
+| `DB_NAME` | `hamburgueria` |
+| `DB_USERNAME` | obrigatório |
+| `DB_PASSWORD` | obrigatório |
 
 Exemplo no Windows:
 
 ```powershell
-$env:JWT_SECRET="uma-chave-secreta-com-pelo-menos-32-caracteres"
+$env:JWT_SECRET="sua-chave-base64"
 $env:DB_HOST="localhost"
 $env:DB_PORT="5432"
 $env:DB_NAME="hamburgueria"
@@ -163,15 +205,7 @@ $env:DB_USERNAME="postgres"
 $env:DB_PASSWORD="sua-senha"
 ```
 
-> Não adicione senhas ou chaves reais ao repositório.
-
-Para gerar uma chave em formato Base64:
-
-```powershell
-$bytes = New-Object byte[] 32
-[System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($bytes)
-[Convert]::ToBase64String($bytes)
-```
+> Não adicione senhas ou chaves reais ao repositório. Utilize uma chave exclusiva para testes e outra para produção.
 
 ## 🌐 Configuração da API no frontend
 
@@ -195,10 +229,10 @@ O projeto utiliza Springdoc OpenAPI para gerar a documentação da API e disponi
 
 Com o backend em execução, acesse:
 
-| Recurso      | URL                                           |
-| ------------ | --------------------------------------------- |
-| Swagger UI   | `http://localhost:8080/swagger-ui/index.html` |
-| OpenAPI JSON | `http://localhost:8080/v3/api-docs`           |
+| Recurso | URL |
+|---|---|
+| Swagger UI | http://localhost:8080/swagger-ui/index.html |
+| OpenAPI JSON | http://localhost:8080/v3/api-docs |
 
 A documentação permite:
 
@@ -211,19 +245,19 @@ Os endpoints de documentação são públicos. Os endpoints protegidos continuam
 
 ## 📡 Principais endpoints
 
-| Método | Endpoint                   | Descrição                                                | Autenticação |
-| ------ | -------------------------- | -------------------------------------------------------- | ------------ |
-| `POST` | `/auth/login`              | Autentica e retorna JWT                                  | Não          |
-| `GET`  | `/products`                | Lista produtos                                           | Não          |
-| `GET`  | `/products/{id}`           | Busca um produto                                         | Não          |
-| `GET`  | `/categories`              | Lista categorias                                         | Não          |
-| `GET`  | `/addresses`               | Lista endereços do usuário                               | Sim          |
-| `POST` | `/addresses`               | Cadastra endereço                                        | Sim          |
-| `GET`  | `/addresses/cep/{zipCode}` | Consulta endereço pelo ViaCEP                            | Não          |
-| `GET`  | `/orders`                  | Lista pedidos do usuário ou de todos, para administrador | Sim          |
-| `POST` | `/orders`                  | Cria pedido e reduz o estoque                            | Sim          |
-| `GET`  | `/orders/{id}`             | Busca pedido                                             | Sim          |
-| `PUT`  | `/orders/{id}`             | Atualiza status conforme as regras de perfil             | Sim          |
+| Método | Endpoint | Descrição | Autenticação |
+|---|---|---|---|
+| `POST` | `/auth/login` | Autentica e retorna JWT | Não |
+| `GET` | `/products` | Lista produtos | Não |
+| `GET` | `/products/{id}` | Busca um produto | Não |
+| `GET` | `/categories` | Lista categorias | Não |
+| `GET` | `/addresses` | Lista endereços do usuário | Sim |
+| `POST` | `/addresses` | Cadastra endereço | Sim |
+| `GET` | `/addresses/cep/{zipCode}` | Consulta endereço pelo ViaCEP | Não |
+| `GET` | `/orders` | Lista pedidos do usuário ou de todos, para administrador | Sim |
+| `POST` | `/orders` | Cria pedido e reduz o estoque | Sim |
+| `GET` | `/orders/{id}` | Busca pedido | Sim |
+| `PUT` | `/orders/{id}` | Atualiza status conforme as regras de perfil | Sim |
 
 As requisições autenticadas devem enviar:
 
@@ -240,14 +274,18 @@ O arquivo `backend/src/main/resources/data.sql` popula o banco com:
 - Usuários administrativos e clientes.
 - Endereços e pedidos de exemplo.
 
-Usuário inicial de exemplo:
+Credenciais de demonstração (**apenas para desenvolvimento**):
 
-```text
-E-mail: admin@email.com
-Perfil: ADMIN
-```
+| Perfil | E-mail | Senha |
+|---|---|---|
+| `ADMIN` | `admin@email.com` | `[senha-de-demo]` |
+| `CLIENT` | `marcus@email.com` | `[senha-de-demo]` |
 
-> Os usuários possuem hashes BCrypt no `data.sql`. Use a senha configurada no ambiente ou cadastre uma nova conta pela interface.
+Você também pode criar uma conta nova em `/register`. Contas criadas pela interface têm o perfil `CLIENT`.
+
+> Os usuários do `data.sql` possuem senhas armazenadas como hash BCrypt.
+>
+> O `data.sql` limpa todas as tabelas (`DELETE FROM`) antes de inserir os dados de exemplo, então os dados são recriados a cada inicialização.
 
 ## 🖥️ Páginas do frontend
 
@@ -259,23 +297,30 @@ Perfil: ADMIN
 - `/pedidos/{id}` — confirmação e detalhes de um pedido.
 - `/admin/pedidos` — painel administrativo de pedidos.
 
-## 📦 Status e acompanhamento dos pedidos
+## 📦 Status dos pedidos
 
-A trilha do cliente possui 4 etapas:
+```text
+PENDING → PREPARING → READY → DELIVERED
+   └──────────┴─────────┘
+          ↓
+      CANCELLED
+```
 
-1. `PENDING` — Pendente
-2. `PREPARING` — Preparando
-3. `READY` — Pronto
-4. `DELIVERED` — Entregue
+| Status | Descrição |
+|---|---|
+| `PENDING` | Pendente |
+| `PREPARING` | Preparando |
+| `READY` | Pronto |
+| `DELIVERED` | Entregue (final) |
+| `CANCELLED` | Cancelado (final, exibido em vermelho) |
 
-Pedidos `CANCELLED` são exibidos em vermelho como pedidos encerrados.
+A trilha de acompanhamento do cliente possui 4 etapas (`PENDING` a `DELIVERED`). Pedidos `CANCELLED` são exibidos como pedidos encerrados.
 
 No painel administrativo:
 
-- A alteração é sempre em ordem direta, uma etapa por vez.
-- Não é permitido retroceder o status.
+- O status avança uma etapa por vez, sem retroceder.
 - `DELIVERED` e `CANCELLED` são estados finais e ficam bloqueados.
-- O administrador também pode cancelar pedidos que ainda estão ativos.
+- Pedidos ainda ativos podem ser cancelados.
 
 ## 🛠️ Comandos úteis
 
@@ -298,7 +343,7 @@ npm run preview
 
 ## 📦 Build de produção
 
-Frontend:
+### Frontend
 
 ```powershell
 cd frontend
@@ -307,7 +352,7 @@ npm run build
 
 Os arquivos finais serão gerados em `frontend/dist`.
 
-Backend:
+### Backend
 
 ```powershell
 cd backend
@@ -316,10 +361,11 @@ cd backend
 
 O arquivo executável será gerado em `backend/target`.
 
-
 ## 🧪 Testes
 
-O backend possui um teste de integração utilizando **JUnit 6.0.3** e Spring Boot para validar o controle de estoque em situações de concorrência.
+O backend possui testes automatizados com **JUnit 6.0.3** e Spring Boot.
+
+Os testes utilizam o perfil `test`, configurado em `application-test.properties`, com banco H2 em memória. Dessa forma, não dependem do PostgreSQL de desenvolvimento.
 
 ### Teste de concorrência do estoque
 
@@ -347,6 +393,89 @@ Para executar apenas o teste de concorrência:
 .\mvnw.cmd -Dtest=StockConcurrencyTest test
 ```
 
-O teste utiliza o perfil `test`, com banco de dados H2 em memória, evitando alterações no banco de desenvolvimento.
+Para executar os testes e validar o build:
 
+```powershell
+.\mvnw.cmd clean verify
+```
 
+## ⚙️ Integração contínua — GitHub Actions
+
+O projeto utiliza **GitHub Actions** para executar automaticamente verificações de integração contínua (CI).
+
+O workflow está localizado em:
+
+```text
+.github/workflows/ci.yml
+```
+
+### Quando o CI é executado?
+
+O workflow é acionado:
+
+- A cada `push` para a branch `main`.
+- A cada Pull Request direcionado à branch `main`.
+
+### Backend
+
+O job do backend:
+
+- Configura Java 25.
+- Ativa o perfil `test`.
+- Utiliza H2 em memória.
+- Executa os testes automatizados.
+- Valida o build com Maven.
+
+Comando executado:
+
+```bash
+bash ./mvnw -B clean verify
+```
+
+A chave JWT utilizada nos testes é exclusiva do perfil `test`, definida em `application-test.properties`. O CI não precisa acessar a chave JWT de desenvolvimento ou produção.
+
+### Frontend
+
+O job do frontend:
+
+- Configura Node.js 22.
+- Instala as dependências com `npm ci`.
+- Executa o ESLint.
+- Gera o build de produção.
+
+Comandos executados:
+
+```bash
+npm ci
+npm run lint
+npm run build
+```
+
+### GitHub Flow
+
+O desenvolvimento segue o fluxo:
+
+1. Criar uma branch para a funcionalidade ou correção.
+2. Implementar e testar as alterações.
+3. Enviar a branch para o GitHub.
+4. Abrir um Pull Request para `main`.
+5. Aguardar a aprovação dos checks do CI.
+6. Fazer o merge para `main`.
+
+O CI valida o backend e o frontend antes da integração das alterações na branch principal.
+
+> O workflow atual realiza integração contínua (CI). O deploy automático (CD) poderá ser configurado posteriormente com a plataforma de hospedagem.
+
+## 👨‍💻 Autor
+
+**[Seu nome]**
+
+Projeto pessoal de portfólio para praticar desenvolvimento full-stack com Java, Spring Boot, React e integração de APIs REST.
+
+- LinkedIn: https://www.linkedin.com/in/marcusantosdev
+- GitHub: https://github.com/MarcuSantosDev
+- E-mail: marcus.xtreme03@gmail.com
+
+## 📄 Licença
+
+Distribuído sob a licença MIT. Consulte o arquivo `LICENSE` para mais detalhes.
