@@ -138,6 +138,6 @@ public class OrderService {
     }
 
     private Product findProductById(Long id) {
-        return productRepository.findById(id).orElseThrow(() -> new ResourceNotFound(id));
+        return productRepository.findByIdForUpdate(id).orElseThrow(() -> new ResourceNotFound(id));
     }
 }
