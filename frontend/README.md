@@ -5,12 +5,23 @@ Interface React da hamburgueria Marcus's Burgers. Utiliza Vite, React Router e i
 ## Funcionalidades
 
 - Catálogo por categorias e produtos.
-- Carrinho persistido no navegador.
+- Carrinho persistido no navegador para usuários clientes.
 - Controle de quantidade conforme o estoque.
 - Login, cadastro e perfil no cabeçalho.
 - Busca automática de endereço pelo ViaCEP durante o checkout.
 - Acompanhamento de pedidos por status.
-- Painel administrativo em `/admin/pedidos`.
+- Painel administrativo de pedidos em `/admin/pedidos`.
+- Cadastro, edição e exclusão de categorias em `/admin/categorias`.
+- Cadastro, edição e exclusão de produtos em `/admin/produtos`.
+- Administradores não veem carrinho, botão “Adicionar +” nem confirmação de pedido.
+- Administradores podem abrir o checkout, mas não podem criar pedidos.
+
+## Navegação por perfil
+
+| Perfil   | Menu                                      | Tela após login  |
+| -------- | ----------------------------------------- | ---------------- |
+| `CLIENT` | Início, Cardápio, Sobre nós, Meus pedidos | `/checkout`      |
+| `ADMIN`  | Categorias, Produtos, Pedidos             | `/admin/pedidos` |
 
 ## Executar
 

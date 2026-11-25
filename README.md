@@ -56,6 +56,10 @@ docker compose down -v
 - Perfil do usuário com nome e e-mail no cabeçalho.
 - Criação e acompanhamento de pedidos.
 - Painel administrativo para acompanhar e alterar status dos pedidos.
+- Cadastro, edição e exclusão de categorias pelo administrador.
+- Cadastro, edição e exclusão de produtos pelo administrador.
+- Administrador pode navegar pelo cardápio e acessar o checkout, mas não possui carrinho nem pode confirmar pedidos.
+- Navbar personalizada por perfil: clientes veem pedidos; administradores veem categorias, produtos e pedidos.
 - Controle de acesso para usuários `CLIENT` e administradores `ADMIN`.
 - Validação de dados com Bean Validation.
 - Documentação interativa da API com Swagger UI / OpenAPI.
@@ -326,7 +330,7 @@ O projeto possui configurações para diferentes ambientes:
 O perfil ativo é definido em `application.properties` (`spring.profiles.active=test`) e pode ser sobrescrito:
 
 - **Maven:** `-Dspring-boot.run.profiles=dev`
-- **Variável de ambiente:** `SPRING_PROFILES_ACTIVE=dev` (é o que o `docker-compose.yml` faz; veja [Trocando o perfil no Docker](#trocando-o-perfil-no-docker-dev--test))
+- **Variável de ambiente:** `SPRING_PROFILES_ACTIVE=dev` (alteração feita no serviço `backend` do `docker-compose.yml`; veja [Usar PostgreSQL em vez do H2](#usar-postgresql-em-vez-do-h2))
 
 O perfil `test` também é utilizado pelos testes automatizados, o que evita alterações no banco de desenvolvimento.
 
@@ -393,19 +397,25 @@ Os endpoints de documentação são públicos. Os endpoints protegidos continuam
 
 ## 📡 Principais endpoints
 
-| Método | Endpoint                   | Descrição                                                | Autenticação |
-| ------ | -------------------------- | -------------------------------------------------------- | ------------ |
-| `POST` | `/auth/login`              | Autentica e retorna JWT                                  | Não          |
-| `GET`  | `/products`                | Lista produtos                                           | Não          |
-| `GET`  | `/products/{id}`           | Busca um produto                                         | Não          |
-| `GET`  | `/categories`              | Lista categorias                                         | Não          |
-| `GET`  | `/addresses`               | Lista endereços do usuário                               | Sim          |
-| `POST` | `/addresses`               | Cadastra endereço                                        | Sim          |
-| `GET`  | `/addresses/cep/{zipCode}` | Consulta endereço pelo ViaCEP                            | Não          |
-| `GET`  | `/orders`                  | Lista pedidos do usuário ou de todos, para administrador | Sim          |
-| `POST` | `/orders`                  | Cria pedido e reduz o estoque                            | Sim          |
-| `GET`  | `/orders/{id}`             | Busca pedido                                             | Sim          |
-| `PUT`  | `/orders/{id}`             | Atualiza status conforme as regras de perfil             | Sim          |
+| Método   | Endpoint                   | Descrição                                                | Autenticação |
+| -------- | -------------------------- | -------------------------------------------------------- | ------------ |
+| `POST`   | `/auth/login`              | Autentica e retorna JWT                                  | Não          |
+| `GET`    | `/products`                | Lista produtos                                           | Não          |
+| `GET`    | `/products/{id}`           | Busca um produto                                         | Não          |
+| `POST`   | `/products`                | Cadastra produto                                         | Sim — ADMIN  |
+| `PUT`    | `/products/{id}`           | Edita produto                                            | Sim — ADMIN  |
+| `DELETE` | `/products/{id}`           | Exclui produto                                           | Sim — ADMIN  |
+| `GET`    | `/categories`              | Lista categorias                                         | Não          |
+| `POST`   | `/categories`              | Cadastra categoria                                       | Sim — ADMIN  |
+| `PUT`    | `/categories/{id}`         | Edita categoria                                          | Sim — ADMIN  |
+| `DELETE` | `/categories/{id}`         | Exclui categoria                                         | Sim — ADMIN  |
+| `GET`    | `/addresses`               | Lista endereços do usuário                               | Sim          |
+| `POST`   | `/addresses`               | Cadastra endereço                                        | Sim          |
+| `GET`    | `/addresses/cep/{zipCode}` | Consulta endereço pelo ViaCEP                            | Não          |
+| `GET`    | `/orders`                  | Lista pedidos do usuário ou de todos, para administrador | Sim          |
+| `POST`   | `/orders`                  | Cria pedido e reduz o estoque                            | Sim — CLIENT |
+| `GET`    | `/orders/{id}`             | Busca pedido                                             | Sim          |
+| `PUT`    | `/orders/{id}`             | Atualiza status conforme as regras de perfil             | Sim          |
 
 As requisições autenticadas devem enviar:
 
@@ -437,13 +447,24 @@ Você também pode criar uma conta nova em `/register`. Contas criadas pela inte
 
 ## 🖥️ Páginas do frontend
 
+### Usuário cliente
+
 - `/` — página inicial e cardápio por categoria.
 - `/login` — login.
 - `/register` — cadastro.
 - `/checkout` — endereços e confirmação do pedido.
 - `/pedidos` — pedidos do usuário, separados entre ativos e encerrados.
 - `/pedidos/{id}` — confirmação e detalhes de um pedido.
-- `/admin/pedidos` — painel administrativo de pedidos.
+
+### Administrador
+
+- `/admin/pedidos` — controle e alteração de status dos pedidos.
+- `/admin/categorias` — cadastro, edição e exclusão de categorias.
+- `/admin/produtos` — cadastro, edição e exclusão de produtos.
+- `/` — consulta do cardápio sem carrinho ou botão de adicionar.
+- `/checkout` — tela acessível, porém sem confirmar pedido.
+
+Na navbar do administrador aparecem **Categorias**, **Produtos** e **Pedidos**. O link de perfil abre o painel administrativo, e não a página “Meus pedidos”.
 
 ## 📦 Status dos pedidos
 
