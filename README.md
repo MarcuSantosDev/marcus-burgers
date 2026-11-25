@@ -1,4 +1,5 @@
 # 🍔 Marcus's Burgers
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Aplicação full-stack para uma hamburgueria, desenvolvida com **React + Vite** no frontend e **Java + Spring Boot** no backend.
 
