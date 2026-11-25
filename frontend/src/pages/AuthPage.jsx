@@ -17,6 +17,12 @@ export default function AuthPage({ mode = "login" }) {
   async function submit(event) {
     event.preventDefault();
     setError("");
+
+    if (isRegister && form.password.length < 8) {
+      setError("A senha deve ter pelo menos 8 caracteres.");
+      return;
+    }
+
     setLoading(true);
     try {
       if (isRegister) {
@@ -46,7 +52,20 @@ export default function AuthPage({ mode = "login" }) {
             <label>Nome<input name="name" value={form.name} onChange={update} required /></label>
           )}
           <label>E-mail<input name="email" type="email" value={form.email} onChange={update} required /></label>
-          <label>Senha<input name="password" type="password" minLength={isRegister ? 8 : 1} value={form.password} onChange={update} required /></label>
+          <label>
+            Senha
+            <input
+              name="password"
+              type="password"
+              minLength={8}
+              maxLength={72}
+              value={form.password}
+              onChange={update}
+              required
+              aria-describedby="password-hint"
+            />
+            <small id="password-hint" className="form__hint">Use no mínimo 8 caracteres.</small>
+          </label>
           {error && <p className="form__error" role="alert">{error}</p>}
           <button className="primary-button" type="submit" disabled={loading}>{loading ? "Aguarde..." : isRegister ? "Criar conta" : "Entrar"}</button>
         </form>
