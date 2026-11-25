@@ -25,7 +25,7 @@ function CartIcon() {
   );
 }
 
-function Header({ cartCount = 0, onOpenCart, authenticated = false, onLogout }) {
+function Header({ cartCount = 0, onOpenCart, authenticated = false, onLogout, isAdmin = false }) {
   const profile = authenticated ? getUserProfile() : null;
   const profileInitial = profile?.name?.trim()?.charAt(0)?.toUpperCase() || "U";
 
@@ -75,25 +75,29 @@ function Header({ cartCount = 0, onOpenCart, authenticated = false, onLogout }) 
           </Link>
         )}
 
-        <button
-          type="button"
-          className="header__cart"
-          onClick={onOpenCart}
-          aria-label={`Abrir carrinho, ${cartCount} ${
-            cartCount === 1 ? "item" : "itens"
-          }`}
-        >
-          <CartIcon />
-          {cartCount > 0 && (
-            <span className="header__cart-count" key={cartCount}>
-              {cartCount}
-            </span>
-          )}
-        </button>
+        {!isAdmin && (
+          <button
+            type="button"
+            className="header__cart"
+            onClick={onOpenCart}
+            aria-label={`Abrir carrinho, ${cartCount} ${
+              cartCount === 1 ? "item" : "itens"
+            }`}
+          >
+            <CartIcon />
+            {cartCount > 0 && (
+              <span className="header__cart-count" key={cartCount}>
+                {cartCount}
+              </span>
+            )}
+          </button>
+        )}
 
-        <Button href="/checkout" className="header__cta">
-          Fazer pedido
-        </Button>
+        {!isAdmin && (
+          <Button href="/checkout" className="header__cta">
+            Fazer pedido
+          </Button>
+        )}
       </div>
     </header>
   );

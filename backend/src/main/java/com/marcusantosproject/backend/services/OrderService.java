@@ -43,7 +43,11 @@ public class OrderService {
     // O dono do pedido é sempre quem está logado (callerId vem do token, nunca do
     // body)
     @Transactional
-    public OrderResponse insert(Long callerId, OrderRequest request) {
+    public OrderResponse insert(Long callerId, boolean isAdmin, OrderRequest request) {
+        if (isAdmin) {
+            throw new BadRequest("Administradores não podem fazer pedidos.");
+        }
+
         if (request.items() == null || request.items().isEmpty()) {
             throw new BadRequest("Order must have at least one item");
         }

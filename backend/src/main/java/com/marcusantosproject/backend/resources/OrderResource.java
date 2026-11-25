@@ -30,14 +30,14 @@ public class OrderResource {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<OrderResponse> findById(@PathVariable Long id,
-                                                  @AuthenticationPrincipal Jwt jwt) {
+            @AuthenticationPrincipal Jwt jwt) {
         return ResponseEntity.ok().body(orderService.findById(id, AuthUtils.userId(jwt), AuthUtils.isAdmin(jwt)));
     }
 
     @PostMapping
     public ResponseEntity<OrderResponse> insert(@RequestBody @Valid OrderRequest request,
-                                                @AuthenticationPrincipal Jwt jwt) {
-        OrderResponse response = orderService.insert(AuthUtils.userId(jwt), request);
+            @AuthenticationPrincipal Jwt jwt) {
+        OrderResponse response = orderService.insert(AuthUtils.userId(jwt), AuthUtils.isAdmin(jwt), request);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}").buildAndExpand(response.orderId()).toUri();
         return ResponseEntity.created(uri).body(response);
@@ -47,8 +47,8 @@ public class OrderResource {
     // As regras por perfil ficam no OrderService.update.
     @PutMapping("/{id}")
     public ResponseEntity<OrderResponse> update(@PathVariable Long id,
-                                                @RequestBody @Valid OrderUpdate request,
-                                                @AuthenticationPrincipal Jwt jwt) {
+            @RequestBody @Valid OrderUpdate request,
+            @AuthenticationPrincipal Jwt jwt) {
         return ResponseEntity.ok(orderService.update(id, request, AuthUtils.userId(jwt), AuthUtils.isAdmin(jwt)));
     }
 

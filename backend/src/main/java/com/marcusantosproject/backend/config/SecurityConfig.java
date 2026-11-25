@@ -70,6 +70,8 @@ public class SecurityConfig {
                         // Pedidos: apagar é só ADMIN; o restante exige login + checagem de dono no
                         // service
                         .requestMatchers(HttpMethod.DELETE, "/orders/**").hasRole("ADMIN")
+                        // Apenas clientes podem criar pedidos
+                        .requestMatchers(HttpMethod.POST, "/orders").hasRole("CLIENT")
 
                         // Endereços e pedidos: logado; dono validado no service
                         .requestMatchers(HttpMethod.GET, "/addresses/cep/**").permitAll()

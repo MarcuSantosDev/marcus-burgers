@@ -2,7 +2,7 @@ import SectionHeading from "../SectionHeading/SectionHeading";
 import ProductCard from "../ProductCard/ProductCard";
 import "./Menu.css";
 
-function Menu({ products = [], onAddToCart }) {
+function Menu({ products = [], onAddToCart, isAdmin = false }) {
   return (
     <section className="menu" id="cardapio" aria-labelledby="menu-title">
       <SectionHeading
@@ -34,6 +34,7 @@ function Menu({ products = [], onAddToCart }) {
                     key={product.id}
                     product={product}
                     onAdd={onAddToCart}
+                    isAdmin={isAdmin}
                   />
                 ))}
               </div>

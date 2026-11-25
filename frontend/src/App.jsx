@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation, Navigate } from "react-router-dom";
 import { useCart } from "./hooks/useCart";
-import { api, clearToken, getToken } from "./services/api";
+import { api, clearToken, getToken, getUserProfile } from "./services/api";
 import Header from "./components/Header/Header";
 import Hero from "./components/Hero/Hero";
 import Menu from "./components/Menu/Menu";
@@ -44,12 +44,12 @@ const fallbackProducts = [
 	},
 ];
 
-function StorePage({ products, onAddToCart }) {
+function StorePage({ products, onAddToCart, isAdmin }) {
 	return (
 		<>
 			<main id="conteudo">
 				<Hero />
-				<Menu products={products} onAddToCart={onAddToCart} />
+				<Menu products={products} onAddToCart={onAddToCart} isAdmin={isAdmin} />
 				<About />
 			</main>
 			<Footer />
@@ -77,6 +77,8 @@ function AppRoutes() {
 	const [isCartOpen, setIsCartOpen] = useState(false);
 	const [products, setProducts] = useState(fallbackProducts);
 	const [authenticated, setAuthenticated] = useState(Boolean(getToken()));
+	const profile = authenticated ? getUserProfile() : null;
+	const isAdmin = profile?.role === "ADMIN";
 	const [cartFlight, setCartFlight] = useState(null);
 	const cart = useCart(products);
 
@@ -111,6 +113,8 @@ function AppRoutes() {
 	}
 
 	function addToCart(product, button) {
+		if (isAdmin) return; // Impede administradores de adicionar produtos ao carrinho
+
 		const source =
 			button?.getBoundingRect?.() || button?.getBoundingClientRect?.();
 		const target = document.querySelector(".header__cart")?.getBoundingClientRect();
@@ -154,25 +158,30 @@ function AppRoutes() {
 				onOpenCart={() => setIsCartOpen(true)}
 				authenticated={authenticated}
 				onLogout={logout}
+				isAdmin={isAdmin}
 			/>
 
 			<Routes>
 				<Route
 					path="/"
-					element={<StorePage products={products} onAddToCart={addToCart} />}
+					element={<StorePage products={products} onAddToCart={addToCart} isAdmin={isAdmin} />}
 				/>
 				<Route path="/login" element={<AuthPage mode="login" />} />
 				<Route path="/register" element={<AuthPage mode="register" />} />
 				<Route
 					path="/checkout"
 					element={
-						<CheckoutPage
-							cart={cart}
-							onSuccess={async () => {
-								cart.clear();
-								await loadProducts();
-							}}
-						/>
+						authenticated && !isAdmin ? (
+							<CheckoutPage
+								cart={cart}
+								onSuccess={async () => {
+									cart.clear();
+									await loadProducts();
+								}}
+							/>
+						) : (
+							<Navigate to="/" replace />
+						)
 					}
 				/>
 				<Route path="/pedidos" element={<OrdersPage />} />

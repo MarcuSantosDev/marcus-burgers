@@ -2,7 +2,7 @@ import { formatCurrency } from "../../utils/formatCurrency";
 import { unsplashUrl, unsplashSrcSet } from "../../utils/unsplash";
 import "./ProductCard.css";
 
-function ProductCard({ product, onAdd }) {
+function ProductCard({ product, onAdd, isAdmin = false }) {
   const { name, description, price, imageUrl, imageId, stock = 0 } = product;
 
   return (
@@ -28,11 +28,11 @@ function ProductCard({ product, onAdd }) {
             type="button"
             className="product-card__button"
             onClick={(event) => onAdd?.(product, event.currentTarget)}
-            aria-label={`Adicionar ${name} ao pedido`}
-            disabled={stock < 1}
-            title={stock < 1 ? "Produto sem estoque" : `${stock} unidade(s) disponível(is)`}
+            aria-label={isAdmin ? "Administradores não podem fazer pedidos" : `Adicionar ${name} ao pedido`}
+            disabled={isAdmin || stock < 1}
+            title={isAdmin ? "Administradores não podem fazer pedidos" : stock < 1 ? "Produto sem estoque" : `${stock} unidade(s) disponível(is)`}
           >
-            {stock < 1 ? "Sem estoque" : "Adicionar +"}
+            {isAdmin ? "Pedido indisponível" : stock < 1 ? "Sem estoque" : "Adicionar +"}
           </button>
         </div>
       </div>

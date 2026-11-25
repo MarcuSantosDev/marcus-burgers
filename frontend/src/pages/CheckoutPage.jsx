@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { api, getToken } from "../services/api";
+import { api, getToken, getUserProfile } from "../services/api";
 import { formatCurrency } from "../utils/formatCurrency";
 import "./Pages.css";
 
@@ -109,6 +109,10 @@ export default function CheckoutPage({ cart, onSuccess }) {
     }
     if (!addressId) {
       setError("Cadastre um endereço para finalizar o pedido.");
+      return;
+    }
+    if (getUserProfile()?.role === "ADMIN") {
+      setError("Administradores não podem fazer pedidos.");
       return;
     }
     setLoading(true);
