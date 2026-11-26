@@ -96,41 +96,6 @@ O projeto inclui catálogo por categorias, carrinho persistido, autenticação J
 - GitHub Actions
 - GitHub Flow
 
-## 📂 Estrutura do projeto
-
-```text
-ProjetoHamburgueria/
-├── .github/
-│   └── workflows/
-│       └── ci.yml
-├── backend/
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/
-│   │   │   └── resources/
-│   │   └── test/
-│   │       └── java/
-│   ├── .dockerignore
-│   ├── Dockerfile
-│   └── pom.xml
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── hooks/
-│   │   ├── pages/
-│   │   ├── services/
-│   │   ├── styles/
-│   │   └── utils/
-│   ├── .dockerignore
-│   ├── Dockerfile
-│   ├── package.json
-│   └── vite.config.js
-├── docs/
-├── .env.example
-├── docker-compose.yml
-└── README.md
-```
-
 ## 📋 Pré-requisitos
 
 Escolha uma das formas de execução:
@@ -144,87 +109,6 @@ Escolha uma das formas de execução:
 Os comandos deste README assumem **Windows com PowerShell**.
 
 No Linux/macOS, use `./mvnw` no lugar de `.\mvnw.cmd`.
-
-## Variáveis de ambiente
-
-As variáveis de ambiente ficam em um único arquivo `.env`, localizado na raiz do projeto.
-
-Clone o projeto e crie seu arquivo `.env` a partir do exemplo:
-
-```powershell
-Copy-Item .env.example .env
-```
-
-Depois, preencha os valores:
-
-```env
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=hamburgueria
-DB_USERNAME=seu_usuario
-DB_PASSWORD=sua_senha
-JWT_SECRET=sua_chave_base64
-```
-
-### ⚙️ Variáveis disponíveis
-
-| Variável | Descrição | Padrão |
-|---|---|---|
-| `DB_HOST` | Host do PostgreSQL | `localhost` |
-| `DB_PORT` | Porta do PostgreSQL | `5432` |
-| `DB_NAME` | Nome do banco | `hamburgueria` |
-| `DB_USERNAME` | Usuário do banco | Obrigatória no perfil `dev` |
-| `DB_PASSWORD` | Senha do banco | Obrigatória no perfil `dev` |
-| `JWT_SECRET` | Chave Base64 para assinatura e validação dos tokens JWT | Obrigatória no perfil `dev` |
-
-A chave JWT deve possuir pelo menos 32 bytes após a decodificação Base64, conforme a configuração HS256 utilizada pelo projeto.
-
-### Como o `.env` é utilizado
-
-**Docker Compose**
-
-O Docker Compose lê o `.env` localizado na raiz do projeto e repassa as variáveis ao container do backend.
-
-Dentro da rede Docker, o backend utiliza o nome do serviço PostgreSQL como host:
-
-```text
-db
-```
-
-O valor `localhost` do `.env` é destinado à execução local e não interfere quando o Compose sobrescreve `DB_HOST` para `db`.
-
-**Execução local**
-
-O `application.properties` importa o arquivo `.env` por meio de:
-
-```properties
-spring.config.import=optional:file:.env[.properties]
-```
-
-Execute o backend a partir da raiz do projeto ou da pasta `backend`, conforme a configuração do projeto.
-
-Como o import é opcional, a ausência do `.env` não gera erro quando o perfil `test` ou o CI não precisam das variáveis de PostgreSQL.
-
-### Gerar uma chave JWT
-
-No PowerShell:
-
-```powershell
-$bytes = New-Object byte[] 32
-$rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
-$rng.GetBytes($bytes)
-[Convert]::ToBase64String($bytes)
-```
-
-No Linux/macOS:
-
-```bash
-openssl rand -base64 32
-```
-
-O token JWT expira em 3600 segundos (1 hora), conforme a configuração `security.jwt.expiration`.
-
-> ⚠️ Nunca commite o arquivo `.env`. Ele está no `.gitignore`; apenas o `.env.example`, com valores fictícios, deve ser versionado. Utilize uma chave JWT exclusiva para cada ambiente.
 
 ## 🚀 Como Rodar na Minha Máquina
 
@@ -383,6 +267,122 @@ Não é necessário alterar manualmente a URL JDBC. O perfil selecionado define 
 |---|---|---|---|
 | `test` (padrão) | H2 | Volume `h2_data` | Carregados pelo `data.sql` |
 | `dev` | PostgreSQL | Volume `postgres_data` | Não carregados automaticamente |
+
+## 📂 Estrutura do projeto
+
+```text
+ProjetoHamburgueria/
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+├── backend/
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/
+│   │   │   └── resources/
+│   │   └── test/
+│   │       └── java/
+│   ├── .dockerignore
+│   ├── Dockerfile
+│   └── pom.xml
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   ├── styles/
+│   │   └── utils/
+│   ├── .dockerignore
+│   ├── Dockerfile
+│   ├── package.json
+│   └── vite.config.js
+├── docs/
+├── .env.example
+├── docker-compose.yml
+└── README.md
+```
+
+## Variáveis de ambiente
+
+As variáveis de ambiente ficam em um único arquivo `.env`, localizado na raiz do projeto.
+
+Clone o projeto e crie seu arquivo `.env` a partir do exemplo:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Depois, preencha os valores:
+
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=hamburgueria
+DB_USERNAME=seu_usuario
+DB_PASSWORD=sua_senha
+JWT_SECRET=sua_chave_base64
+```
+
+### ⚙️ Variáveis disponíveis
+
+| Variável | Descrição | Padrão |
+|---|---|---|
+| `DB_HOST` | Host do PostgreSQL | `localhost` |
+| `DB_PORT` | Porta do PostgreSQL | `5432` |
+| `DB_NAME` | Nome do banco | `hamburgueria` |
+| `DB_USERNAME` | Usuário do banco | Obrigatória no perfil `dev` |
+| `DB_PASSWORD` | Senha do banco | Obrigatória no perfil `dev` |
+| `JWT_SECRET` | Chave Base64 para assinatura e validação dos tokens JWT | Obrigatória no perfil `dev` |
+
+A chave JWT deve possuir pelo menos 32 bytes após a decodificação Base64, conforme a configuração HS256 utilizada pelo projeto.
+
+### Como o `.env` é utilizado
+
+**Docker Compose**
+
+O Docker Compose lê o `.env` localizado na raiz do projeto e repassa as variáveis ao container do backend.
+
+Dentro da rede Docker, o backend utiliza o nome do serviço PostgreSQL como host:
+
+```text
+db
+```
+
+O valor `localhost` do `.env` é destinado à execução local e não interfere quando o Compose sobrescreve `DB_HOST` para `db`.
+
+**Execução local**
+
+O `application.properties` importa o arquivo `.env` por meio de:
+
+```properties
+spring.config.import=optional:file:.env[.properties]
+```
+
+Execute o backend a partir da raiz do projeto ou da pasta `backend`, conforme a configuração do projeto.
+
+Como o import é opcional, a ausência do `.env` não gera erro quando o perfil `test` ou o CI não precisam das variáveis de PostgreSQL.
+
+### Gerar uma chave JWT
+
+No PowerShell:
+
+```powershell
+$bytes = New-Object byte[] 32
+$rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+$rng.GetBytes($bytes)
+[Convert]::ToBase64String($bytes)
+```
+
+No Linux/macOS:
+
+```bash
+openssl rand -base64 32
+```
+
+O token JWT expira em 3600 segundos (1 hora), conforme a configuração `security.jwt.expiration`.
+
+> ⚠️ Nunca commite o arquivo `.env`. Ele está no `.gitignore`; apenas o `.env.example`, com valores fictícios, deve ser versionado. Utilize uma chave JWT exclusiva para cada ambiente.
 
 ## 🗄️ Perfis e banco de dados
 
