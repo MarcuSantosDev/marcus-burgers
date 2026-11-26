@@ -34,6 +34,9 @@ jobs:
           java-version: "25"
           cache: maven
 
+      - name: Verify Docker
+        run: docker --version
+
       - name: Run tests and build
         run: bash ./mvnw -B clean verify
 
