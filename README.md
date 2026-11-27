@@ -225,14 +225,21 @@ DB_NAME=hamburgueria
 DB_USERNAME=seu_usuario
 DB_PASSWORD=sua_senha
 JWT_SECRET=sua_chave_base64
+SPRING_PROFILES_ACTIVE=dev
 ```
 
 > Na execução local, use `DB_HOST=localhost`. O valor `db` é o nome do serviço PostgreSQL dentro da rede do Docker Compose.
 
-Execute o backend com o perfil `dev`:
+Com `SPRING_PROFILES_ACTIVE=dev` no `.env`, basta executar:
 
 ```powershell
 cd backend
+.\mvnw.cmd spring-boot:run
+```
+
+Ou, para forçar o perfil `dev` pela linha de comando:
+
+```powershell
 .\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=dev"
 ```
 
@@ -335,7 +342,7 @@ SPRING_PROFILES_ACTIVE=test
 | `DB_USERNAME` | Usuário do banco | Obrigatória no perfil `dev` |
 | `DB_PASSWORD` | Senha do banco | Obrigatória no perfil `dev` |
 | `JWT_SECRET` | Chave Base64 para assinatura e validação dos tokens JWT | Obrigatória no perfil `dev` |
-| `SPRING_PROFILES_ACTIVE` | Perfil do backend no Docker Compose: `test` (H2) ou `dev` (PostgreSQL) | `test` |
+| `SPRING_PROFILES_ACTIVE` | Perfil ativo do backend: `test` (H2) ou `dev` (PostgreSQL) | `test` |
 
 A chave JWT deve possuir pelo menos 32 bytes após a decodificação Base64, conforme a configuração HS256 utilizada pelo projeto.
 
@@ -369,7 +376,7 @@ spring.config.import=optional:file:.env[.properties]
 
 Execute o backend a partir da raiz do projeto ou da pasta `backend`, conforme a configuração do projeto.
 
-Na execução local, o perfil **não** é escolhido pelo `.env`. Use `-Dspring-boot.run.profiles=dev` para ativar o perfil `dev`. A variável `SPRING_PROFILES_ACTIVE` do `.env` vale apenas para o Docker Compose.
+O perfil também pode ser escolhido pelo `.env` na execução local: defina `SPRING_PROFILES_ACTIVE=dev` (PostgreSQL) ou `SPRING_PROFILES_ACTIVE=test` (H2). Se preferir, é possível sobrescrever pela linha de comando com `-Dspring-boot.run.profiles=dev`.
 
 Como o import é opcional, a ausência do `.env` não gera erro quando o perfil `test` ou o CI não precisam das variáveis de PostgreSQL.
 
