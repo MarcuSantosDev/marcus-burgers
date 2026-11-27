@@ -1,5 +1,4 @@
 # Marcus's Burgers
-
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Aplicação full-stack para uma hamburgueria, desenvolvida com **React + Vite** no frontend e **Java + Spring Boot** no backend.
@@ -91,10 +90,10 @@ O projeto inclui catálogo por categorias, carrinho persistido, autenticação J
 
 Escolha uma das formas de execução:
 
-| Forma de execução                                                         | Necessário                                        |
-| ------------------------------------------------------------------------- | ------------------------------------------------- |
-| [Docker](#opção-1-docker-compose-recomendado)                             | Docker Desktop com Docker Compose e Git           |
-| [Local — perfil `test`](#opção-2-execução-local-com-perfil-test)          | Java 25, Node.js 22 ou superior e Git             |
+| Forma de execução | Necessário |
+|---|---|
+| [Docker](#opção-1-docker-compose-recomendado) | Docker Desktop com Docker Compose e Git |
+| [Local — perfil `test`](#opção-2-execução-local-com-perfil-test) | Java 25, Node.js 22 ou superior e Git |
 | [Local — perfil `dev`](#opção-3-execução-local-com-postgresql-perfil-dev) | Java 25, Node.js 22 ou superior, PostgreSQL e Git |
 
 > Para **executar os testes automatizados do backend** (`mvnw test` / `mvnw verify`), é necessário ter o **Docker em execução**, pois o teste de concorrência sobe um container PostgreSQL via Testcontainers. Veja a seção [Testes](#-testes).
@@ -107,14 +106,15 @@ No Linux/macOS, use `./mvnw` no lugar de `.\mvnw.cmd`.
 
 ### Endereços da aplicação
 
-| Serviço         | Endereço                                    |
-| --------------- | ------------------------------------------- |
-| Loja (frontend) | http://localhost:5173                       |
-| API do backend  | http://localhost:8080                       |
-| Swagger UI      | http://localhost:8080/swagger-ui/index.html |
-| OpenAPI JSON    | http://localhost:8080/v3/api-docs           |
-| Console do H2   | http://localhost:8080/h2-console            |
-| PostgreSQL      | `localhost:5432`                            |
+| Serviço | Endereço |
+|---|---|
+| Loja (frontend) | http://localhost:5173 |
+| API do backend | http://localhost:8080 |
+| Swagger UI | http://localhost:8080/swagger-ui/index.html |
+| OpenAPI JSON | http://localhost:8080/v3/api-docs |
+| Console do H2 | http://localhost:8080/h2-console |
+| PostgreSQL (Docker) | `localhost:5433` |
+| PostgreSQL (instalado localmente) | `localhost:5432` |
 
 ### Opção 1: Docker Compose (recomendado)
 
@@ -140,7 +140,7 @@ Acesse:
 
 http://localhost:5173
 
-Por padrão, o Compose inicia o backend com o perfil `test`, utilizando H2 em arquivo.
+O perfil do backend é definido pela variável `SPRING_PROFILES_ACTIVE` no arquivo `.env`. Por padrão, o valor é `test`, que utiliza H2 em arquivo.
 
 O banco H2 é persistido no volume Docker `h2_data`, portanto os dados permanecem disponíveis após reiniciar o container.
 
@@ -227,6 +227,8 @@ DB_PASSWORD=sua_senha
 JWT_SECRET=sua_chave_base64
 ```
 
+> Na execução local, use `DB_HOST=localhost`. O valor `db` é o nome do serviço PostgreSQL dentro da rede do Docker Compose.
+
 Execute o backend com o perfil `dev`:
 
 ```powershell
@@ -240,10 +242,10 @@ O perfil `dev` utiliza PostgreSQL e as variáveis de ambiente configuradas no `.
 
 ### Utilizar PostgreSQL no Docker
 
-Para utilizar PostgreSQL em vez de H2 no Docker, altere o perfil do serviço `backend` no `docker-compose.yml`:
+Para utilizar PostgreSQL em vez de H2 no Docker, altere o perfil no arquivo `.env`:
 
-```yaml
-SPRING_PROFILES_ACTIVE: dev
+```env
+SPRING_PROFILES_ACTIVE=dev
 ```
 
 Depois recrie o backend:
@@ -254,12 +256,12 @@ docker compose up -d --build backend
 
 O serviço PostgreSQL é acessado pelo backend através do host `db`, que corresponde ao nome do serviço no Docker Compose.
 
-Não é necessário alterar manualmente a URL JDBC. O perfil selecionado define automaticamente o banco utilizado.
+Não é necessário alterar o `docker-compose.yml` nem a URL JDBC. O perfil selecionado no `.env` define automaticamente o banco utilizado.
 
-| Perfil no Docker | Banco      | Persistência           | Dados de demonstração          |
-| ---------------- | ---------- | ---------------------- | ------------------------------ |
-| `test` (padrão)  | H2         | Volume `h2_data`       | Carregados pelo `data.sql`     |
-| `dev`            | PostgreSQL | Volume `postgres_data` | Não carregados automaticamente |
+| Perfil no Docker | Banco | Persistência | Dados de demonstração |
+|---|---|---|---|
+| `test` (padrão) | H2 | Volume `h2_data` | Carregados pelo `data.sql` |
+| `dev` | PostgreSQL | Volume `postgres_data` | Não carregados automaticamente |
 
 ## 📂 Estrutura do projeto
 
@@ -306,27 +308,34 @@ Clone o projeto e crie seu arquivo `.env` a partir do exemplo:
 Copy-Item .env.example .env
 ```
 
-Depois, preencha os valores:
+Depois, preencha os valores. Exemplo para uso com Docker Compose:
 
 ```env
-DB_HOST=localhost
+# PostgreSQL
+DB_HOST=db
 DB_PORT=5432
 DB_NAME=hamburgueria
-DB_USERNAME=seu_usuario
-DB_PASSWORD=sua_senha
-JWT_SECRET=sua_chave_base64
+DB_USERNAME=admin_user
+DB_PASSWORD=change_me
+
+# JWT
+JWT_SECRET=your_base64_secret_here
+
+# test = H2 | dev = PostgreSQL
+SPRING_PROFILES_ACTIVE=test
 ```
 
 ### ⚙️ Variáveis disponíveis
 
-| Variável      | Descrição                                               | Padrão                      |
-| ------------- | ------------------------------------------------------- | --------------------------- |
-| `DB_HOST`     | Host do PostgreSQL                                      | `localhost`                 |
-| `DB_PORT`     | Porta do PostgreSQL                                     | `5432`                      |
-| `DB_NAME`     | Nome do banco                                           | `hamburgueria`              |
-| `DB_USERNAME` | Usuário do banco                                        | Obrigatória no perfil `dev` |
-| `DB_PASSWORD` | Senha do banco                                          | Obrigatória no perfil `dev` |
-| `JWT_SECRET`  | Chave Base64 para assinatura e validação dos tokens JWT | Obrigatória no perfil `dev` |
+| Variável | Descrição | Padrão |
+|---|---|---|
+| `DB_HOST` | Host do PostgreSQL (`db` no Docker, `localhost` na execução local) | `localhost` |
+| `DB_PORT` | Porta do PostgreSQL | `5432` |
+| `DB_NAME` | Nome do banco | `hamburgueria` |
+| `DB_USERNAME` | Usuário do banco | Obrigatória no perfil `dev` |
+| `DB_PASSWORD` | Senha do banco | Obrigatória no perfil `dev` |
+| `JWT_SECRET` | Chave Base64 para assinatura e validação dos tokens JWT | Obrigatória no perfil `dev` |
+| `SPRING_PROFILES_ACTIVE` | Perfil do backend no Docker Compose: `test` (H2) ou `dev` (PostgreSQL) | `test` |
 
 A chave JWT deve possuir pelo menos 32 bytes após a decodificação Base64, conforme a configuração HS256 utilizada pelo projeto.
 
@@ -336,13 +345,19 @@ A chave JWT deve possuir pelo menos 32 bytes após a decodificação Base64, con
 
 O Docker Compose lê o `.env` localizado na raiz do projeto e repassa as variáveis ao container do backend.
 
+O perfil do backend é escolhido por `SPRING_PROFILES_ACTIVE` no `.env`. Se a variável não existir, o Compose usa `test` como valor padrão. Para trocar de perfil, altere o valor no `.env` e recrie o backend:
+
+```powershell
+docker compose up -d --build backend
+```
+
 Dentro da rede Docker, o backend utiliza o nome do serviço PostgreSQL como host:
 
 ```text
 db
 ```
 
-O valor `localhost` do `.env` é destinado à execução local e não interfere quando o Compose sobrescreve `DB_HOST` para `db`.
+O Compose sempre define `DB_HOST` como `db` para o backend, portanto o valor de `DB_HOST` no `.env` só importa na execução local.
 
 **Execução local**
 
@@ -353,6 +368,8 @@ spring.config.import=optional:file:.env[.properties]
 ```
 
 Execute o backend a partir da raiz do projeto ou da pasta `backend`, conforme a configuração do projeto.
+
+Na execução local, o perfil **não** é escolhido pelo `.env`. Use `-Dspring-boot.run.profiles=dev` para ativar o perfil `dev`. A variável `SPRING_PROFILES_ACTIVE` do `.env` vale apenas para o Docker Compose.
 
 Como o import é opcional, a ausência do `.env` não gera erro quando o perfil `test` ou o CI não precisam das variáveis de PostgreSQL.
 
@@ -381,10 +398,10 @@ O token JWT expira em 3600 segundos (1 hora), conforme a configuração `securit
 
 O projeto possui configurações para diferentes ambientes:
 
-| Perfil          | Banco         | Uso                                       |
-| --------------- | ------------- | ----------------------------------------- |
-| `test` (padrão) | H2 em arquivo | Execução local e Docker                   |
-| `dev`           | PostgreSQL    | Desenvolvimento com banco relacional real |
+| Perfil | Banco | Uso |
+|---|---|---|
+| `test` (padrão) | H2 em arquivo | Execução local e Docker |
+| `dev` | PostgreSQL | Desenvolvimento com banco relacional real |
 
 O perfil ativo é definido em `application.properties` e pode ser sobrescrito.
 
@@ -396,7 +413,7 @@ O perfil ativo é definido em `application.properties` e pode ser sobrescrito.
 
 **Docker:**
 
-Altere `SPRING_PROFILES_ACTIVE` no serviço `backend` do `docker-compose.yml` e recrie o container.
+Altere `SPRING_PROFILES_ACTIVE` no arquivo `.env` e recrie o container com `docker compose up -d --build backend`.
 
 Os testes automatizados também ativam o perfil `test` (para reaproveitar as configurações de JWT e demais propriedades), mas **sobrescrevem o datasource** com um container PostgreSQL temporário criado pelo Testcontainers. Assim, não há alteração no banco de desenvolvimento nem no arquivo H2 local.
 
@@ -408,12 +425,12 @@ http://localhost:8080/h2-console
 
 Utilize as seguintes configurações:
 
-| Campo        | Valor            |
-| ------------ | ---------------- |
-| Driver Class | `org.h2.Driver`  |
-| JDBC URL     | `jdbc:h2:~/test` |
-| User Name    | `sa`             |
-| Password     | Deixe vazio      |
+| Campo | Valor |
+|---|---|
+| Driver Class | `org.h2.Driver` |
+| JDBC URL | `jdbc:h2:~/test` |
+| User Name | `sa` |
+| Password | Deixe vazio |
 
 No Docker, o banco H2 é persistido no volume `h2_data`.
 
@@ -445,10 +462,10 @@ O projeto utiliza Springdoc OpenAPI para gerar a documentação da API e disponi
 
 Com o backend em execução, acesse:
 
-| Recurso      | URL                                         |
-| ------------ | ------------------------------------------- |
-| Swagger UI   | http://localhost:8080/swagger-ui/index.html |
-| OpenAPI JSON | http://localhost:8080/v3/api-docs           |
+| Recurso | URL |
+|---|---|
+| Swagger UI | http://localhost:8080/swagger-ui/index.html |
+| OpenAPI JSON | http://localhost:8080/v3/api-docs |
 
 A documentação permite:
 
@@ -461,25 +478,25 @@ Os endpoints de documentação são públicos. Os endpoints protegidos continuam
 
 ## 🔌 Principais endpoints
 
-| Método   | Endpoint                   | Descrição                                    | Autenticação |
-| -------- | -------------------------- | -------------------------------------------- | ------------ |
-| `POST`   | `/auth/login`              | Autentica e retorna JWT                      | Não          |
-| `GET`    | `/products`                | Lista produtos                               | Não          |
-| `GET`    | `/products/{id}`           | Busca um produto                             | Não          |
-| `POST`   | `/products`                | Cadastra produto                             | ADMIN        |
-| `PUT`    | `/products/{id}`           | Edita produto                                | ADMIN        |
-| `DELETE` | `/products/{id}`           | Exclui produto                               | ADMIN        |
-| `GET`    | `/categories`              | Lista categorias                             | Não          |
-| `POST`   | `/categories`              | Cadastra categoria                           | ADMIN        |
-| `PUT`    | `/categories/{id}`         | Edita categoria                              | ADMIN        |
-| `DELETE` | `/categories/{id}`         | Exclui categoria                             | ADMIN        |
-| `GET`    | `/addresses`               | Lista endereços do usuário                   | Sim          |
-| `POST`   | `/addresses`               | Cadastra endereço                            | Sim          |
-| `GET`    | `/addresses/cep/{zipCode}` | Consulta endereço pelo ViaCEP                | Não          |
-| `GET`    | `/orders`                  | Lista pedidos do usuário ou todos para ADMIN | Sim          |
-| `POST`   | `/orders`                  | Cria pedido e reduz o estoque                | CLIENT       |
-| `GET`    | `/orders/{id}`             | Busca pedido                                 | Sim          |
-| `PUT`    | `/orders/{id}`             | Atualiza status conforme regras de perfil    | Sim          |
+| Método | Endpoint | Descrição | Autenticação |
+|---|---|---|---|
+| `POST` | `/auth/login` | Autentica e retorna JWT | Não |
+| `GET` | `/products` | Lista produtos | Não |
+| `GET` | `/products/{id}` | Busca um produto | Não |
+| `POST` | `/products` | Cadastra produto | ADMIN |
+| `PUT` | `/products/{id}` | Edita produto | ADMIN |
+| `DELETE` | `/products/{id}` | Exclui produto | ADMIN |
+| `GET` | `/categories` | Lista categorias | Não |
+| `POST` | `/categories` | Cadastra categoria | ADMIN |
+| `PUT` | `/categories/{id}` | Edita categoria | ADMIN |
+| `DELETE` | `/categories/{id}` | Exclui categoria | ADMIN |
+| `GET` | `/addresses` | Lista endereços do usuário | Sim |
+| `POST` | `/addresses` | Cadastra endereço | Sim |
+| `GET` | `/addresses/cep/{zipCode}` | Consulta endereço pelo ViaCEP | Não |
+| `GET` | `/orders` | Lista pedidos do usuário ou todos para ADMIN | Sim |
+| `POST` | `/orders` | Cria pedido e reduz o estoque | CLIENT |
+| `GET` | `/orders/{id}` | Busca pedido | Sim |
+| `PUT` | `/orders/{id}` | Atualiza status conforme regras de perfil | Sim |
 
 As requisições autenticadas devem enviar o token no cabeçalho:
 
@@ -498,9 +515,9 @@ O arquivo `backend/src/main/resources/data.sql` popula o banco com:
 
 Credenciais de demonstração (somente para desenvolvimento):
 
-| Perfil   | E-mail             | Senha                 |
-| -------- | ------------------ | --------------------- |
-| `ADMIN`  | `admin@email.com`  | Senha de demonstração |
+| Perfil | E-mail | Senha |
+|---|---|---|
+| `ADMIN` | `admin@email.com` | Senha de demonstração |
 | `CLIENT` | `marcus@email.com` | Senha de demonstração |
 
 As senhas dos usuários de demonstração são armazenadas como hashes BCrypt.
@@ -541,12 +558,12 @@ PENDING → PREPARING → READY → DELIVERED
           CANCELLED
 ```
 
-| Status      | Descrição         |
-| ----------- | ----------------- |
-| `PENDING`   | Pendente          |
-| `PREPARING` | Preparando        |
-| `READY`     | Pronto            |
-| `DELIVERED` | Entregue (final)  |
+| Status | Descrição |
+|---|---|
+| `PENDING` | Pendente |
+| `PREPARING` | Preparando |
+| `READY` | Pronto |
+| `DELIVERED` | Entregue (final) |
 | `CANCELLED` | Cancelado (final) |
 
 A trilha de acompanhamento do cliente possui 4 etapas, de `PENDING` a `DELIVERED`.
