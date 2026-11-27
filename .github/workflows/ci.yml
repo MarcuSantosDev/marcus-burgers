@@ -24,6 +24,8 @@ jobs:
       SPRING_PROFILES_ACTIVE: test
       DOCKER_HOST: unix:///var/run/docker.sock
       DOCKER_API_VERSION: "1.44"
+      TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE: /var/run/docker.sock
+      TESTCONTAINERS_RYUK_DISABLED: true
 
     steps:
       - name: Checkout repository
@@ -35,12 +37,6 @@ jobs:
           distribution: temurin
           java-version: "25"
           cache: maven
-
-      - name: Verify Docker
-        run: |
-          docker --version
-          docker info --format '{{json .ServerVersion}}'
-          docker run --rm hello-world
 
       - name: Run tests and build
         run: bash ./mvnw -B clean verify
