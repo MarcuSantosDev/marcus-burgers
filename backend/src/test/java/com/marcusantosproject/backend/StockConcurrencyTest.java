@@ -21,9 +21,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -60,7 +60,7 @@ class StockConcurrencyTest {
         private Long secondUserId;
 
         @Container
-        static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17-alpine")
+        static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:17-alpine")
                         .withDatabaseName("hamburgueria")
                         .withUsername("test")
                         .withPassword("test");

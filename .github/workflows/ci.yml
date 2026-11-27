@@ -22,10 +22,6 @@ jobs:
 
     env:
       SPRING_PROFILES_ACTIVE: test
-      DOCKER_HOST: unix:///var/run/docker.sock
-      DOCKER_API_VERSION: "1.44"
-      TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE: /var/run/docker.sock
-      TESTCONTAINERS_RYUK_DISABLED: true
 
     steps:
       - name: Checkout repository
