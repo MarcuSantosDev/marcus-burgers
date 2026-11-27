@@ -1,4 +1,5 @@
 # Marcus's Burgers
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Aplicação full-stack para uma hamburgueria, desenvolvida com **React + Vite** no frontend e **Java + Spring Boot** no backend.
@@ -30,7 +31,7 @@ O projeto inclui catálogo por categorias, carrinho persistido, autenticação J
 - Busca automática de endereço por CEP integrada à API ViaCEP no backend.
 - Limite de quantidade no carrinho conforme o estoque disponível.
 - Controle de estoque com bloqueio pessimista, evitando que pedidos simultâneos vendam o mesmo último item.
-- Teste automatizado de concorrência para validar o controle de estoque.
+- Teste automatizado de concorrência executado contra um PostgreSQL real (Testcontainers) para validar o controle de estoque.
 - Atualização do catálogo e estoque após a finalização de pedidos.
 - Perfil do usuário com nome e e-mail no cabeçalho.
 - Criação e acompanhamento de pedidos.
@@ -61,10 +62,11 @@ O projeto inclui catálogo por categorias, carrinho persistido, autenticação J
 - ViaCEP API com `RestClient`
 - Bean Validation
 - PostgreSQL
-- H2 para testes e desenvolvimento
+- H2 para execução local e Docker (perfil `test`)
 - Maven
 - Lombok
 - JUnit 6.0.3
+- Testcontainers 2.x (PostgreSQL nos testes de integração)
 
 ### Frontend
 
@@ -89,11 +91,13 @@ O projeto inclui catálogo por categorias, carrinho persistido, autenticação J
 
 Escolha uma das formas de execução:
 
-| Forma de execução | Necessário |
-|---|---|
-| [Docker](#opção-1-docker-compose-recomendado) | Docker Desktop com Docker Compose e Git |
-| [Local — perfil `test`](#opção-2-execução-local-com-perfil-test) | Java 25, Node.js 22 ou superior e Git |
+| Forma de execução                                                         | Necessário                                        |
+| ------------------------------------------------------------------------- | ------------------------------------------------- |
+| [Docker](#opção-1-docker-compose-recomendado)                             | Docker Desktop com Docker Compose e Git           |
+| [Local — perfil `test`](#opção-2-execução-local-com-perfil-test)          | Java 25, Node.js 22 ou superior e Git             |
 | [Local — perfil `dev`](#opção-3-execução-local-com-postgresql-perfil-dev) | Java 25, Node.js 22 ou superior, PostgreSQL e Git |
+
+> Para **executar os testes automatizados do backend** (`mvnw test` / `mvnw verify`), é necessário ter o **Docker em execução**, pois o teste de concorrência sobe um container PostgreSQL via Testcontainers. Veja a seção [Testes](#-testes).
 
 Os comandos deste README assumem **Windows com PowerShell**.
 
@@ -103,14 +107,14 @@ No Linux/macOS, use `./mvnw` no lugar de `.\mvnw.cmd`.
 
 ### Endereços da aplicação
 
-| Serviço | Endereço |
-|---|---|
-| Loja (frontend) | http://localhost:5173 |
-| API do backend | http://localhost:8080 |
-| Swagger UI | http://localhost:8080/swagger-ui/index.html |
-| OpenAPI JSON | http://localhost:8080/v3/api-docs |
-| Console do H2 | http://localhost:8080/h2-console |
-| PostgreSQL | `localhost:5432` |
+| Serviço         | Endereço                                    |
+| --------------- | ------------------------------------------- |
+| Loja (frontend) | http://localhost:5173                       |
+| API do backend  | http://localhost:8080                       |
+| Swagger UI      | http://localhost:8080/swagger-ui/index.html |
+| OpenAPI JSON    | http://localhost:8080/v3/api-docs           |
+| Console do H2   | http://localhost:8080/h2-console            |
+| PostgreSQL      | `localhost:5432`                            |
 
 ### Opção 1: Docker Compose (recomendado)
 
@@ -252,10 +256,10 @@ O serviço PostgreSQL é acessado pelo backend através do host `db`, que corres
 
 Não é necessário alterar manualmente a URL JDBC. O perfil selecionado define automaticamente o banco utilizado.
 
-| Perfil no Docker | Banco | Persistência | Dados de demonstração |
-|---|---|---|---|
-| `test` (padrão) | H2 | Volume `h2_data` | Carregados pelo `data.sql` |
-| `dev` | PostgreSQL | Volume `postgres_data` | Não carregados automaticamente |
+| Perfil no Docker | Banco      | Persistência           | Dados de demonstração          |
+| ---------------- | ---------- | ---------------------- | ------------------------------ |
+| `test` (padrão)  | H2         | Volume `h2_data`       | Carregados pelo `data.sql`     |
+| `dev`            | PostgreSQL | Volume `postgres_data` | Não carregados automaticamente |
 
 ## 📂 Estrutura do projeto
 
@@ -315,14 +319,14 @@ JWT_SECRET=sua_chave_base64
 
 ### ⚙️ Variáveis disponíveis
 
-| Variável | Descrição | Padrão |
-|---|---|---|
-| `DB_HOST` | Host do PostgreSQL | `localhost` |
-| `DB_PORT` | Porta do PostgreSQL | `5432` |
-| `DB_NAME` | Nome do banco | `hamburgueria` |
-| `DB_USERNAME` | Usuário do banco | Obrigatória no perfil `dev` |
-| `DB_PASSWORD` | Senha do banco | Obrigatória no perfil `dev` |
-| `JWT_SECRET` | Chave Base64 para assinatura e validação dos tokens JWT | Obrigatória no perfil `dev` |
+| Variável      | Descrição                                               | Padrão                      |
+| ------------- | ------------------------------------------------------- | --------------------------- |
+| `DB_HOST`     | Host do PostgreSQL                                      | `localhost`                 |
+| `DB_PORT`     | Porta do PostgreSQL                                     | `5432`                      |
+| `DB_NAME`     | Nome do banco                                           | `hamburgueria`              |
+| `DB_USERNAME` | Usuário do banco                                        | Obrigatória no perfil `dev` |
+| `DB_PASSWORD` | Senha do banco                                          | Obrigatória no perfil `dev` |
+| `JWT_SECRET`  | Chave Base64 para assinatura e validação dos tokens JWT | Obrigatória no perfil `dev` |
 
 A chave JWT deve possuir pelo menos 32 bytes após a decodificação Base64, conforme a configuração HS256 utilizada pelo projeto.
 
@@ -377,10 +381,10 @@ O token JWT expira em 3600 segundos (1 hora), conforme a configuração `securit
 
 O projeto possui configurações para diferentes ambientes:
 
-| Perfil | Banco | Uso |
-|---|---|---|
-| `test` (padrão) | H2 em arquivo | Execução local, Docker e testes automatizados |
-| `dev` | PostgreSQL | Desenvolvimento com banco relacional real |
+| Perfil          | Banco         | Uso                                       |
+| --------------- | ------------- | ----------------------------------------- |
+| `test` (padrão) | H2 em arquivo | Execução local e Docker                   |
+| `dev`           | PostgreSQL    | Desenvolvimento com banco relacional real |
 
 O perfil ativo é definido em `application.properties` e pode ser sobrescrito.
 
@@ -394,7 +398,7 @@ O perfil ativo é definido em `application.properties` e pode ser sobrescrito.
 
 Altere `SPRING_PROFILES_ACTIVE` no serviço `backend` do `docker-compose.yml` e recrie o container.
 
-O perfil `test` também é utilizado pelos testes automatizados, evitando alterações no banco de desenvolvimento.
+Os testes automatizados também ativam o perfil `test` (para reaproveitar as configurações de JWT e demais propriedades), mas **sobrescrevem o datasource** com um container PostgreSQL temporário criado pelo Testcontainers. Assim, não há alteração no banco de desenvolvimento nem no arquivo H2 local.
 
 ### H2 Console
 
@@ -404,12 +408,12 @@ http://localhost:8080/h2-console
 
 Utilize as seguintes configurações:
 
-| Campo | Valor |
-|---|---|
-| Driver Class | `org.h2.Driver` |
-| JDBC URL | `jdbc:h2:~/test` |
-| User Name | `sa` |
-| Password | Deixe vazio |
+| Campo        | Valor            |
+| ------------ | ---------------- |
+| Driver Class | `org.h2.Driver`  |
+| JDBC URL     | `jdbc:h2:~/test` |
+| User Name    | `sa`             |
+| Password     | Deixe vazio      |
 
 No Docker, o banco H2 é persistido no volume `h2_data`.
 
@@ -441,10 +445,10 @@ O projeto utiliza Springdoc OpenAPI para gerar a documentação da API e disponi
 
 Com o backend em execução, acesse:
 
-| Recurso | URL |
-|---|---|
-| Swagger UI | http://localhost:8080/swagger-ui/index.html |
-| OpenAPI JSON | http://localhost:8080/v3/api-docs |
+| Recurso      | URL                                         |
+| ------------ | ------------------------------------------- |
+| Swagger UI   | http://localhost:8080/swagger-ui/index.html |
+| OpenAPI JSON | http://localhost:8080/v3/api-docs           |
 
 A documentação permite:
 
@@ -457,25 +461,25 @@ Os endpoints de documentação são públicos. Os endpoints protegidos continuam
 
 ## 🔌 Principais endpoints
 
-| Método | Endpoint | Descrição | Autenticação |
-|---|---|---|---|
-| `POST` | `/auth/login` | Autentica e retorna JWT | Não |
-| `GET` | `/products` | Lista produtos | Não |
-| `GET` | `/products/{id}` | Busca um produto | Não |
-| `POST` | `/products` | Cadastra produto | ADMIN |
-| `PUT` | `/products/{id}` | Edita produto | ADMIN |
-| `DELETE` | `/products/{id}` | Exclui produto | ADMIN |
-| `GET` | `/categories` | Lista categorias | Não |
-| `POST` | `/categories` | Cadastra categoria | ADMIN |
-| `PUT` | `/categories/{id}` | Edita categoria | ADMIN |
-| `DELETE` | `/categories/{id}` | Exclui categoria | ADMIN |
-| `GET` | `/addresses` | Lista endereços do usuário | Sim |
-| `POST` | `/addresses` | Cadastra endereço | Sim |
-| `GET` | `/addresses/cep/{zipCode}` | Consulta endereço pelo ViaCEP | Não |
-| `GET` | `/orders` | Lista pedidos do usuário ou todos para ADMIN | Sim |
-| `POST` | `/orders` | Cria pedido e reduz o estoque | CLIENT |
-| `GET` | `/orders/{id}` | Busca pedido | Sim |
-| `PUT` | `/orders/{id}` | Atualiza status conforme regras de perfil | Sim |
+| Método   | Endpoint                   | Descrição                                    | Autenticação |
+| -------- | -------------------------- | -------------------------------------------- | ------------ |
+| `POST`   | `/auth/login`              | Autentica e retorna JWT                      | Não          |
+| `GET`    | `/products`                | Lista produtos                               | Não          |
+| `GET`    | `/products/{id}`           | Busca um produto                             | Não          |
+| `POST`   | `/products`                | Cadastra produto                             | ADMIN        |
+| `PUT`    | `/products/{id}`           | Edita produto                                | ADMIN        |
+| `DELETE` | `/products/{id}`           | Exclui produto                               | ADMIN        |
+| `GET`    | `/categories`              | Lista categorias                             | Não          |
+| `POST`   | `/categories`              | Cadastra categoria                           | ADMIN        |
+| `PUT`    | `/categories/{id}`         | Edita categoria                              | ADMIN        |
+| `DELETE` | `/categories/{id}`         | Exclui categoria                             | ADMIN        |
+| `GET`    | `/addresses`               | Lista endereços do usuário                   | Sim          |
+| `POST`   | `/addresses`               | Cadastra endereço                            | Sim          |
+| `GET`    | `/addresses/cep/{zipCode}` | Consulta endereço pelo ViaCEP                | Não          |
+| `GET`    | `/orders`                  | Lista pedidos do usuário ou todos para ADMIN | Sim          |
+| `POST`   | `/orders`                  | Cria pedido e reduz o estoque                | CLIENT       |
+| `GET`    | `/orders/{id}`             | Busca pedido                                 | Sim          |
+| `PUT`    | `/orders/{id}`             | Atualiza status conforme regras de perfil    | Sim          |
 
 As requisições autenticadas devem enviar o token no cabeçalho:
 
@@ -494,9 +498,9 @@ O arquivo `backend/src/main/resources/data.sql` popula o banco com:
 
 Credenciais de demonstração (somente para desenvolvimento):
 
-| Perfil | E-mail | Senha |
-|---|---|---|
-| `ADMIN` | `admin@email.com` | Senha de demonstração |
+| Perfil   | E-mail             | Senha                 |
+| -------- | ------------------ | --------------------- |
+| `ADMIN`  | `admin@email.com`  | Senha de demonstração |
 | `CLIENT` | `marcus@email.com` | Senha de demonstração |
 
 As senhas dos usuários de demonstração são armazenadas como hashes BCrypt.
@@ -537,12 +541,12 @@ PENDING → PREPARING → READY → DELIVERED
           CANCELLED
 ```
 
-| Status | Descrição |
-|---|---|
-| `PENDING` | Pendente |
-| `PREPARING` | Preparando |
-| `READY` | Pronto |
-| `DELIVERED` | Entregue (final) |
+| Status      | Descrição         |
+| ----------- | ----------------- |
+| `PENDING`   | Pendente          |
+| `PREPARING` | Preparando        |
+| `READY`     | Pronto            |
+| `DELIVERED` | Entregue (final)  |
 | `CANCELLED` | Cancelado (final) |
 
 A trilha de acompanhamento do cliente possui 4 etapas, de `PENDING` a `DELIVERED`.
@@ -569,8 +573,9 @@ npm run preview
 ### Backend
 
 ```powershell
-.\mvnw.cmd test
-.\mvnw.cmd clean package
+.\mvnw.cmd test                # requer Docker em execução
+.\mvnw.cmd clean package       # executa os testes (requer Docker)
+.\mvnw.cmd clean package -DskipTests
 .\mvnw.cmd spring-boot:run
 ```
 
@@ -580,12 +585,6 @@ npm run preview
 docker compose up --build
 docker compose down
 docker compose logs -f backend
-```
-
-Executar os testes do backend com Docker:
-
-```powershell
-docker compose --profile tests run --rm backend-test
 ```
 
 ## 🏗️ Build de produção
@@ -608,13 +607,23 @@ cd backend
 
 O arquivo executável será gerado em `backend/target`.
 
+Para gerar o pacote sem executar os testes (por exemplo, em uma máquina sem Docker):
+
+```powershell
+.\mvnw.cmd clean package -DskipTests
+```
+
 > O Dockerfile atual do frontend utiliza o servidor de desenvolvimento do Vite. Para produção, gere o build com `npm run build` e sirva a pasta `dist` com um servidor web, como Nginx.
 
 ## 🧪 Testes
 
-O backend possui testes automatizados com **JUnit 6.0.3** e Spring Boot.
+O backend possui testes automatizados com **JUnit 6.0.3**, Spring Boot e **Testcontainers 2.x**.
 
-Os testes utilizam o perfil `test`, configurado em `application-test.properties`, com banco H2 em arquivo. Dessa forma, não dependem do PostgreSQL de desenvolvimento nem das variáveis de ambiente.
+Os testes de integração rodam contra um **PostgreSQL real** (`postgres:17-alpine`) iniciado automaticamente em um container Docker. Isso garante que o bloqueio pessimista de estoque seja validado no mesmo tipo de banco usado em ambiente relacional real, e não apenas no H2.
+
+O container é criado antes dos testes e descartado ao final. O datasource é configurado dinamicamente com `@DynamicPropertySource`, portanto os testes não dependem de um PostgreSQL instalado, do banco de desenvolvimento nem do arquivo `.env`.
+
+> **Requisito:** o Docker precisa estar instalado e em execução na máquina que roda os testes. Sem Docker, os testes que usam Testcontainers falham com `Could not find a valid Docker environment`.
 
 ### Teste de concorrência do estoque
 
@@ -626,11 +635,11 @@ O teste verifica se:
 - O estoque do produto permanece em zero.
 - Apenas um pedido é registrado no banco de dados.
 
-A implementação utiliza `CountDownLatch` para sincronizar o início das requisições concorrentes e valida o controle de estoque com bloqueio pessimista no banco de dados.
+A implementação utiliza `CountDownLatch` para sincronizar o início das requisições concorrentes e valida o controle de estoque com bloqueio pessimista (`SELECT ... FOR NO KEY UPDATE`) no PostgreSQL.
 
 ### Executar os testes
 
-Na pasta `backend`, execute todos os testes:
+Com o Docker em execução, na pasta `backend`, execute todos os testes:
 
 ```powershell
 .\mvnw.cmd test
@@ -648,13 +657,9 @@ Para executar os testes e validar o build:
 .\mvnw.cmd clean verify
 ```
 
-### Executar os testes com Docker
+### Executar os testes com Docker Compose
 
-O container de backend utiliza uma imagem de runtime e não precisa conter Maven nem código-fonte. Por isso, os testes são executados em um container separado.
-
-O `docker-compose.yml` possui o serviço `backend-test`, que utiliza um perfil próprio do Docker Compose chamado `tests`.
-
-Execute todos os testes:
+O container de backend utiliza uma imagem de runtime e não precisa conter Maven nem código-fonte. Por isso, os testes são executados em um container separado, definido no serviço `backend-test` do `docker-compose.yml`, que utiliza um perfil próprio do Docker Compose chamado `tests`.
 
 ```powershell
 docker compose --profile tests run --rm backend-test
@@ -670,10 +675,9 @@ Observações:
 
 - O serviço `backend-test` só é executado quando chamado com `--profile tests`.
 - O perfil `tests` é um perfil do Docker Compose e não deve ser confundido com o perfil `test` do Spring.
-- Os testes utilizam o perfil `test` do Spring e H2 em arquivo.
-- Os testes não precisam do PostgreSQL nem do arquivo `.env`.
+- Como os testes usam Testcontainers, o container `backend-test` precisa ter acesso ao Docker da máquina hospedeira (por exemplo, montando `/var/run/docker.sock`). Se preferir evitar essa configuração, execute os testes diretamente com `.\mvnw.cmd test`.
 - O serviço de testes não utiliza `env_file`, evitando que os testes apontem acidentalmente para o banco de desenvolvimento.
-- O volume `maven_repo` guarda as dependências do Maven. A primeira execução pode demorar mais devido ao download das dependências.
+- O volume `maven_repo` guarda as dependências do Maven. A primeira execução pode demorar mais devido ao download das dependências e da imagem `postgres:17-alpine`.
 
 ## 🔄 Integração contínua — GitHub Actions
 
@@ -696,10 +700,9 @@ O workflow é acionado:
 
 O job do backend:
 
-- Configura Java.
+- Configura Java 25 (Temurin) com cache do Maven.
 - Ativa o perfil `test`.
-- Utiliza H2 em arquivo.
-- Executa os testes automatizados.
+- Executa os testes automatizados, que sobem um PostgreSQL temporário via Testcontainers usando o Docker já disponível no runner `ubuntu-latest`.
 - Valida o build com Maven.
 
 Comando executado:
@@ -707,6 +710,8 @@ Comando executado:
 ```bash
 ./mvnw -B clean verify
 ```
+
+Não é necessário configurar serviços de banco de dados nem variáveis de ambiente do Docker no workflow: o Testcontainers detecta o Docker do runner automaticamente.
 
 O CI não utiliza o arquivo `.env`, pois ele não é versionado e não é necessário para os testes.
 
